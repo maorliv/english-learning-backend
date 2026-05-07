@@ -1,5 +1,50 @@
 const { sendError, sendSuccess } = require('../utils/response');
-const { getAllUsers, getUserById } = require('../models/users.model');
+const {
+  createUser,
+  getAllUsers,
+  getUserByEmail,
+  getUserById,
+} = require('../models/users.model');
+
+function registerUser(req, res) {
+  const { firstName, lastName, email, password, userRole, sex } = req.body;
+  const missingFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'password',
+    'userRole',
+    'sex',
+  ].filter((field) => !req.body[field]);
+
+  if (missingFields.length > 0) {
+    return sendError(res, 400, 'VALIDATION_ERROR', 'Missing required fields', {
+      missingFields,
+    });
+  }
+
+  if (getUserByEmail(email)) {
+    return sendError(res, 409, 'EMAIL_ALREADY_EXISTS', 'Email already exists', {
+      email,
+    });
+  }
+
+  const newUser = createUser({
+    firstName,
+    lastName,
+    email,
+    password,
+    userRole,
+    sex,
+  });
+
+  return sendSuccess(res, 201, {
+    userId: newUser.userID,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
+    userRole: newUser.role,
+  });
+}
 
 function listUsers(req, res) {
   return sendSuccess(res, 200, getAllUsers());
@@ -18,6 +63,7 @@ function getUser(req, res) {
 }
 
 module.exports = {
+  registerUser,
   listUsers,
   getUser,
 };

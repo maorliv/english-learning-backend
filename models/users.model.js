@@ -35,9 +35,25 @@ function createUser(userData) {
   return newUser;
 }
 
+function updateUserById(id, userData) {
+  const user = getUserById(id);
+
+  if (!user) {
+    return null;
+  }
+
+  user.firstName = userData.firstName;
+  user.lastName = userData.lastName;
+  user.role = userData.userRole;
+  user.updateDate = new Date().toISOString();
+
+  return user;
+}
+
 module.exports = {
   getAllUsers,
   getUserById,
   getUserByEmail,
   createUser,
+  updateUserById,
 };

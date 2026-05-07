@@ -1,9 +1,11 @@
 const { sendError, sendSuccess } = require('../utils/response');
+const { validateIdParam } = require('../utils/validators');
 const {
   createUser,
   getAllUsers,
   getUserByEmail,
   getUserById,
+  updateUserById,
 } = require('../models/users.model');
 
 function registerUser(req, res) {
@@ -51,19 +53,72 @@ function listUsers(req, res) {
 }
 
 function getUser(req, res) {
-  const user = getUserById(req.params.id);
+  const validatedId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  const user = getUserById(validatedId.value);
 
   if (!user) {
     return sendError(res, 404, 'USER_NOT_FOUND', 'User not found', {
-      userID: req.params.id,
+      userID: validatedId.value,
     });
   }
 
   return sendSuccess(res, 200, user);
 }
 
+function updateUser(req, res) {
+  const { firstName, lastName, userRole } = req.body;
+  const validatedId = validateIdParam(req.params.id, 'id');
+  const missingFields = ['firstName', 'lastName', 'userRole'].filter(
+    (field) => !req.body[field]
+  );
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  if (missingFields.length > 0) {
+    return sendError(res, 400, 'VALIDATION_ERROR', 'Missing required fields', {
+      missingFields,
+    });
+  }
+
+  const updatedUser = updateUserById(validatedId.value, {
+    firstName,
+    lastName,
+    userRole,
+  });
+
+  if (!updatedUser) {
+    return sendError(res, 404, 'USER_NOT_FOUND', 'User not found', {
+      userID: validatedId.value,
+    });
+  }
+
+  return sendSuccess(res, 200, {
+    userId: updatedUser.userID,
+  });
+}
+
 module.exports = {
   registerUser,
   listUsers,
   getUser,
+  updateUser,
 };

@@ -1,0 +1,32 @@
+[
+  {
+    "userID": 1,
+    "firstName": "Dana",
+    "lastName": "Levi",
+    "email": "dana.levi@example.com",
+    "password": "1234",
+    "role": "student",
+    "createDate": "2026-05-01T09:00:00.000Z",
+    "sex": "female"
+  },
+  {
+    "userID": 2,
+    "firstName": "Omer",
+    "lastName": "Cohen",
+    "email": "omer.cohen@example.com",
+    "password": "1234",
+    "role": "teacher",
+    "createDate": "2026-05-02T10:30:00.000Z",
+    "sex": "male"
+  },
+  {
+    "userID": 3,
+    "firstName": "Maya",
+    "lastName": "Ben-Ami",
+    "email": "maya.benami@example.com",
+    "password": "1234",
+    "role": "admin",
+    "createDate": "2026-05-03T12:15:00.000Z",
+    "sex": "female"
+  }
+]

@@ -4,6 +4,7 @@ const errorHandler = require('./middleware/errorHandler.middleware');
 const logger = require('./middleware/logger.middleware');
 const notFound = require('./middleware/notFound.middleware');
 const healthRouter = require('./routes/health.routes');
+const usersRouter = require('./routes/users.routes');
 
 const app = express();
 const PORT = 3000;
@@ -11,6 +12,7 @@ const PORT = 3000;
 app.use(logger);
 app.use(express.json());
 app.use('/', healthRouter);
+app.use('/api/users', usersRouter);
 app.use(notFound);
 app.use(errorHandler);
 

@@ -1,5 +1,5 @@
 const { sendError, sendSuccess } = require('../utils/response');
-const { validateIdParam } = require('../utils/validators');
+const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const {
   createUser,
   deleteUserById,
@@ -11,19 +11,23 @@ const {
 
 function registerUser(req, res) {
   const { firstName, lastName, email, password, userRole, sex } = req.body;
-  const missingFields = [
+  const requiredFieldsValidation = validateRequiredFields(req.body, [
     'firstName',
     'lastName',
     'email',
     'password',
     'userRole',
     'sex',
-  ].filter((field) => !req.body[field]);
+  ]);
 
-  if (missingFields.length > 0) {
-    return sendError(res, 400, 'VALIDATION_ERROR', 'Missing required fields', {
-      missingFields,
-    });
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
   }
 
   if (getUserByEmail(email)) {
@@ -46,6 +50,38 @@ function registerUser(req, res) {
     firstName: newUser.firstName,
     lastName: newUser.lastName,
     userRole: newUser.role,
+  });
+}
+
+function loginUser(req, res) {
+  const { email, password } = req.body;
+  const requiredFieldsValidation = validateRequiredFields(req.body, [
+    'email',
+    'password',
+  ]);
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const user = getUserByEmail(email);
+
+  if (!user || user.password !== password) {
+    return sendError(res, 401, 'INVALID_CREDENTIALS', 'Invalid email or password', {
+      email,
+    });
+  }
+
+  return sendSuccess(res, 200, {
+    userId: user.userID,
+    userRole: user.role,
+    token: `mock-token-user-${user.userID}`,
   });
 }
 
@@ -80,9 +116,11 @@ function getUser(req, res) {
 function updateUser(req, res) {
   const { firstName, lastName, userRole } = req.body;
   const validatedId = validateIdParam(req.params.id, 'id');
-  const missingFields = ['firstName', 'lastName', 'userRole'].filter(
-    (field) => !req.body[field]
-  );
+  const requiredFieldsValidation = validateRequiredFields(req.body, [
+    'firstName',
+    'lastName',
+    'userRole',
+  ]);
 
   if (!validatedId.isValid) {
     return sendError(
@@ -94,10 +132,14 @@ function updateUser(req, res) {
     );
   }
 
-  if (missingFields.length > 0) {
-    return sendError(res, 400, 'VALIDATION_ERROR', 'Missing required fields', {
-      missingFields,
-    });
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
   }
 
   const updatedUser = updateUserById(validatedId.value, {
@@ -145,6 +187,7 @@ function deleteUser(req, res) {
 
 module.exports = {
   registerUser,
+  loginUser,
   listUsers,
   getUser,
   updateUser,

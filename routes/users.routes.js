@@ -4,6 +4,7 @@ const authorize = require('../middleware/authorize.middleware');
 const {
 	deleteUser,
 	getUser,
+	loginUser,
 	listUsers,
 	registerUser,
 	updateUser,
@@ -12,6 +13,7 @@ const {
 const router = express.Router();
 
 router.get('/', authorize(['admin']), listUsers);
+router.post('/login', loginUser);
 router.post('/register', registerUser);
 router.put('/:id', authorize(['admin'], { allowSelf: true }), updateUser);
 router.delete('/:id', authorize(['admin']), deleteUser);

@@ -50,10 +50,23 @@ function updateUserById(id, userData) {
   return user;
 }
 
+function deleteUserById(id) {
+  const userIndex = users.findIndex((user) => String(user.userID) === String(id));
+
+  if (userIndex === -1) {
+    return null;
+  }
+
+  const [deletedUser] = users.splice(userIndex, 1);
+
+  return deletedUser;
+}
+
 module.exports = {
   getAllUsers,
   getUserById,
   getUserByEmail,
   createUser,
   updateUserById,
+  deleteUserById,
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 
 const {
+	deleteUser,
 	getUser,
 	listUsers,
 	registerUser,
@@ -12,6 +13,7 @@ const router = express.Router();
 router.get('/', listUsers);
 router.post('/register', registerUser);
 router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
 router.get('/:id', getUser);
 
 module.exports = router;

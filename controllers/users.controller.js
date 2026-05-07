@@ -2,6 +2,7 @@ const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam } = require('../utils/validators');
 const {
   createUser,
+  deleteUserById,
   getAllUsers,
   getUserByEmail,
   getUserById,
@@ -116,9 +117,36 @@ function updateUser(req, res) {
   });
 }
 
+function deleteUser(req, res) {
+  const validatedId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  const deletedUser = deleteUserById(validatedId.value);
+
+  if (!deletedUser) {
+    return sendError(res, 404, 'USER_NOT_FOUND', 'User not found', {
+      userID: validatedId.value,
+    });
+  }
+
+  return sendSuccess(res, 200, {
+    userId: deletedUser.userID,
+  });
+}
+
 module.exports = {
   registerUser,
   listUsers,
   getUser,
   updateUser,
+  deleteUser,
 };

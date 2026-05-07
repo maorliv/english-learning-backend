@@ -1,11 +1,9 @@
+const { sendSuccess } = require('../utils/response');
+
 function getHealth(req, res) {
-  res.status(200).json({
-    success: true,
-    data: {
-      message: 'Server is running',
-      timestamp: new Date().toISOString(),
-    },
-    error: null,
+  return sendSuccess(res, 200, {
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
   });
 }
 

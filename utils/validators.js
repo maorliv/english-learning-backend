@@ -30,7 +30,11 @@ function validateIdParam(id, fieldName = 'id') {
 }
 
 function validateRequiredFields(body, requiredFields) {
-  const missingFields = requiredFields.filter((field) => !body[field]);
+  const missingFields = requiredFields.filter((field) => {
+    const value = body[field];
+
+    return value === undefined || value === null || value === '';
+  });
 
   if (missingFields.length > 0) {
     return {

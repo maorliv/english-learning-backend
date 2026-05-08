@@ -5,13 +5,14 @@ function authorize(allowedRoles, options = {}) {
     const userRole = req.header('x-user-role');
     const userId = req.header('x-user-id');
     const routeId = req.params[options.idParam || 'id'];
+    const ownerId = options.getOwnerId ? options.getOwnerId(req) : routeId;
 
     const isAllowedRole = userRole && allowedRoles.includes(userRole);
     const isSelfAllowed =
       options.allowSelf === true &&
       userId &&
-      routeId &&
-      String(userId) === String(routeId);
+      ownerId &&
+      String(userId) === String(ownerId);
 
     if (!isAllowedRole && !isSelfAllowed) {
       return sendError(
@@ -24,6 +25,7 @@ function authorize(allowedRoles, options = {}) {
           receivedRole: userRole || null,
           receivedUserId: userId || null,
           routeId: routeId || null,
+          ownerId: ownerId || null,
         }
       );
     }

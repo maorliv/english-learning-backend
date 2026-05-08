@@ -7,15 +7,6 @@ function getAllTeachers(filters = {}) {
         return false;
       }
 
-      if (
-        filters.specialty &&
-        !teacher.specialties.some((specialty) =>
-          specialty.toLowerCase().includes(filters.specialty.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
       if (typeof filters.maxPrice === 'number' && teacher.pricePerWeek > filters.maxPrice) {
         return false;
       }
@@ -34,6 +25,57 @@ function getAllTeachers(filters = {}) {
     }));
 }
 
+function getTeacherById(id) {
+  const teacher = teachers.find((item) => String(item.teacherId) === String(id));
+
+  if (!teacher) {
+    return null;
+  }
+
+  return {
+    teacherId: teacher.teacherId,
+    userId: teacher.userID,
+    firstName: teacher.firstName,
+    lastName: teacher.lastName,
+    rank: teacher.rank,
+    pricePerWeek: teacher.pricePerWeek,
+    specialties: teacher.specialties,
+    available: teacher.available,
+    experience: teacher.experience,
+    feedback: teacher.feedback,
+  };
+}
+
+function updateTeacherById(id, teacherData) {
+  const teacher = teachers.find((item) => String(item.teacherId) === String(id));
+
+  if (!teacher) {
+    return null;
+  }
+
+  teacher.experience = teacherData.experience;
+  teacher.pricePerWeek = teacherData.pricePerWeek;
+  teacher.specialties = teacherData.specialties;
+  teacher.available = teacherData.available;
+  teacher.feedback = teacherData.feedback;
+  teacher.updateDate = new Date().toISOString();
+
+  return {
+    teacherId: teacher.teacherId,
+    userId: teacher.userID,
+    firstName: teacher.firstName,
+    lastName: teacher.lastName,
+    rank: teacher.rank,
+    pricePerWeek: teacher.pricePerWeek,
+    specialties: teacher.specialties,
+    available: teacher.available,
+    experience: teacher.experience,
+    feedback: teacher.feedback,
+  };
+}
+
 module.exports = {
   getAllTeachers,
+  getTeacherById,
+  updateTeacherById,
 };

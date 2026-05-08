@@ -54,9 +54,22 @@ function updateLessonById(id, lessonData) {
   return lesson;
 }
 
+function deleteLessonById(id) {
+  const lessonIndex = lessons.findIndex((lesson) => String(lesson.lessonId) === String(id));
+
+  if (lessonIndex === -1) {
+    return null;
+  }
+
+  const [deletedLesson] = lessons.splice(lessonIndex, 1);
+
+  return deletedLesson;
+}
+
 module.exports = {
   getAllLessons,
   getLessonById,
   createLesson,
   updateLessonById,
+  deleteLessonById,
 };

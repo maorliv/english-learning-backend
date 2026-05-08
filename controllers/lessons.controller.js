@@ -2,6 +2,7 @@ const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const {
   createLesson,
+  deleteLessonById,
   getAllLessons,
   getLessonById,
   updateLessonById,
@@ -120,9 +121,36 @@ function updateLesson(req, res) {
   });
 }
 
+function deleteLesson(req, res) {
+  const validatedId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  const deletedLesson = deleteLessonById(validatedId.value);
+
+  if (!deletedLesson) {
+    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+      lessonId: validatedId.value,
+    });
+  }
+
+  return sendSuccess(res, 200, {
+    lessonId: deletedLesson.lessonId,
+  });
+}
+
 module.exports = {
   createLessonHandler,
   listLessons,
   getLesson,
   updateLesson,
+  deleteLesson,
 };

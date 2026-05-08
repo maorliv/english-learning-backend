@@ -13,6 +13,11 @@ function getAllLessons(level) {
   }));
 }
 
+function getLessonById(id) {
+  return lessons.find((lesson) => String(lesson.lessonId) === String(id)) || null;
+}
+
 module.exports = {
   getAllLessons,
+  getLessonById,
 };

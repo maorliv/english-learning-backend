@@ -37,8 +37,26 @@ function createLesson(lessonData) {
   return newLesson;
 }
 
+function updateLessonById(id, lessonData) {
+  const lesson = getLessonById(id);
+
+  if (!lesson) {
+    return null;
+  }
+
+  lesson.title = lessonData.title;
+  lesson.scene = lessonData.scene;
+  lesson.aiRole = lessonData.aiRole;
+  lesson.level = lessonData.level;
+  lesson.grammarRuleId = lessonData.grammarRuleId;
+  lesson.vocabularyId = lessonData.vocabularyId;
+
+  return lesson;
+}
+
 module.exports = {
   getAllLessons,
   getLessonById,
   createLesson,
+  updateLessonById,
 };

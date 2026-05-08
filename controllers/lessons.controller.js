@@ -1,6 +1,11 @@
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
-const { createLesson, getAllLessons, getLessonById } = require('../models/lessons.model');
+const {
+  createLesson,
+  getAllLessons,
+  getLessonById,
+  updateLessonById,
+} = require('../models/lessons.model');
 
 function createLessonHandler(req, res) {
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -64,8 +69,60 @@ function getLesson(req, res) {
   return sendSuccess(res, 200, lesson);
 }
 
+function updateLesson(req, res) {
+  const validatedId = validateIdParam(req.params.id, 'id');
+  const requiredFieldsValidation = validateRequiredFields(req.body, [
+    'title',
+    'scene',
+    'aiRole',
+    'level',
+    'grammarRuleId',
+    'vocabularyId',
+  ]);
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const updatedLesson = updateLessonById(validatedId.value, {
+    title: req.body.title,
+    scene: req.body.scene,
+    aiRole: req.body.aiRole,
+    level: req.body.level,
+    grammarRuleId: req.body.grammarRuleId,
+    vocabularyId: req.body.vocabularyId,
+  });
+
+  if (!updatedLesson) {
+    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+      lessonId: validatedId.value,
+    });
+  }
+
+  return sendSuccess(res, 200, {
+    lessonId: updatedLesson.lessonId,
+  });
+}
+
 module.exports = {
   createLessonHandler,
   listLessons,
   getLesson,
+  updateLesson,
 };

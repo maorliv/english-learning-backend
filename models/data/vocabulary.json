@@ -1,0 +1,38 @@
+[
+  {
+    "vocabularyId": 301,
+    "lessonId": 101,
+    "word": "Maintain",
+    "translation": "לתחזק",
+    "example": "I maintain the servers every day.",
+    "definition": "to keep something working or in good condition",
+    "completeSentence": "I ________ the servers every day."
+  },
+  {
+    "vocabularyId": 302,
+    "lessonId": 101,
+    "word": "Deploy",
+    "translation": "לפרוס",
+    "example": "We deploy the new version on Friday.",
+    "definition": "to release software to an environment for use",
+    "completeSentence": "We ________ the new version on Friday."
+  },
+  {
+    "vocabularyId": 303,
+    "lessonId": 102,
+    "word": "Report",
+    "translation": "לדווח",
+    "example": "I report my progress in the standup meeting.",
+    "definition": "to give information about something",
+    "completeSentence": "I ________ my progress in the standup meeting."
+  },
+  {
+    "vocabularyId": 304,
+    "lessonId": 103,
+    "word": "Investigate",
+    "translation": "לחקור",
+    "example": "We investigate the production incident immediately.",
+    "definition": "to examine something carefully to discover facts",
+    "completeSentence": "We ________ the production incident immediately."
+  }
+]

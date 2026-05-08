@@ -1,6 +1,46 @@
 const { sendError, sendSuccess } = require('../utils/response');
-const { validateStringIdParam } = require('../utils/validators');
-const { getAllGrammarRules, getGrammarRuleById } = require('../models/grammarRules.model');
+const { validateRequiredFields, validateStringIdParam } = require('../utils/validators');
+const {
+  createGrammarRule,
+  getAllGrammarRules,
+  getGrammarRuleById,
+} = require('../models/grammarRules.model');
+
+function createGrammarRuleHandler(req, res) {
+  const requiredFieldsValidation = validateRequiredFields(req.body, [
+    'id',
+    'category',
+    'usage',
+    'forms',
+    'spellingRules',
+    'examples',
+    'keywords',
+  ]);
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const createdGrammarRule = createGrammarRule({
+    id: String(req.body.id).trim(),
+    category: req.body.category,
+    usage: req.body.usage,
+    forms: req.body.forms,
+    spellingRules: req.body.spellingRules,
+    examples: req.body.examples,
+    keywords: req.body.keywords,
+  });
+
+  return sendSuccess(res, 201, {
+    grammarRuleId: createdGrammarRule.id,
+  });
+}
 
 function listGrammarRules(req, res) {
   const category = req.query.category ? String(req.query.category).trim() : undefined;
@@ -33,6 +73,7 @@ function getGrammarRule(req, res) {
 }
 
 module.exports = {
+  createGrammarRuleHandler,
   listGrammarRules,
   getGrammarRule,
 };

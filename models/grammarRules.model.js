@@ -34,8 +34,39 @@ function createGrammarRule(ruleData) {
   return newGrammarRule;
 }
 
+function updateGrammarRuleById(id, ruleData) {
+  const grammarRule = getGrammarRuleById(id);
+
+  if (!grammarRule) {
+    return null;
+  }
+
+  grammarRule.category = ruleData.category;
+  grammarRule.usage = ruleData.usage;
+  grammarRule.forms = ruleData.forms;
+  grammarRule.spellingRules = ruleData.spellingRules;
+  grammarRule.examples = ruleData.examples;
+  grammarRule.keywords = ruleData.keywords;
+
+  return grammarRule;
+}
+
+function deleteGrammarRuleById(id) {
+  const grammarRuleIndex = grammarRules.findIndex((rule) => rule.id === id);
+
+  if (grammarRuleIndex === -1) {
+    return null;
+  }
+
+  const [deletedGrammarRule] = grammarRules.splice(grammarRuleIndex, 1);
+
+  return deletedGrammarRule;
+}
+
 module.exports = {
   getAllGrammarRules,
   getGrammarRuleById,
   createGrammarRule,
+  updateGrammarRuleById,
+  deleteGrammarRuleById,
 };

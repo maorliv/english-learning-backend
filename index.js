@@ -8,6 +8,7 @@ const healthRouter = require('./routes/health.routes');
 const lessonsRouter = require('./routes/lessons.routes');
 const teachersRouter = require('./routes/teachers.routes');
 const usersRouter = require('./routes/users.routes');
+const warmUpGrammarRouter = require('./routes/warmUpGrammar.routes');
 
 const app = express();
 const PORT = 3000;
@@ -19,6 +20,7 @@ app.use('/api/grammar-rules', grammarRulesRouter);
 app.use('/api/lessons', lessonsRouter);
 app.use('/api/teachers', teachersRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/warm-up-grammar', warmUpGrammarRouter);
 app.use(notFound);
 app.use(errorHandler);
 

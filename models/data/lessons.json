@@ -1,0 +1,29 @@
+[
+  {
+    "lessonId": 101,
+    "vocabularyId": 3,
+    "title": "The Technical Interview",
+    "scene": "You are applying for an IT position. Brian, the team leader, is asking about your routine.",
+    "aiRole": "Technical Team Lead",
+    "grammarRuleId": "present_simple",
+    "level": "Intermediate"
+  },
+  {
+    "lessonId": 102,
+    "vocabularyId": 4,
+    "title": "Daily Standup Meeting",
+    "scene": "You are speaking in a daily standup and explaining what you worked on yesterday.",
+    "aiRole": "Scrum Master",
+    "grammarRuleId": "past_simple",
+    "level": "Beginner"
+  },
+  {
+    "lessonId": 103,
+    "vocabularyId": 5,
+    "title": "Production Incident",
+    "scene": "A production issue happened and you need to explain what is happening and what you are doing next.",
+    "aiRole": "Engineering Manager",
+    "grammarRuleId": "present_continuous",
+    "level": "Advanced"
+  }
+]

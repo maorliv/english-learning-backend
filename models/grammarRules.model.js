@@ -14,6 +14,11 @@ function getAllGrammarRules(category) {
     }));
 }
 
+function getGrammarRuleById(id) {
+  return grammarRules.find((rule) => rule.id === id) || null;
+}
+
 module.exports = {
   getAllGrammarRules,
+  getGrammarRuleById,
 };

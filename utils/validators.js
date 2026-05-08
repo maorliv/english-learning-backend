@@ -29,6 +29,23 @@ function validateIdParam(id, fieldName = 'id') {
   };
 }
 
+function validateStringIdParam(id, fieldName = 'id') {
+  if (id === undefined || id === null || String(id).trim() === '') {
+    return {
+      isValid: false,
+      message: 'Missing required id parameter',
+      details: {
+        parameter: fieldName,
+      },
+    };
+  }
+
+  return {
+    isValid: true,
+    value: String(id).trim(),
+  };
+}
+
 function validateRequiredFields(body, requiredFields) {
   const missingFields = requiredFields.filter((field) => {
     const value = body[field];
@@ -53,5 +70,6 @@ function validateRequiredFields(body, requiredFields) {
 
 module.exports = {
   validateIdParam,
+  validateStringIdParam,
   validateRequiredFields,
 };

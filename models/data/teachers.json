@@ -1,0 +1,44 @@
+[
+  {
+    "teacherId": 1,
+    "teacherID": 1,
+    "userID": 432,
+    "firstName": "Omer",
+    "lastName": "Cohen",
+    "rank": 4,
+    "pricePerWeek": 80,
+    "specialties": ["Grammar", "Tech English"],
+    "feedback": "weekly",
+    "available": true,
+    "experience": "5 years in Tech English",
+    "updateDate": "2024-04-15T09:00:00Z"
+  },
+  {
+    "teacherId": 2,
+    "teacherID": 2,
+    "userID": 433,
+    "firstName": "Yael",
+    "lastName": "Levi",
+    "rank": 5,
+    "pricePerWeek": 120,
+    "specialties": ["Interview Prep", "Speaking"],
+    "feedback": "daily",
+    "available": false,
+    "experience": "7 years coaching software students",
+    "updateDate": "2024-05-01T08:30:00Z"
+  },
+  {
+    "teacherId": 3,
+    "teacherID": 3,
+    "userID": 434,
+    "firstName": "Noa",
+    "lastName": "Ben-David",
+    "rank": 4,
+    "pricePerWeek": 95,
+    "specialties": ["Vocabulary", "Tech English", "Interview Prep"],
+    "feedback": "weekly",
+    "available": true,
+    "experience": "4 years teaching English for developers",
+    "updateDate": "2024-05-03T10:15:00Z"
+  }
+]

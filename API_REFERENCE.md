@@ -1489,7 +1489,8 @@ Error envelope:
 
 ### POST /api/matching/preferences
 
-- Access: student
+- Access: student 
+- x-user-id : self ID
 - Query params: none
 - Request body:
 
@@ -1540,6 +1541,7 @@ Error envelope:
 ### GET /api/matching/recommendations
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1582,6 +1584,7 @@ Error envelope:
 ### GET /api/progress/stats
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1619,6 +1622,7 @@ Error envelope:
 ### GET /api/progress/chart
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1658,6 +1662,7 @@ Error envelope:
 ### GET /api/progress/skills
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1691,6 +1696,7 @@ Error envelope:
 ### GET /api/progress/next-lesson
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1806,6 +1812,7 @@ Error envelope:
 ### GET /api/relations/my-students
 
 - Access: teacher
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1845,6 +1852,7 @@ Error envelope:
 ### GET /api/relations/pending
 
 - Access: teacher
+-  x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -1884,6 +1892,7 @@ Error envelope:
 ### POST /api/relations/request
 
 - Access: student
+-  x-user-id: self ID
 - Query params: none
 - Request body:
 
@@ -1927,6 +1936,7 @@ Error envelope:
 ### PATCH /api/relations/:id/status
 
 - Access: teacher
+- x-user-id: self ID
 - Query params: none
 - Request body:
 
@@ -1970,6 +1980,7 @@ Error envelope:
 ### POST /api/relations/my-teacher/review
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body:
 
@@ -2101,6 +2112,7 @@ Error envelope:
 ### POST /api/conversations/start
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body:
 
@@ -2143,6 +2155,7 @@ Error envelope:
 ### POST /api/conversations/:id/message
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body:
 
@@ -2185,6 +2198,7 @@ Error envelope:
 ### POST /api/conversations/:id/end
 
 - Access: student
+- x-user-id: self ID
 - Query params: none
 - Request body: none
 - Example success (`200 OK`):
@@ -2220,6 +2234,7 @@ Error envelope:
 ### POST /api/conversations/:id/teacher-comment
 
 - Access: teacher
+- x-user-id: self ID
 - Query params: none
 - Request body:
 
@@ -2261,6 +2276,7 @@ Error envelope:
 ### POST /api/conversations/:id/reply
 
 - Access: student, teacher
+- x-user-id: self ID
 - Query params: none
 - Request body:
 

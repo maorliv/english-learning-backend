@@ -1,5 +1,6 @@
 const express = require('express');
 
+const conversationsRouter = require('./routes/conversations.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
 const grammarRulesRouter = require('./routes/grammarRules.routes');
 const logger = require('./middleware/logger.middleware');
@@ -18,6 +19,7 @@ const PORT = 3000;
 app.use(logger);
 app.use(express.json());
 app.use('/', healthRouter);
+app.use('/api/conversations', conversationsRouter);
 app.use('/api/grammar-rules', grammarRulesRouter);
 app.use('/api/lessons', lessonsRouter);
 app.use('/api/matching', matchingRouter);

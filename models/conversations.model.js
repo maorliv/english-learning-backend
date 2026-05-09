@@ -1,5 +1,38 @@
 const conversations = require('./data/conversations.json');
 
+function getAllConversations(filters = {}) {
+  return conversations
+    .filter((conversation) => {
+      if (filters.status && conversation.status !== filters.status) {
+        return false;
+      }
+
+      if (
+        typeof filters.studentId === 'number' &&
+        Number(conversation.studentId) !== filters.studentId
+      ) {
+        return false;
+      }
+
+      if (
+        typeof filters.lessonId === 'number' &&
+        Number(conversation.lessonId) !== filters.lessonId
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .map((conversation) => ({
+      conversationId: conversation.conversationId,
+      studentId: conversation.studentId,
+      lessonId: conversation.lessonId,
+      status: conversation.status,
+      aiScore: conversation.aiScore,
+      isReviewedByTeacher: conversation.isReviewedByTeacher,
+    }));
+}
+
 function getConversationById(conversationId) {
   return (
     conversations.find(
@@ -140,6 +173,7 @@ module.exports = {
   addConversationReply,
   addTeacherComment,
   endConversation,
+  getAllConversations,
   getConversationById,
   addMessageToConversation,
   createConversation,

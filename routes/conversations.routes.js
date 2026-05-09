@@ -5,6 +5,7 @@ const {
 	commentOnConversation,
 	finishConversation,
 	getConversation,
+	listConversations,
 	replyToConversation,
 	sendConversationMessage,
 	startConversation,
@@ -12,6 +13,7 @@ const {
 
 const router = express.Router();
 
+router.get('/', authorize(['admin', 'teacher']), listConversations);
 router.get('/:id', authorize(['student', 'teacher', 'admin']), getConversation);
 router.post('/:id/reply', authorize(['student', 'teacher']), replyToConversation);
 router.post('/:id/teacher-comment', authorize(['teacher']), commentOnConversation);

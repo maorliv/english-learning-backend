@@ -1,5 +1,26 @@
 const conversations = require('./data/conversations.json');
 
+function getScoredCompletedConversationsByStudentId(studentId, limit = 5) {
+  return conversations
+    .filter((conversation) => String(conversation.studentId) === String(studentId))
+    .filter((conversation) => conversation.status === 'completed')
+    .filter((conversation) => conversation.aiScore !== null || conversation.teacherScore !== null)
+    .sort((leftConversation, rightConversation) => {
+      const leftDate = new Date(leftConversation.endedAt || leftConversation.createdAt).getTime();
+      const rightDate = new Date(rightConversation.endedAt || rightConversation.createdAt).getTime();
+
+      return rightDate - leftDate;
+    })
+    .slice(0, limit)
+    .map((conversation) => ({
+      conversationId: conversation.conversationId,
+      lessonId: conversation.lessonId,
+      aiScore: conversation.aiScore,
+      teacherScore: conversation.teacherScore,
+      date: conversation.endedAt || conversation.createdAt,
+    }));
+}
+
 function getAllConversations(filters = {}) {
   return conversations
     .filter((conversation) => {
@@ -174,6 +195,7 @@ module.exports = {
   addTeacherComment,
   endConversation,
   getAllConversations,
+  getScoredCompletedConversationsByStudentId,
   getConversationById,
   addMessageToConversation,
   createConversation,

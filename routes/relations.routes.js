@@ -2,6 +2,7 @@ const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');
 const {
+	listRelations,
 	listMyStudents,
 	listPendingRelations,
 	requestRelation,
@@ -11,6 +12,7 @@ const {
 
 const router = express.Router();
 
+router.get('/', authorize(['admin']), listRelations);
 router.get('/my-students', authorize(['teacher']), listMyStudents);
 router.post('/my-teacher/review', authorize(['student']), reviewMyTeacher);
 router.get('/pending', authorize(['teacher']), listPendingRelations);

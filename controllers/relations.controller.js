@@ -3,6 +3,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const { getUserById } = require('../models/users.model');
 const {
   createRelationRequest,
+  getAllRelations,
   getActiveRelationByStudentId,
   getActiveRelationsByTeacherId,
   getRelationById,
@@ -13,6 +14,26 @@ const {
 } = require('../models/relations.model');
 
 const ALLOWED_RELATION_STATUSES = ['active', 'rejected'];
+const FILTERABLE_RELATION_STATUSES = ['pending', 'active', 'rejected'];
+
+function listRelations(req, res) {
+  const status = req.query.status ? String(req.query.status).trim().toLowerCase() : undefined;
+
+  if (status && !FILTERABLE_RELATION_STATUSES.includes(status)) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      'Invalid status filter',
+      {
+        status: req.query.status,
+        allowedValues: FILTERABLE_RELATION_STATUSES,
+      }
+    );
+  }
+
+  return sendSuccess(res, 200, getAllRelations(status));
+}
 
 function requestRelation(req, res) {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
@@ -276,6 +297,7 @@ function updateRelationStatus(req, res) {
 }
 
 module.exports = {
+  listRelations,
   listMyStudents,
   listPendingRelations,
   requestRelation,

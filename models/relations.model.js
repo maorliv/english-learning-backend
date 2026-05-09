@@ -1,5 +1,23 @@
 const relations = require('./data/relations.json');
 
+function getAllRelations(status) {
+  return relations
+    .filter((relation) => {
+      if (!status) {
+        return true;
+      }
+
+      return relation.status === status;
+    })
+    .map((relation) => ({
+      relationId: relation.relationId,
+      teacherId: relation.teacherId,
+      studentId: relation.studentId,
+      status: relation.status,
+      createdAt: relation.createdAt,
+    }));
+}
+
 function getRelationById(relationId) {
   return relations.find((relation) => String(relation.relationId) === String(relationId)) || null;
 }
@@ -98,6 +116,7 @@ function updateRelationReviewById(relationId, studentId, rating, studentFeedback
 }
 
 module.exports = {
+  getAllRelations,
   getRelationById,
   getRelationByTeacherAndStudent,
   getActiveRelationsByTeacherId,

@@ -149,8 +149,46 @@ function finishConversation(req, res) {
   return sendSuccess(res, 200, result);
 }
 
+function getConversation(req, res) {
+  const validatedConversationId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedConversationId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedConversationId.message,
+      validatedConversationId.details
+    );
+  }
+
+  const conversation = getConversationById(validatedConversationId.value);
+
+  if (!conversation) {
+    return sendError(
+      res,
+      404,
+      'CONVERSATION_NOT_FOUND',
+      'Conversation not found',
+      {
+        conversationId: validatedConversationId.value,
+      }
+    );
+  }
+
+  return sendSuccess(res, 200, {
+    conversationId: conversation.conversationId,
+    messages: conversation.messages,
+    aiScore: conversation.aiScore,
+    teacherScore: conversation.teacherScore,
+    teacherComment: conversation.teacherComment,
+    status: conversation.status,
+  });
+}
+
 module.exports = {
   finishConversation,
+  getConversation,
   sendConversationMessage,
   startConversation,
 };

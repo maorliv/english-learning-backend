@@ -1,5 +1,9 @@
 const relations = require('./data/relations.json');
 
+function getRelationById(relationId) {
+  return relations.find((relation) => String(relation.relationId) === String(relationId)) || null;
+}
+
 function getRelationByTeacherAndStudent(teacherId, studentId) {
   return (
     relations.find(
@@ -37,8 +41,26 @@ function createRelationRequest(teacherId, studentId) {
   return newRelation;
 }
 
+function updateRelationStatusById(relationId, teacherId, status) {
+  const relation = getRelationById(relationId);
+
+  if (!relation) {
+    return null;
+  }
+
+  if (String(relation.teacherId) !== String(teacherId)) {
+    return false;
+  }
+
+  relation.status = status;
+
+  return relation;
+}
+
 module.exports = {
+  getRelationById,
   getRelationByTeacherAndStudent,
   getPendingRelationsByTeacherId,
   createRelationRequest,
+  updateRelationStatusById,
 };

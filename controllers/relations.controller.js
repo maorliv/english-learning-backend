@@ -3,9 +3,13 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const { getUserById } = require('../models/users.model');
 const {
   createRelationRequest,
+  getRelationById,
   getRelationByTeacherAndStudent,
   getPendingRelationsByTeacherId,
+  updateRelationStatusById,
 } = require('../models/relations.model');
+
+const ALLOWED_RELATION_STATUSES = ['active', 'rejected'];
 
 function requestRelation(req, res) {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
@@ -100,7 +104,98 @@ function listPendingRelations(req, res) {
   return sendSuccess(res, 200, pendingRelations);
 }
 
+function updateRelationStatus(req, res) {
+  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const validatedRelationId = validateIdParam(req.params.id, 'id');
+  const requiredFieldsValidation = validateRequiredFields(req.body, ['status']);
+
+  if (!validatedTeacherId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedTeacherId.message,
+      validatedTeacherId.details
+    );
+  }
+
+  if (!validatedRelationId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedRelationId.message,
+      validatedRelationId.details
+    );
+  }
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const normalizedStatus = String(req.body.status).trim().toLowerCase();
+
+  if (!ALLOWED_RELATION_STATUSES.includes(normalizedStatus)) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      'Invalid status value',
+      {
+        field: 'status',
+        allowedValues: ALLOWED_RELATION_STATUSES,
+        receivedValue: req.body.status,
+      }
+    );
+  }
+
+  const relation = getRelationById(validatedRelationId.value);
+
+  if (!relation) {
+    return sendError(
+      res,
+      404,
+      'RELATION_NOT_FOUND',
+      'Relation not found',
+      {
+        relationId: validatedRelationId.value,
+      }
+    );
+  }
+
+  if (String(relation.teacherId) !== String(validatedTeacherId.value)) {
+    return sendError(
+      res,
+      403,
+      'FORBIDDEN',
+      'You do not have permission to update this relation.',
+      {
+        relationId: validatedRelationId.value,
+        teacherId: validatedTeacherId.value,
+      }
+    );
+  }
+
+  const updatedRelation = updateRelationStatusById(
+    validatedRelationId.value,
+    validatedTeacherId.value,
+    normalizedStatus
+  );
+
+  return sendSuccess(res, 200, {
+    relationId: updatedRelation.relationId,
+    status: updatedRelation.status,
+  });
+}
+
 module.exports = {
   listPendingRelations,
   requestRelation,
+  updateRelationStatus,
 };

@@ -1,3 +1,4 @@
+// Warm-up grammar exercise CRUD — admin-only access for all routes
 const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');

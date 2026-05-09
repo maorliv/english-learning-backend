@@ -1,3 +1,6 @@
+// Student progress routes
+// /chart, /next-lesson, /skills, /stats — student reads their own data
+// /:studentId — teacher or admin reads a specific student's progress
 const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');

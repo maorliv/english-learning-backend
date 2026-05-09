@@ -1,3 +1,4 @@
+// Grammar rules CRUD — students and admins can read; only admins can write
 const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');

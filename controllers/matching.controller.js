@@ -6,7 +6,15 @@ const {
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 
+/**
+ * POST /api/matching/preferences
+ * Saves (or replaces) the student's matching preferences, then immediately returns
+ * teacher recommendations based on those preferences.
+ * The student's ID is read from the x-user-id header.
+ * Returns the recommendations on success (201 Created).
+ */
 function saveMatchingPreferences(req, res) {
+  // Read the logged-in student's ID from the request header
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'budget_max',
@@ -42,9 +50,15 @@ function saveMatchingPreferences(req, res) {
     currentLevel: req.body.currentLevel,
   });
 
+  // Return recommendations immediately after saving (no need for a second request)
   return sendSuccess(res, 201, getMockTeacherRecommendationsForPreferences(savedPreferences));
 }
 
+/**
+ * GET /api/matching/recommendations
+ * Returns teacher recommendations based on the student's previously saved preferences.
+ * Returns 404 if the student has not saved preferences yet.
+ */
 function getMatchingRecommendations(req, res) {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 

@@ -1,5 +1,10 @@
 const conversations = require('./data/conversations.json');
 
+/**
+ * Returns the most recent completed and scored conversations for a student.
+ * Used to build the score history shown in the progress chart.
+ * Sorted by date descending and limited to `limit` results (default 5).
+ */
 function getScoredCompletedConversationsByStudentId(studentId, limit = 5) {
   return conversations
     .filter((conversation) => String(conversation.studentId) === String(studentId))
@@ -21,6 +26,11 @@ function getScoredCompletedConversationsByStudentId(studentId, limit = 5) {
     }));
 }
 
+/**
+ * Returns a minimal summary list of conversations matching the given filters.
+ * Supports filtering by status, studentId, studentIds (array), and lessonId.
+ * Used by admin/teacher list endpoints that don't need full message content.
+ */
 function getAllConversations(filters = {}) {
   return conversations
     .filter((conversation) => {
@@ -61,6 +71,10 @@ function getAllConversations(filters = {}) {
     }));
 }
 
+/**
+ * Similar to getAllConversations but returns a richer summary shape that includes
+ * teacherScore, createdAt, etc. Used by teacher review flow.
+ */
 function getConversationSummaries(filters = {}) {
   return conversations
     .filter((conversation) => {
@@ -103,6 +117,7 @@ function getConversationSummaries(filters = {}) {
     }));
 }
 
+/** Finds a single conversation by its numeric ID. Returns the full conversation object or null. */
 function getConversationById(conversationId) {
   return (
     conversations.find(
@@ -111,6 +126,10 @@ function getConversationById(conversationId) {
   );
 }
 
+/**
+ * Creates a new conversation for a student on a given lesson.
+ * The unusedVocab array is pre-populated from the lesson's vocabulary so word usage can be tracked.
+ */
 function createConversation(studentId, lessonId, unusedVocab = []) {
   const nextConversationId = conversations.reduce((maxConversationId, conversation) => {
     return Math.max(maxConversationId, Number(conversation.conversationId) || 0);
@@ -139,6 +158,12 @@ function createConversation(studentId, lessonId, unusedVocab = []) {
   return newConversation;
 }
 
+/**
+ * Appends a student message to the conversation and generates a mock AI reply.
+ * Automatically tracks which lesson vocabulary words appeared in the message.
+ * Words found in content are moved from unusedVocab to usedWords.
+ * Returns the AI reply and updated vocab tracking, or null if not found.
+ */
 function addMessageToConversation(conversationId, content) {
   const conversation = getConversationById(conversationId);
 
@@ -146,7 +171,7 @@ function addMessageToConversation(conversationId, content) {
     return null;
   }
 
-  const normalizedContent = String(content).toLowerCase();
+  const normalizedContent = String(content).toLowerCase(); // Lowercase for case-insensitive word matching
   const foundWords = conversation.unusedVocab.filter((word) => {
     return normalizedContent.includes(String(word).toLowerCase());
   });
@@ -177,6 +202,11 @@ function addMessageToConversation(conversationId, content) {
   };
 }
 
+/**
+ * Marks a conversation as completed and calculates an AI score.
+ * Score = 60 (base) + 10 per vocabulary word used, capped at 100.
+ * Returns the conversationId, aiScore, and aiFeedback.
+ */
 function endConversation(conversationId) {
   const conversation = getConversationById(conversationId);
 
@@ -185,6 +215,7 @@ function endConversation(conversationId) {
   }
 
   const usedWordsCount = Array.isArray(conversation.usedWords) ? conversation.usedWords.length : 0;
+  // aiScore starts at 60 (base) and increases by 10 per vocabulary word used, capped at 100
   const aiScore = Math.min(100, 60 + usedWordsCount * 10);
 
   conversation.status = 'completed';
@@ -202,6 +233,11 @@ function endConversation(conversationId) {
   };
 }
 
+/**
+ * Saves a teacher's score and written comment on a completed conversation.
+ * Sets isReviewedByTeacher = true.
+ * Returns just the conversationId on success, or null if not found.
+ */
 function addTeacherComment(conversationId, teacherScore, teacherComment) {
   const conversation = getConversationById(conversationId);
 
@@ -218,6 +254,11 @@ function addTeacherComment(conversationId, teacherScore, teacherComment) {
   };
 }
 
+/**
+ * Appends a reply to the conversation's commentsThread (not the main messages list).
+ * The commentsThread is for student/teacher discussion after the conversation ends.
+ * Returns the conversationId and the new reply object, or null if not found.
+ */
 function addConversationReply(conversationId, role, content) {
   const conversation = getConversationById(conversationId);
 

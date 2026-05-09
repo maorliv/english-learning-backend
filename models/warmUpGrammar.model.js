@@ -1,9 +1,19 @@
 const warmUpGrammar = require('./data/warmUpGrammar.json');
 
+/** Returns all warm-up grammar exercises (no filtering). Used by admin list endpoint. */
 function getAllWarmUpGrammar() {
   return warmUpGrammar;
 }
 
+/**
+ * Returns warm-up exercises for a specific lesson, optionally filtered by difficulty.
+ * Results are randomly shuffled and limited to `limit` items (default 5).
+ * The correctAnswer field is intentionally excluded from the returned shape.
+ *
+ * @param {number|string} lessonId
+ * @param {string}        [difficulty] - e.g. 'easy', 'medium', 'hard'
+ * @param {number}        [limit=5]    - Maximum number of exercises to return
+ */
 function getWarmUpGrammarByLessonId(lessonId, difficulty, limit = 5) {
   const normalizedDifficulty = difficulty ? String(difficulty).trim().toLowerCase() : null;
 
@@ -11,11 +21,12 @@ function getWarmUpGrammarByLessonId(lessonId, difficulty, limit = 5) {
     .filter((exercise) => String(exercise.lessonId) === String(lessonId))
     .filter((exercise) => {
       if (!normalizedDifficulty) {
-        return true;
+        return true; // No difficulty filter — include all exercises for this lesson
       }
 
       return String(exercise.difficulty).trim().toLowerCase() === normalizedDifficulty;
     })
+    // Project to exclude the correctAnswer field (should not be sent to the student)
     .map((exercise) => ({
       exerciseId: exercise.exerciseId,
       type: exercise.type,
@@ -25,15 +36,21 @@ function getWarmUpGrammarByLessonId(lessonId, difficulty, limit = 5) {
       difficulty: exercise.difficulty,
     }));
 
+  // Shuffle randomly and return only the requested number of exercises
   return matchingExercises
-    .sort(() => Math.random() - 0.5)
+    .sort(() => Math.random() - 0.5) // Fisher-Yates-style shuffle via random comparator
     .slice(0, limit);
 }
 
+/** Finds a warm-up exercise by its numeric ID. Returns null if not found. */
 function getWarmUpGrammarById(id) {
   return warmUpGrammar.find((exercise) => String(exercise.exerciseId) === String(id)) || null;
 }
 
+/**
+ * Creates a new warm-up exercise and appends it to the in-memory array.
+ * The new exercise's ID is one greater than the current maximum exerciseId.
+ */
 function createWarmUpGrammar(exerciseData) {
   const nextExerciseId = warmUpGrammar.reduce((maxExerciseId, exercise) => {
     return Math.max(maxExerciseId, Number(exercise.exerciseId) || 0);
@@ -56,6 +73,10 @@ function createWarmUpGrammar(exerciseData) {
   return newExercise;
 }
 
+/**
+ * Replaces the editable fields of a warm-up exercise.
+ * Returns the updated exercise, or null if not found.
+ */
 function updateWarmUpGrammarById(id, exerciseData) {
   const exercise = getWarmUpGrammarById(id);
 
@@ -73,6 +94,10 @@ function updateWarmUpGrammarById(id, exerciseData) {
   return exercise;
 }
 
+/**
+ * Removes a warm-up exercise by its numeric ID.
+ * Returns the deleted exercise, or null if not found.
+ */
 function deleteWarmUpGrammarById(id) {
   const exerciseIndex = warmUpGrammar.findIndex(
     (exercise) => String(exercise.exerciseId) === String(id)

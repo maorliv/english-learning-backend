@@ -8,10 +8,15 @@ const {
   updateWarmUpGrammarById,
 } = require('../models/warmUpGrammar.model');
 
+/** GET /api/warm-up-grammar \u2014 Returns all warm-up grammar exercises. Restricted to admin. */
 function listWarmUpGrammar(req, res) {
   return sendSuccess(res, 200, getAllWarmUpGrammar());
 }
 
+/**
+ * GET /api/warm-up-grammar/:id
+ * Returns a single warm-up grammar exercise by its numeric ID.
+ */
 function getWarmUpGrammar(req, res) {
   const validatedId = validateIdParam(req.params.id, 'id');
 
@@ -42,6 +47,11 @@ function getWarmUpGrammar(req, res) {
   return sendSuccess(res, 200, exercise);
 }
 
+/**
+ * POST /api/warm-up-grammar
+ * Creates a new warm-up grammar exercise. All fields are required.
+ * Returns the new exercise's ID on success (201 Created).
+ */
 function createWarmUpGrammarHandler(req, res) {
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'grammarRuleId',
@@ -80,6 +90,11 @@ function createWarmUpGrammarHandler(req, res) {
   });
 }
 
+/**
+ * PUT /api/warm-up-grammar/:id
+ * Replaces the editable fields of the given warm-up grammar exercise.
+ * Note: grammarRuleId and lessonId cannot be changed after creation.
+ */
 function updateWarmUpGrammar(req, res) {
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -137,6 +152,7 @@ function updateWarmUpGrammar(req, res) {
   });
 }
 
+/** DELETE /api/warm-up-grammar/:id \u2014 Removes a warm-up grammar exercise by its ID. */
 function deleteWarmUpGrammar(req, res) {
   const validatedId = validateIdParam(req.params.id, 'id');
 

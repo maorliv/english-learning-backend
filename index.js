@@ -1,5 +1,9 @@
+// Entry point for the English Learning Platform backend.
+// Creates the Express app, registers middleware, mounts all route handlers, and starts the server.
+
 const express = require('express');
 
+// Route modules — each file handles one resource (e.g. /api/users, /api/lessons)
 const conversationsRouter = require('./routes/conversations.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
 const grammarRulesRouter = require('./routes/grammarRules.routes');
@@ -18,8 +22,11 @@ const warmUpGrammarRouter = require('./routes/warmUpGrammar.routes');
 const app = express();
 const PORT = 3000;
 
-app.use(logger);
-app.use(express.json());
+// Global middleware — runs for every request, in order
+app.use(logger);              // Log each request with method, URL, status, and response time
+app.use(express.json());      // Parse JSON request bodies (populates req.body)
+
+// Route mounting — each router handles all routes under the given path prefix
 app.use('/', healthRouter);
 app.use('/api/conversations', conversationsRouter);
 app.use('/api/grammar-rules', grammarRulesRouter);
@@ -31,8 +38,10 @@ app.use('/api/students', studentsRouter);
 app.use('/api/teachers', teachersRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/warm-up-grammar', warmUpGrammarRouter);
-app.use(notFound);
-app.use(errorHandler);
+
+// Fallback middleware — must be registered after all routes
+app.use(notFound);     // Returns 404 for any unmatched route
+app.use(errorHandler); // Catches errors thrown/passed from any route or middleware
 
 app.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);

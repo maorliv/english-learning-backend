@@ -1,6 +1,10 @@
 const studentPreferences = require('./data/studentPreferences.json');
 const { getAllTeachers } = require('./teachers.model');
 
+/**
+ * Splits a string value into lowercase tokens (words).
+ * Used to compare preference text against teacher specialties/experience.
+ */
 function tokenizeText(value) {
   return String(value || '')
     .toLowerCase()
@@ -8,16 +12,23 @@ function tokenizeText(value) {
     .filter(Boolean);
 }
 
+/** Returns the first saved preference record. Used to seed demo recommendations if the user has none. */
 function getFirstSavedPreferences() {
   return studentPreferences[0] || null;
 }
 
+/** Finds a student's saved preferences by their userId. Returns null if not found. */
 function getStudentPreferencesByUserId(userId) {
   return (
     studentPreferences.find((preferences) => String(preferences.userId) === String(userId)) || null
   );
 }
 
+/**
+ * Saves or replaces a student's teacher preferences (upsert).
+ * If a previous record for this userId exists, it is removed first.
+ * The new record is inserted at the front of the array (unshift) so it's found first.
+ */
 function saveStudentPreferences(userId, preferencesData) {
   const existingPreferencesIndex = studentPreferences.findIndex(
     (preferences) => String(preferences.userId) === String(userId)
@@ -32,14 +43,19 @@ function saveStudentPreferences(userId, preferencesData) {
   };
 
   if (existingPreferencesIndex !== -1) {
-    studentPreferences.splice(existingPreferencesIndex, 1);
+    studentPreferences.splice(existingPreferencesIndex, 1); // Remove existing record before reinserting
   }
 
-  studentPreferences.unshift(savedPreferences);
+  studentPreferences.unshift(savedPreferences); // Prepend so find() returns this record first
 
   return savedPreferences;
 }
 
+/**
+ * Computes a mock match score between a teacher and a set of student preferences.
+ * Score = (number of shared tokens between preference text and teacher profile) * 10 + teacher rank.
+ * Higher score = better match.
+ */
 function calculateMockMatchScore(teacher, preferences) {
   const preferenceTokens = new Set([
     ...tokenizeText(preferences.learning_goal),
@@ -51,6 +67,7 @@ function calculateMockMatchScore(teacher, preferences) {
     ...tokenizeText(teacher.experience),
   ]);
 
+  // Count overlapping tokens; each overlap adds 10 to the score
   const overlapScore = Array.from(preferenceTokens).reduce((score, token) => {
     return teacherTokens.has(token) ? score + 10 : score;
   }, 0);
@@ -58,7 +75,11 @@ function calculateMockMatchScore(teacher, preferences) {
   return overlapScore + Number(teacher.rank || 0);
 }
 
-
+/**
+ * Returns a ranked list of available teacher recommendations for the given preferences.
+ * Only teachers who are available and within budget are included.
+ * Sorted by: matchScore DESC, rank DESC, pricePerWeek ASC.
+ */
 function getMockTeacherRecommendationsForPreferences(preferences) {
   if (!preferences) {
     return null;
@@ -80,14 +101,14 @@ function getMockTeacherRecommendationsForPreferences(preferences) {
     }))
     .sort((leftTeacher, rightTeacher) => {
       if (rightTeacher.matchScore !== leftTeacher.matchScore) {
-        return rightTeacher.matchScore - leftTeacher.matchScore;
+        return rightTeacher.matchScore - leftTeacher.matchScore; // Higher score first
       }
 
       if (rightTeacher.rank !== leftTeacher.rank) {
-        return rightTeacher.rank - leftTeacher.rank;
+        return rightTeacher.rank - leftTeacher.rank; // Higher rank first
       }
 
-      return leftTeacher.pricePerWeek - rightTeacher.pricePerWeek;
+      return leftTeacher.pricePerWeek - rightTeacher.pricePerWeek; // Lower price first
     });
 }
 

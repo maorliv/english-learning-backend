@@ -9,6 +9,11 @@ const {
   updateVocabularyItemByLessonAndId,
 } = require('../models/vocabulary.model');
 
+/**
+ * GET /api/lessons/:id/vocab
+ * Returns all vocabulary items belonging to the given lesson.
+ * Returns 404 if the lesson itself does not exist.
+ */
 function listLessonVocabulary(req, res) {
   const validatedId = validateIdParam(req.params.id, 'id');
 
@@ -33,9 +38,14 @@ function listLessonVocabulary(req, res) {
   return sendSuccess(res, 200, getVocabularyByLessonId(validatedId.value));
 }
 
+/**
+ * GET /api/lessons/:id/vocab/:vocabId
+ * Returns a single vocabulary item identified by both its lessonId and vocabularyId.
+ * Both IDs come from req.params and must be valid positive integers.
+ */
 function getLessonVocabularyItem(req, res) {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
-  const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId');
+  const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId'); // :vocabId is the second URL segment
 
   if (!validatedLessonId.isValid) {
     return sendError(
@@ -80,6 +90,12 @@ function getLessonVocabularyItem(req, res) {
   return sendSuccess(res, 200, vocabularyItem);
 }
 
+/**
+ * POST /api/lessons/:id/vocab
+ * Adds a new vocabulary item to the given lesson.
+ * All word fields (word, translation, example, definition, completeSentence) are required.
+ * Returns the new item's vocabularyId on success (201 Created).
+ */
 function createLessonVocabularyItem(req, res) {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -131,6 +147,11 @@ function createLessonVocabularyItem(req, res) {
   });
 }
 
+/**
+ * PUT /api/lessons/:id/vocab/:vocabId
+ * Replaces all fields of an existing vocabulary item.
+ * Both the lesson ID and vocab ID must exist and match.
+ */
 function updateLessonVocabularyItem(req, res) {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId');
@@ -196,6 +217,10 @@ function updateLessonVocabularyItem(req, res) {
   });
 }
 
+/**
+ * DELETE /api/lessons/:id/vocab/:vocabId
+ * Removes the specified vocabulary item from the given lesson.
+ */
 function deleteLessonVocabularyItem(req, res) {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId');

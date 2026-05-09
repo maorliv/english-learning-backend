@@ -1,5 +1,6 @@
 const { sendSuccess } = require('../utils/response');
 
+/** Returns a simple server health check response with the current timestamp. */
 function getHealth(req, res) {
   return sendSuccess(res, 200, {
     message: 'Server is running',

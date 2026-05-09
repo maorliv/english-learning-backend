@@ -13,10 +13,18 @@ const {
   updateRelationStatusById,
 } = require('../models/relations.model');
 
+// Statuses a teacher can set when responding to a request
 const ALLOWED_RELATION_STATUSES = ['active', 'rejected'];
+// Statuses that can be used as query filters
 const FILTERABLE_RELATION_STATUSES = ['pending', 'active', 'rejected'];
 
+/**
+ * GET /api/relations
+ * Returns all student-teacher relations. Accepts an optional ?status= filter.
+ * Restricted to admin.
+ */
 function listRelations(req, res) {
+  // Normalize status from query string (e.g. ?status=pending)
   const status = req.query.status ? String(req.query.status).trim().toLowerCase() : undefined;
 
   if (status && !FILTERABLE_RELATION_STATUSES.includes(status)) {
@@ -35,6 +43,12 @@ function listRelations(req, res) {
   return sendSuccess(res, 200, getAllRelations(status));
 }
 
+/**
+ * POST /api/relations/request
+ * Creates a new pending relation request from the logged-in student to a teacher.
+ * The student's ID comes from the x-user-id header; the teacher's ID comes from req.body.
+ * Returns 409 if a relation between this pair already exists.
+ */
 function requestRelation(req, res) {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['teacherId']);
@@ -59,6 +73,7 @@ function requestRelation(req, res) {
     );
   }
 
+  // teacherId comes from the request body, not the URL
   const validatedTeacherId = validateIdParam(req.body.teacherId, 'teacherId');
 
   if (!validatedTeacherId.isValid) {
@@ -71,6 +86,7 @@ function requestRelation(req, res) {
     );
   }
 
+  // 409 Conflict \u2014 prevent duplicate relations between the same pair
   const existingRelation = getRelationByTeacherAndStudent(
     validatedTeacherId.value,
     validatedStudentId.value
@@ -98,6 +114,11 @@ function requestRelation(req, res) {
   });
 }
 
+/**
+ * GET /api/relations/pending
+ * Returns all pending relation requests for the logged-in teacher.
+ * Enriches each record with the student's first and last name.
+ */
 function listPendingRelations(req, res) {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
@@ -113,12 +134,12 @@ function listPendingRelations(req, res) {
 
   const pendingRelations = getPendingRelationsByTeacherId(validatedTeacherId.value).map(
     (relation) => {
-      const student = getUserById(relation.studentId);
+      const student = getUserById(relation.studentId); // Look up the student's name from the users model
 
       return {
         relationId: relation.relationId,
         studentId: relation.studentId,
-        firstName: student ? student.firstName : null,
+        firstName: student ? student.firstName : null,   // Gracefully handle missing user
         lastName: student ? student.lastName : null,
         createdAt: relation.createdAt,
       };
@@ -128,6 +149,11 @@ function listPendingRelations(req, res) {
   return sendSuccess(res, 200, pendingRelations);
 }
 
+/**
+ * GET /api/relations/my-students
+ * Returns all students with an active relation with the logged-in teacher.
+ * Enriches each record with the student's name from the users model.
+ */
 function listMyStudents(req, res) {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
@@ -148,7 +174,7 @@ function listMyStudents(req, res) {
       studentId: relation.studentId,
       firstName: student ? student.firstName : null,
       lastName: student ? student.lastName : null,
-      currentLevel: null,
+      currentLevel: null,     // Not stored in the relation; could be extended in future
       lastActivityDate: null,
     };
   });
@@ -156,6 +182,11 @@ function listMyStudents(req, res) {
   return sendSuccess(res, 200, activeStudents);
 }
 
+/**
+ * POST /api/relations/my-teacher/review
+ * Lets the logged-in student submit a rating and feedback for their current teacher.
+ * Requires an active relation; returns 404 if none is found.
+ */
 function reviewMyTeacher(req, res) {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['rating', 'student_feedback']);
@@ -180,6 +211,7 @@ function reviewMyTeacher(req, res) {
     );
   }
 
+  // The student can only review the teacher they are currently connected to
   const relation = getActiveRelationByStudentId(validatedStudentId.value);
 
   if (!relation) {
@@ -206,6 +238,12 @@ function reviewMyTeacher(req, res) {
   });
 }
 
+/**
+ * PATCH /api/relations/:id/status
+ * Allows the logged-in teacher to accept (active) or reject a pending relation request.
+ * Verifies that the relation belongs to this teacher before updating.
+ * Only 'active' and 'rejected' are valid status values.
+ */
 function updateRelationStatus(req, res) {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');
@@ -241,7 +279,7 @@ function updateRelationStatus(req, res) {
     );
   }
 
-  const normalizedStatus = String(req.body.status).trim().toLowerCase();
+  const normalizedStatus = String(req.body.status).trim().toLowerCase(); // Normalize before comparison
 
   if (!ALLOWED_RELATION_STATUSES.includes(normalizedStatus)) {
     return sendError(
@@ -271,6 +309,7 @@ function updateRelationStatus(req, res) {
     );
   }
 
+  // Ensure the teacher is updating their own relation, not someone else's
   if (String(relation.teacherId) !== String(validatedTeacherId.value)) {
     return sendError(
       res,

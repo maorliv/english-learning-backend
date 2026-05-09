@@ -1,3 +1,4 @@
+// Public health check endpoint — no authentication required
 const express = require('express');
 
 const HealthController  = require('../controllers/health.controller');

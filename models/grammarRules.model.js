@@ -1,9 +1,15 @@
 const grammarRules = require('./data/grammarRules.json');
 
+/**
+ * Returns all grammar rules, optionally filtered by category.
+ * The returned shape is a summary (id + category + usage) — full details require getGrammarRuleById.
+ *
+ * @param {string} [category] - Optional category filter (case-insensitive)
+ */
 function getAllGrammarRules(category) {
   return grammarRules.filter((rule) => {
       if (!category) {
-        return true;
+        return true; // No filter — include all rules
       }
 
       return rule.category.toLowerCase() === category.toLowerCase();
@@ -14,10 +20,19 @@ function getAllGrammarRules(category) {
     }));
 }
 
+/**
+ * Finds a grammar rule by its string ID (e.g. 'present-simple').
+ * Returns the full rule object including forms, examples, and keywords.
+ * Returns null if not found.
+ */
 function getGrammarRuleById(id) {
   return grammarRules.find((rule) => rule.id === id) || null;
 }
 
+/**
+ * Creates a new grammar rule and appends it to the in-memory array.
+ * Note: the ID is a string, not a number, and is supplied by the caller.
+ */
 function createGrammarRule(ruleData) {
   const newGrammarRule = {
     id: ruleData.id,
@@ -34,6 +49,10 @@ function createGrammarRule(ruleData) {
   return newGrammarRule;
 }
 
+/**
+ * Updates the editable fields of a grammar rule identified by string ID.
+ * Returns the updated rule, or null if not found.
+ */
 function updateGrammarRuleById(id, ruleData) {
   const grammarRule = getGrammarRuleById(id);
 
@@ -51,6 +70,10 @@ function updateGrammarRuleById(id, ruleData) {
   return grammarRule;
 }
 
+/**
+ * Removes a grammar rule by its string ID.
+ * Returns the deleted rule, or null if not found.
+ */
 function deleteGrammarRuleById(id) {
   const grammarRuleIndex = grammarRules.findIndex((rule) => rule.id === id);
 

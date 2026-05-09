@@ -27,6 +27,15 @@ function getActiveRelationsByTeacherId(teacherId) {
   );
 }
 
+function getReviewedRelationsByTeacherId(teacherId) {
+  return relations.filter(
+    (relation) =>
+      String(relation.teacherId) === String(teacherId) &&
+      relation.rating !== null &&
+      relation.student_feedback !== null
+  );
+}
+
 function getActiveRelationByStudentId(studentId) {
   return (
     relations.find(
@@ -94,6 +103,7 @@ module.exports = {
   getActiveRelationsByTeacherId,
   getActiveRelationByStudentId,
   getPendingRelationsByTeacherId,
+  getReviewedRelationsByTeacherId,
   createRelationRequest,
   updateRelationStatusById,
   updateRelationReviewById,

@@ -1,6 +1,37 @@
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getAllTeachers, getTeacherById, updateTeacherById } = require('../models/teachers.model');
+const { getReviewedRelationsByTeacherId } = require('../models/relations.model');
+
+function getMyReviews(req, res) {
+  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedTeacherId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedTeacherId.message,
+      validatedTeacherId.details
+    );
+  }
+
+  const reviewedRelations = getReviewedRelationsByTeacherId(validatedTeacherId.value);
+  const reviews = reviewedRelations.map((relation) => ({
+    studentId: relation.studentId,
+    rating: relation.rating,
+    feedback: relation.student_feedback,
+  }));
+  const avgRating =
+    reviews.length === 0
+      ? 0
+      : reviews.reduce((total, review) => total + Number(review.rating || 0), 0) / reviews.length;
+
+  return sendSuccess(res, 200, {
+    avgRating,
+    reviews,
+  });
+}
 
 function listTeachers(req, res) {
   const { available, maxPrice } = req.query;
@@ -107,6 +138,7 @@ function updateTeacher(req, res) {
 }
 
 module.exports = {
+  getMyReviews,
   listTeachers,
   getTeacher,
   updateTeacher,

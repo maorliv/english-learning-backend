@@ -27,6 +27,14 @@ function getActiveRelationsByTeacherId(teacherId) {
   );
 }
 
+function getActiveRelationByStudentId(studentId) {
+  return (
+    relations.find(
+      (relation) => String(relation.studentId) === String(studentId) && relation.status === 'active'
+    ) || null
+  );
+}
+
 function createRelationRequest(teacherId, studentId) {
   const nextRelationId = relations.reduce((maxRelationId, relation) => {
     return Math.max(maxRelationId, Number(relation.relationId) || 0);
@@ -63,11 +71,30 @@ function updateRelationStatusById(relationId, teacherId, status) {
   return relation;
 }
 
+function updateRelationReviewById(relationId, studentId, rating, studentFeedback) {
+  const relation = getRelationById(relationId);
+
+  if (!relation) {
+    return null;
+  }
+
+  if (String(relation.studentId) !== String(studentId) || relation.status !== 'active') {
+    return false;
+  }
+
+  relation.rating = Number(rating);
+  relation.student_feedback = studentFeedback;
+
+  return relation;
+}
+
 module.exports = {
   getRelationById,
   getRelationByTeacherAndStudent,
   getActiveRelationsByTeacherId,
+  getActiveRelationByStudentId,
   getPendingRelationsByTeacherId,
   createRelationRequest,
   updateRelationStatusById,
+  updateRelationReviewById,
 };

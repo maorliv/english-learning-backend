@@ -5,12 +5,14 @@ const {
 	listMyStudents,
 	listPendingRelations,
 	requestRelation,
+	reviewMyTeacher,
 	updateRelationStatus,
 } = require('../controllers/relations.controller');
 
 const router = express.Router();
 
 router.get('/my-students', authorize(['teacher']), listMyStudents);
+router.post('/my-teacher/review', authorize(['student']), reviewMyTeacher);
 router.get('/pending', authorize(['teacher']), listPendingRelations);
 router.patch('/:id/status', authorize(['teacher']), updateRelationStatus);
 router.post('/request', authorize(['student']), requestRelation);

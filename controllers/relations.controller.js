@@ -3,10 +3,12 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const { getUserById } = require('../models/users.model');
 const {
   createRelationRequest,
+  getActiveRelationByStudentId,
   getActiveRelationsByTeacherId,
   getRelationById,
   getRelationByTeacherAndStudent,
   getPendingRelationsByTeacherId,
+  updateRelationReviewById,
   updateRelationStatusById,
 } = require('../models/relations.model');
 
@@ -133,6 +135,56 @@ function listMyStudents(req, res) {
   return sendSuccess(res, 200, activeStudents);
 }
 
+function reviewMyTeacher(req, res) {
+  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const requiredFieldsValidation = validateRequiredFields(req.body, ['rating', 'student_feedback']);
+
+  if (!validatedStudentId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedStudentId.message,
+      validatedStudentId.details
+    );
+  }
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const relation = getActiveRelationByStudentId(validatedStudentId.value);
+
+  if (!relation) {
+    return sendError(
+      res,
+      404,
+      'RELATION_NOT_FOUND',
+      'Active relation not found for this student',
+      {
+        studentId: validatedStudentId.value,
+      }
+    );
+  }
+
+  const updatedRelation = updateRelationReviewById(
+    relation.relationId,
+    validatedStudentId.value,
+    req.body.rating,
+    req.body.student_feedback
+  );
+
+  return sendSuccess(res, 200, {
+    relationId: updatedRelation.relationId,
+  });
+}
+
 function updateRelationStatus(req, res) {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');
@@ -227,5 +279,6 @@ module.exports = {
   listMyStudents,
   listPendingRelations,
   requestRelation,
+  reviewMyTeacher,
   updateRelationStatus,
 };

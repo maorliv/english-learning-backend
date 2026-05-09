@@ -1,6 +1,7 @@
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getGrammarRuleById } = require('../models/grammarRules.model');
+const { getWarmUpGrammarByLessonId } = require('../models/warmUpGrammar.model');
 const {
   createLesson,
   deleteLessonById,
@@ -110,6 +111,45 @@ function getLessonGrammar(req, res) {
   });
 }
 
+function getLessonGrammarWarmUp(req, res) {
+  const validatedId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  const lesson = getLessonById(validatedId.value);
+
+  if (!lesson) {
+    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+      lessonId: validatedId.value,
+    });
+  }
+
+  const exercises = getWarmUpGrammarByLessonId(validatedId.value, req.query.difficulty);
+
+  if (exercises.length === 0) {
+    return sendError(
+      res,
+      404,
+      'WARMUP_GRAMMAR_NOT_FOUND',
+      'Warm-up grammar exercises not found for lesson',
+      {
+        lessonId: validatedId.value,
+        difficulty: req.query.difficulty,
+      }
+    );
+  }
+
+  return sendSuccess(res, 200, exercises);
+}
+
 function updateLesson(req, res) {
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -192,6 +232,7 @@ module.exports = {
   listLessons,
   getLesson,
   getLessonGrammar,
+  getLessonGrammarWarmUp,
   updateLesson,
   deleteLesson,
 };

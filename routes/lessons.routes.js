@@ -13,6 +13,7 @@ const {
 	deleteLesson,
 	getLesson,
 	getLessonGrammar,
+	getLessonGrammarWarmUp,
 	listLessons,
 	updateLesson,
 } = require('../controllers/lessons.controller');
@@ -22,6 +23,7 @@ const router = express.Router();
 router.get('/', authorize(['student', 'admin']), listLessons);
 router.post('/', authorize(['admin']), createLessonHandler);
 router.get('/:id/grammar', authorize(['student', 'admin']), getLessonGrammar);
+router.get('/:id/grammar-warmup', authorize(['student']), getLessonGrammarWarmUp);
 router.post('/:id/vocab', authorize(['admin']), createLessonVocabularyItem);
 router.get('/:id/vocab/:vocabId', authorize(['student', 'admin']), getLessonVocabularyItem);
 router.get('/:id/vocab', authorize(['student', 'admin']), listLessonVocabulary);

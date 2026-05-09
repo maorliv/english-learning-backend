@@ -1,5 +1,13 @@
 const conversations = require('./data/conversations.json');
 
+function getConversationById(conversationId) {
+  return (
+    conversations.find(
+      (conversation) => String(conversation.conversationId) === String(conversationId)
+    ) || null
+  );
+}
+
 function createConversation(studentId, lessonId) {
   const nextConversationId = conversations.reduce((maxConversationId, conversation) => {
     return Math.max(maxConversationId, Number(conversation.conversationId) || 0);
@@ -28,6 +36,46 @@ function createConversation(studentId, lessonId) {
   return newConversation;
 }
 
+function addMessageToConversation(conversationId, content) {
+  const conversation = getConversationById(conversationId);
+
+  if (!conversation) {
+    return null;
+  }
+
+  const normalizedContent = String(content).toLowerCase();
+  const foundWords = conversation.unusedVocab.filter((word) => {
+    return normalizedContent.includes(String(word).toLowerCase());
+  });
+
+  conversation.unusedVocab = conversation.unusedVocab.filter((word) => {
+    return !foundWords.includes(word);
+  });
+  conversation.usedWords = Array.from(new Set([...conversation.usedWords, ...foundWords]));
+
+  conversation.messages.push({
+    role: 'student',
+    content,
+    createdAt: new Date().toISOString(),
+  });
+
+  const aiReply = `Mock AI reply: I understood your message about lesson ${conversation.lessonId}.`;
+
+  conversation.messages.push({
+    role: 'assistant',
+    content: aiReply,
+    createdAt: new Date().toISOString(),
+  });
+
+  return {
+    reply: aiReply,
+    unusedVocab: conversation.unusedVocab,
+    usedWords: conversation.usedWords,
+  };
+}
+
 module.exports = {
+  getConversationById,
+  addMessageToConversation,
   createConversation,
 };

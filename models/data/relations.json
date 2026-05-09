@@ -1,1 +1,29 @@
-[]
+[
+	{
+		"relationId": 1,
+		"teacherId": 2,
+		"studentId": 5,
+		"status": "pending",
+		"createdAt": "2026-05-09T10:00:00.000Z",
+		"rating": null,
+		"student_feedback": null
+	},
+	{
+		"relationId": 2,
+		"teacherId": 1,
+		"studentId": 7,
+		"status": "approved",
+		"createdAt": "2026-05-08T14:30:00.000Z",
+		"rating": 4,
+		"student_feedback": "Very clear explanations and useful weekly feedback."
+	},
+	{
+		"relationId": 3,
+		"teacherId": 3,
+		"studentId": 8,
+		"status": "pending",
+		"createdAt": "2026-05-09T11:15:00.000Z",
+		"rating": null,
+		"student_feedback": null
+	}
+]

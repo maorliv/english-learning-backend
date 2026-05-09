@@ -1,8 +1,10 @@
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
+const { getUserById } = require('../models/users.model');
 const {
   createRelationRequest,
   getRelationByTeacherAndStudent,
+  getPendingRelationsByTeacherId,
 } = require('../models/relations.model');
 
 function requestRelation(req, res) {
@@ -68,6 +70,37 @@ function requestRelation(req, res) {
   });
 }
 
+function listPendingRelations(req, res) {
+  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedTeacherId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedTeacherId.message,
+      validatedTeacherId.details
+    );
+  }
+
+  const pendingRelations = getPendingRelationsByTeacherId(validatedTeacherId.value).map(
+    (relation) => {
+      const student = getUserById(relation.studentId);
+
+      return {
+        relationId: relation.relationId,
+        studentId: relation.studentId,
+        firstName: student ? student.firstName : null,
+        lastName: student ? student.lastName : null,
+        createdAt: relation.createdAt,
+      };
+    }
+  );
+
+  return sendSuccess(res, 200, pendingRelations);
+}
+
 module.exports = {
+  listPendingRelations,
   requestRelation,
 };

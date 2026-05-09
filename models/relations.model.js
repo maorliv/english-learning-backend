@@ -10,6 +10,13 @@ function getRelationByTeacherAndStudent(teacherId, studentId) {
   );
 }
 
+function getPendingRelationsByTeacherId(teacherId) {
+  return relations.filter(
+    (relation) =>
+      String(relation.teacherId) === String(teacherId) && relation.status === 'pending'
+  );
+}
+
 function createRelationRequest(teacherId, studentId) {
   const nextRelationId = relations.reduce((maxRelationId, relation) => {
     return Math.max(maxRelationId, Number(relation.relationId) || 0);
@@ -32,5 +39,6 @@ function createRelationRequest(teacherId, studentId) {
 
 module.exports = {
   getRelationByTeacherAndStudent,
+  getPendingRelationsByTeacherId,
   createRelationRequest,
 };

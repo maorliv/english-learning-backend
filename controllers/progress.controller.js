@@ -181,9 +181,46 @@ function getNextLesson(req, res) {
   return sendSuccess(res, 200, buildRecommendedLesson(progress, preferences));
 }
 
+function getStudentProgress(req, res) {
+  const validatedStudentId = validateIdParam(req.params.studentId, 'studentId');
+
+  if (!validatedStudentId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedStudentId.message,
+      validatedStudentId.details
+    );
+  }
+
+  const progress = getProgressByStudentId(validatedStudentId.value);
+
+  if (!progress) {
+    return sendError(
+      res,
+      404,
+      'PROGRESS_NOT_FOUND',
+      'Progress not found for this student',
+      {
+        studentId: validatedStudentId.value,
+      }
+    );
+  }
+
+  return sendSuccess(res, 200, {
+    currentLevel: progress.currentLevel,
+    completedLessonsCount: progress.completedLessonsCount,
+    successedLessonsCount: progress.successedLessonsCount,
+    overallAverage: progress.overallAverage,
+    skillsRadar: progress.skillsRadar,
+  });
+}
+
 module.exports = {
   getProgressChart,
   getNextLesson,
   getProgressSkills,
   getProgressStats,
+  getStudentProgress,
 };

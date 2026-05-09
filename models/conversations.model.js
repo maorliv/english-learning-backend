@@ -99,7 +99,24 @@ function endConversation(conversationId) {
   };
 }
 
+function addTeacherComment(conversationId, teacherScore, teacherComment) {
+  const conversation = getConversationById(conversationId);
+
+  if (!conversation) {
+    return null;
+  }
+
+  conversation.teacherScore = teacherScore;
+  conversation.teacherComment = teacherComment;
+  conversation.isReviewedByTeacher = true;
+
+  return {
+    conversationId: conversation.conversationId,
+  };
+}
+
 module.exports = {
+  addTeacherComment,
   endConversation,
   getConversationById,
   addMessageToConversation,

@@ -2,6 +2,7 @@ const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');
 const {
+	commentOnConversation,
 	finishConversation,
 	getConversation,
 	sendConversationMessage,
@@ -11,6 +12,7 @@ const {
 const router = express.Router();
 
 router.get('/:id', authorize(['student', 'teacher', 'admin']), getConversation);
+router.post('/:id/teacher-comment', authorize(['teacher']), commentOnConversation);
 router.post('/:id/end', authorize(['student']), finishConversation);
 router.post('/:id/message', authorize(['student']), sendConversationMessage);
 router.post('/start', authorize(['student']), startConversation);

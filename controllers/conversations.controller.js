@@ -1,6 +1,7 @@
 const { getLessonById } = require('../models/lessons.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const {
+  addTeacherComment,
   addMessageToConversation,
   createConversation,
   endConversation,
@@ -186,7 +187,58 @@ function getConversation(req, res) {
   });
 }
 
+function commentOnConversation(req, res) {
+  const validatedConversationId = validateIdParam(req.params.id, 'id');
+  const requiredFieldsValidation = validateRequiredFields(req.body, [
+    'teacherScore',
+    'teacherComment',
+  ]);
+
+  if (!validatedConversationId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedConversationId.message,
+      validatedConversationId.details
+    );
+  }
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const conversation = getConversationById(validatedConversationId.value);
+
+  if (!conversation) {
+    return sendError(
+      res,
+      404,
+      'CONVERSATION_NOT_FOUND',
+      'Conversation not found',
+      {
+        conversationId: validatedConversationId.value,
+      }
+    );
+  }
+
+  const result = addTeacherComment(
+    validatedConversationId.value,
+    req.body.teacherScore,
+    req.body.teacherComment
+  );
+
+  return sendSuccess(res, 200, result);
+}
+
 module.exports = {
+  commentOnConversation,
   finishConversation,
   getConversation,
   sendConversationMessage,

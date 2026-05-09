@@ -10,9 +10,9 @@
 	},
 	{
 		"relationId": 2,
-		"teacherId": 1,
+		"teacherId": 2,
 		"studentId": 7,
-		"status": "approved",
+		"status": "active",
 		"createdAt": "2026-05-08T14:30:00.000Z",
 		"rating": 4,
 		"student_feedback": "Very clear explanations and useful weekly feedback."

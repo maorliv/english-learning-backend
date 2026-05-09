@@ -1,6 +1,6 @@
 [
   {
-    "id": "Present_Simple",
+    "id": "present_simple",
     "category": "Tenses",
     "usage": "To talk about regular actions, facts, and general truths.",
     "forms": {
@@ -24,7 +24,7 @@
     "exerciseID": 300
   },
   {
-    "id": "Past_Simple",
+    "id": "past_simple",
     "category": "Tenses",
     "usage": "To talk about completed actions in the past.",
     "forms": {
@@ -48,7 +48,7 @@
     "exerciseID": 301
   },
   {
-    "id": "Present_Continuous",
+    "id": "present_continuous",
     "category": "Tenses",
     "usage": "To describe actions happening now or around the current time.",
     "forms": {

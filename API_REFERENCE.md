@@ -43,7 +43,7 @@ Error envelope:
 - Access: public
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -56,7 +56,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`500 Internal Server Error`):
 
 ```json
 {
@@ -89,7 +89,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
@@ -104,7 +104,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`409 Conflict`):
 
 ```json
 {
@@ -133,7 +133,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -147,7 +147,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`401 Unauthorized`):
 
 ```json
 {
@@ -168,7 +168,7 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -186,7 +186,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`403 Forbidden`):
 
 ```json
 {
@@ -207,7 +207,7 @@ Error envelope:
 - Access: admin, or self when `x-user-id` matches `:id`
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -224,7 +224,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -254,7 +254,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -266,7 +266,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -287,7 +287,7 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -299,7 +299,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -324,7 +324,7 @@ Error envelope:
   - `available=true|false`
   - `maxPrice=<number>`
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -332,10 +332,12 @@ Error envelope:
   "data": [
     {
       "teacherId": 1,
-      "firstName": "Omer",
-      "lastName": "Cohen",
+      "firstName": "Yael",
+      "lastName": "Levi",
+      "rank": 4,
       "pricePerWeek": 80,
       "available": true,
+      "experience": "5 years in Tech English",
       "specialties": ["Grammar", "Tech English"]
     }
   ],
@@ -343,7 +345,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -362,10 +364,10 @@ Error envelope:
 
 ### GET /api/teachers/my-reviews
 
-- Access: teacher
+- Access: teacher,  when x-user-id matches
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -384,7 +386,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -405,24 +407,27 @@ Error envelope:
 - Access: student, admin, or self when owner mapping allows it
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
     "teacherId": 1,
-    "firstName": "Omer",
-    "lastName": "Cohen",
+    "firstName": "Yael",
+    "lastName": "Levi",
+    "rank": 4,
     "pricePerWeek": 80,
     "available": true,
-    "experience": "5 years in Tech English"
+    "experience": "5 years in Tech English",
+    "feedback": "weekly",
+    "specialties": ["Grammar", "Tech English"]
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -454,7 +459,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -466,7 +471,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -490,7 +495,7 @@ Error envelope:
 - Query params:
   - `level=<string>`
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -498,18 +503,20 @@ Error envelope:
   "data": [
     {
       "lessonId": 101,
+      "vocabularyId": 301,
       "title": "The Technical Interview",
       "scene": "You are applying for an IT position.",
       "aiRole": "Technical Team Lead",
       "grammarRuleId": "present_simple",
-      "level": "Intermediate"
+      "level": "Intermediate",
+      "locked": false
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`403 Forbidden`):
 
 ```json
 {
@@ -538,18 +545,18 @@ Error envelope:
   "aiRole": "Engineering Manager",
   "level": "Intermediate",
   "grammarRuleId": "present_continuous",
-  "vocabularyId": 6
+  "vocabularyId": 304
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
   "success": true,
   "data": {
     "lessonId": 104,
-    "vocabularyId": 6,
+    "vocabularyId": 304,
     "title": "Bug Triage Meeting",
     "scene": "You explain a production bug to your team.",
     "aiRole": "Engineering Manager",
@@ -560,7 +567,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -581,13 +588,14 @@ Error envelope:
 - Access: student, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
     "lessonId": 101,
+    "vocabularyId": 301,
     "title": "The Technical Interview",
     "scene": "You are applying for an IT position. Brian, the team leader, is asking about your routine.",
     "aiRole": "Technical Team Lead",
@@ -598,7 +606,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -627,11 +635,11 @@ Error envelope:
   "aiRole": "Technical Team Lead",
   "level": "Intermediate",
   "grammarRuleId": "present_simple",
-  "vocabularyId": 3
+  "vocabularyId": 301
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -643,7 +651,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -664,7 +672,7 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -676,7 +684,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -697,24 +705,38 @@ Error envelope:
 - Access: student, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
     "grammarRuleId": "present_simple",
-    "category": "Present Simple",
+    "category": "Tenses",
     "usage": "Used for routines and facts.",
-    "forms": ["subject + base verb"],
-    "spellingRules": ["Add s for he/she/it"],
-    "examples": ["I work every day."]
+    "forms": {
+      "general_formula": "Subject + Verb",
+      "positive": "Subject + base verb (add -s/-es for he/she/it)",
+      "negative": "Subject + do/does not + base verb",
+      "question": "Do/Does + Subject + base verb?"
+    },
+    "spellingRules": "Verbs ending in -o, -sh, -ch add -es.",
+    "examples": [
+      {
+        "text": "The server runs on Linux.",
+        "type": "positive"
+      },
+      {
+        "text": "Does the system require a reboot?",
+        "type": "question"
+      }
+    ]
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -736,29 +758,26 @@ Error envelope:
 - Query params:
   - `difficulty=<string>`
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": [
     {
-      "exerciseId": 201,
-      "grammarRuleId": "present_simple",
-      "lessonId": 101,
+      "exerciseId": 300,
       "type": "multiple_choice",
-      "instruction": "Choose the correct sentence.",
-      "content": "She ___ to work every day.",
-      "options": ["go", "goes"],
-      "correctAnswer": "goes",
-      "difficulty": "easy"
+      "instruction": "Choose the correct answer",
+      "content": "How often ____ you update the server?",
+      "options": ["do", "does", "is", "are"],
+      "difficulty": "INTERMEDIATE"
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -780,7 +799,7 @@ Error envelope:
 - Access: student, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -804,7 +823,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -825,7 +844,7 @@ Error envelope:
 - Access: student, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -844,7 +863,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -876,19 +895,19 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
   "success": true,
   "data": {
-    "vocabularyId": 306
+    "vocabularyId": 305
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -909,7 +928,7 @@ Error envelope:
 - Access: student, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -919,14 +938,13 @@ Error envelope:
     "word": "Maintain",
     "translation": "לתחזק",
     "example": "I maintain the servers every day.",
-    "definition": "to keep something working or in good condition",
-    "completeSentence": "I ________ the servers every day."
+    "definition": "to keep something working or in good condition"
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -959,7 +977,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -971,7 +989,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -993,7 +1011,7 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1005,7 +1023,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1030,7 +1048,7 @@ Error envelope:
 - Query params:
   - `category=<string>`
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1038,19 +1056,15 @@ Error envelope:
   "data": [
     {
       "id": "present_simple",
-      "category": "Present Simple",
-      "usage": "Used for routines and facts.",
-      "forms": ["subject + base verb"],
-      "spellingRules": ["Add s for he/she/it"],
-      "examples": ["I work every day."],
-      "keywords": ["always", "usually"]
+      "category": "Tenses",
+      "usage": "To talk about regular actions, facts, and general truths."
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`403 Forbidden`):
 
 ```json
 {
@@ -1075,16 +1089,26 @@ Error envelope:
 ```json
 {
   "id": "future_simple",
-  "category": "Future Simple",
+  "category": "Tenses",
   "usage": "Used for predictions and future decisions.",
-  "forms": ["will + base verb"],
-  "spellingRules": ["No verb change after will"],
-  "examples": ["I will deploy tomorrow."],
+  "forms": {
+    "general_formula": "Subject + will + base verb",
+    "positive": "Subject + will + base verb",
+    "negative": "Subject + will not + base verb",
+    "question": "Will + subject + base verb?"
+  },
+  "spellingRules": "No verb change after will.",
+  "examples": [
+    {
+      "text": "I will deploy tomorrow.",
+      "type": "positive"
+    }
+  ],
   "keywords": ["tomorrow", "next week"]
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
@@ -1096,7 +1120,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1117,25 +1141,39 @@ Error envelope:
 - Access: student, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
     "id": "present_simple",
-    "category": "Present Simple",
-    "usage": "Used for routines and facts.",
-    "forms": ["subject + base verb"],
-    "spellingRules": ["Add s for he/she/it"],
-    "examples": ["I work every day."],
-    "keywords": ["always", "usually"]
+    "category": "Tenses",
+    "usage": "To talk about regular actions, facts, and general truths.",
+    "forms": {
+      "general_formula": "Subject + Verb",
+      "positive": "Subject + base verb (add -s/-es for he/she/it)",
+      "negative": "Subject + do/does not + base verb",
+      "question": "Do/Does + Subject + base verb?"
+    },
+    "spellingRules": "Verbs ending in -o, -sh, -ch add -es.",
+    "examples": [
+      {
+        "text": "The server runs on Linux.",
+        "type": "positive"
+      },
+      {
+        "text": "Does the system require a reboot?",
+        "type": "question"
+      }
+    ],
+    "keywords": ["always", "usually", "every day", "regularly"]
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1159,16 +1197,26 @@ Error envelope:
 
 ```json
 {
-  "category": "Present Simple",
-  "usage": "Used for routines, habits, and facts.",
-  "forms": ["subject + base verb"],
-  "spellingRules": ["Add s for he/she/it"],
-  "examples": ["She works every day."],
-  "keywords": ["always", "usually"]
+  "category": "Tenses",
+  "usage": "To talk about regular actions, facts, and general truths.",
+  "forms": {
+    "general_formula": "Subject + Verb",
+    "positive": "Subject + base verb (add -s/-es for he/she/it)",
+    "negative": "Subject + do/does not + base verb",
+    "question": "Do/Does + Subject + base verb?"
+  },
+  "spellingRules": "Verbs ending in -o, -sh, -ch add -es.",
+  "examples": [
+    {
+      "text": "The server runs on Linux.",
+      "type": "positive"
+    }
+  ],
+  "keywords": ["always", "usually", "every day", "regularly"]
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1180,7 +1228,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1201,7 +1249,7 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1213,7 +1261,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1236,26 +1284,26 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": [
     {
-      "exerciseId": 201,
+      "exerciseId": 300,
       "grammarRuleId": "present_simple",
       "lessonId": 101,
       "type": "multiple_choice",
-      "instruction": "Choose the correct sentence.",
-      "difficulty": "easy"
+      "instruction": "Choose the correct answer",
+      "difficulty": "INTERMEDIATE"
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`403 Forbidden`):
 
 ```json
 {
@@ -1276,27 +1324,27 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
-    "exerciseId": 201,
+    "exerciseId": 300,
     "grammarRuleId": "present_simple",
     "lessonId": 101,
     "type": "multiple_choice",
-    "instruction": "Choose the correct sentence.",
-    "content": "She ___ to work every day.",
-    "options": ["go", "goes"],
-    "correctAnswer": "goes",
-    "difficulty": "easy"
+    "instruction": "Choose the correct answer",
+    "content": "How often ____ you update the server?",
+    "options": ["do", "does", "is", "are"],
+    "correctAnswer": "do",
+    "difficulty": "INTERMEDIATE"
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1323,27 +1371,27 @@ Error envelope:
   "grammarRuleId": "present_simple",
   "lessonId": 101,
   "type": "multiple_choice",
-  "instruction": "Choose the correct sentence.",
+  "instruction": "Choose the correct answer",
   "content": "He ___ in a startup.",
   "options": ["work", "works"],
   "correctAnswer": "works",
-  "difficulty": "easy"
+  "difficulty": "INTERMEDIATE"
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
   "success": true,
   "data": {
-    "exerciseId": 204
+    "exerciseId": 303
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1372,23 +1420,23 @@ Error envelope:
   "content": "They ___ meetings every Monday.",
   "options": ["has", "have"],
   "correctAnswer": "have",
-  "difficulty": "easy"
+  "difficulty": "INTERMEDIATE"
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
-    "exerciseId": 201
+    "exerciseId": 300
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1409,19 +1457,19 @@ Error envelope:
 - Access: admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
-    "exerciseId": 201
+    "exerciseId": 300
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1448,13 +1496,13 @@ Error envelope:
 ```json
 {
   "budget_max": 100,
-  "learning_goal": "Improve interview speaking",
-  "onboarding_text": "I work in software and want more confidence in conversations.",
+  "learning_goal": "tech english interview grammar",
+  "onboarding_text": "I want help speaking more clearly in technical interviews.",
   "currentLevel": "Intermediate"
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
@@ -1462,14 +1510,18 @@ Error envelope:
   "data": [
     {
       "teacherId": 1,
-      "matchScore": 2
+      "firstName": "Yael",
+      "matchScore": 44,
+      "rank": 4,
+      "pricePerWeek": 80,
+      "specialties": ["Grammar", "Tech English"]
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1490,7 +1542,7 @@ Error envelope:
 - Access: student
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1498,14 +1550,18 @@ Error envelope:
   "data": [
     {
       "teacherId": 1,
-      "matchScore": 2
+      "firstName": "Yael",
+      "matchScore": 44,
+      "rank": 4,
+      "pricePerWeek": 80,
+      "specialties": ["Grammar", "Tech English"]
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1528,23 +1584,23 @@ Error envelope:
 - Access: student
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
     "currentLevel": "Intermediate",
-    "completedLessonsCount": 4,
-    "successedLessonsCount": 3,
-    "overallAverage": 82,
-    "lastActivityDate": "2026-05-09T09:05:00.000Z"
+    "completedLessonsCount": 6,
+    "successedLessonsCount": 5,
+    "overallAverage": 84,
+    "lastActivityDate": "2026-05-09T10:30:00.000Z"
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1565,7 +1621,7 @@ Error envelope:
 - Access: student
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1583,7 +1639,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1604,19 +1660,19 @@ Error envelope:
 - Access: student
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
-    "skillsRadar": "Strong grammar and vocabulary progress, with speaking confidence improving steadily."
+    "skillsRadar": "Practice more present simple and technical vocabulary."
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1637,7 +1693,7 @@ Error envelope:
 - Access: student
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1645,13 +1701,13 @@ Error envelope:
   "data": {
     "lessonId": 101,
     "title": "The Technical Interview",
-    "reason": "Recommended for your Intermediate level and learning goal: Improve interview speaking."
+    "reason": "Recommended for your Intermediate level and learning goal: tech english interview grammar."
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1672,23 +1728,23 @@ Error envelope:
 - Access: teacher, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": {
     "currentLevel": "Intermediate",
-    "completedLessonsCount": 4,
-    "successedLessonsCount": 3,
-    "overallAverage": 82,
-    "skillsRadar": "Strong grammar and vocabulary progress, with speaking confidence improving steadily."
+    "completedLessonsCount": 6,
+    "successedLessonsCount": 5,
+    "overallAverage": 84,
+    "skillsRadar": "Practice more present simple and technical vocabulary."
   },
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1712,7 +1768,7 @@ Error envelope:
 - Query params:
   - `status=pending|active|rejected`
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1730,7 +1786,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1752,7 +1808,7 @@ Error envelope:
 - Access: teacher
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1760,8 +1816,8 @@ Error envelope:
   "data": [
     {
       "studentId": 7,
-      "firstName": null,
-      "lastName": null,
+      "firstName": "Lior",
+      "lastName": "Azran",
       "currentLevel": null,
       "lastActivityDate": null
     }
@@ -1770,7 +1826,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1791,7 +1847,7 @@ Error envelope:
 - Access: teacher
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1800,8 +1856,8 @@ Error envelope:
     {
       "relationId": 1,
       "studentId": 5,
-      "firstName": null,
-      "lastName": null,
+      "firstName": "Eitan",
+      "lastName": "Sharon",
       "createdAt": "2026-05-09T10:00:00.000Z"
     }
   ],
@@ -1809,7 +1865,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`403 Forbidden`):
 
 ```json
 {
@@ -1837,7 +1893,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
@@ -1850,7 +1906,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`409 Conflict`):
 
 ```json
 {
@@ -1880,7 +1936,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1893,7 +1949,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -1905,7 +1961,7 @@ Error envelope:
     "details": {
       "field": "status",
       "allowedValues": ["active", "rejected"],
-      "receivedValue": "approved"
+      "receivedValue": "accepted"
     }
   }
 }
@@ -1924,7 +1980,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1936,7 +1992,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -1962,7 +2018,7 @@ Error envelope:
   - `studentId=<number>`
   - `lessonId=<number>`
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -1981,7 +2037,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -2003,7 +2059,7 @@ Error envelope:
 - Access: student, teacher, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -2026,7 +2082,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -2054,7 +2110,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`201 Created`):
 
 ```json
 {
@@ -2068,7 +2124,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -2096,7 +2152,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -2110,7 +2166,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -2131,7 +2187,7 @@ Error envelope:
 - Access: student
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -2145,7 +2201,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`404 Not Found`):
 
 ```json
 {
@@ -2174,7 +2230,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -2186,7 +2242,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -2215,7 +2271,7 @@ Error envelope:
 }
 ```
 
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
@@ -2232,7 +2288,7 @@ Error envelope:
 }
 ```
 
-- Example error:
+- Example error (`400 Bad Request`):
 
 ```json
 {
@@ -2257,28 +2313,28 @@ Error envelope:
 - Access: teacher, admin
 - Query params: none
 - Request body: none
-- Example success:
+- Example success (`200 OK`):
 
 ```json
 {
   "success": true,
   "data": [
     {
-      "conversationId": 1,
-      "lessonId": 101,
-      "lessonTitle": "The Technical Interview",
-      "status": "completed",
-      "aiScore": 80,
-      "teacherScore": 88,
-      "isReviewedByTeacher": true,
-      "createdAt": "2026-05-09T08:58:00.000Z"
+      "conversationId": 2,
+      "lessonId": 102,
+      "lessonTitle": "Daily Standup Meeting",
+      "status": "active",
+      "aiScore": null,
+      "teacherScore": null,
+      "isReviewedByTeacher": false,
+      "createdAt": "2026-05-09T10:28:00.000Z"
     }
   ],
   "error": null
 }
 ```
 
-- Example error:
+- Example error (`403 Forbidden`):
 
 ```json
 {

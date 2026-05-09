@@ -45,6 +45,10 @@ function getActiveRelationsByTeacherId(teacherId) {
   );
 }
 
+function getActiveStudentIdsByTeacherId(teacherId) {
+  return getActiveRelationsByTeacherId(teacherId).map((relation) => relation.studentId);
+}
+
 function getReviewedRelationsByTeacherId(teacherId) {
   return relations.filter(
     (relation) =>
@@ -120,6 +124,7 @@ module.exports = {
   getRelationById,
   getRelationByTeacherAndStudent,
   getActiveRelationsByTeacherId,
+  getActiveStudentIdsByTeacherId,
   getActiveRelationByStudentId,
   getPendingRelationsByTeacherId,
   getReviewedRelationsByTeacherId,

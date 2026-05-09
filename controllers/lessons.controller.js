@@ -2,6 +2,7 @@ const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getGrammarRuleById } = require('../models/grammarRules.model');
 const { getWarmUpGrammarByLessonId } = require('../models/warmUpGrammar.model');
+const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const {
   createLesson,
   deleteLessonById,
@@ -150,6 +151,42 @@ function getLessonGrammarWarmUp(req, res) {
   return sendSuccess(res, 200, exercises);
 }
 
+function getLessonVocabularyWarmUp(req, res) {
+  const validatedId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedId.message,
+      validatedId.details
+    );
+  }
+
+  const lesson = getLessonById(validatedId.value);
+
+  if (!lesson) {
+    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+      lessonId: validatedId.value,
+    });
+  }
+
+  const vocabulary = getVocabularyByLessonId(validatedId.value);
+
+  return sendSuccess(res, 200, {
+    completeSentence: vocabulary.map((item) => ({
+      vocabularyId: item.vocabularyId,
+      completeSentence: item.completeSentence,
+      word: item.word,
+    })),
+    matching: vocabulary.map((item) => ({
+      word: item.word,
+      definition: item.definition,
+    })),
+  });
+}
+
 function updateLesson(req, res) {
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -233,6 +270,7 @@ module.exports = {
   getLesson,
   getLessonGrammar,
   getLessonGrammarWarmUp,
+  getLessonVocabularyWarmUp,
   updateLesson,
   deleteLesson,
 };

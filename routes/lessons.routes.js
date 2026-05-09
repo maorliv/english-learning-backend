@@ -14,6 +14,7 @@ const {
 	getLesson,
 	getLessonGrammar,
 	getLessonGrammarWarmUp,
+	getLessonVocabularyWarmUp,
 	listLessons,
 	updateLesson,
 } = require('../controllers/lessons.controller');
@@ -24,6 +25,7 @@ router.get('/', authorize(['student', 'admin']), listLessons);
 router.post('/', authorize(['admin']), createLessonHandler);
 router.get('/:id/grammar', authorize(['student', 'admin']), getLessonGrammar);
 router.get('/:id/grammar-warmup', authorize(['student']), getLessonGrammarWarmUp);
+router.get('/:id/vocab-warmup', authorize(['student', 'admin']), getLessonVocabularyWarmUp);
 router.post('/:id/vocab', authorize(['admin']), createLessonVocabularyItem);
 router.get('/:id/vocab/:vocabId', authorize(['student', 'admin']), getLessonVocabularyItem);
 router.get('/:id/vocab', authorize(['student', 'admin']), listLessonVocabulary);

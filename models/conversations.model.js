@@ -36,6 +36,13 @@ function getAllConversations(filters = {}) {
       }
 
       if (
+        Array.isArray(filters.studentIds) &&
+        !filters.studentIds.map(String).includes(String(conversation.studentId))
+      ) {
+        return false;
+      }
+
+      if (
         typeof filters.lessonId === 'number' &&
         Number(conversation.lessonId) !== filters.lessonId
       ) {
@@ -51,6 +58,48 @@ function getAllConversations(filters = {}) {
       status: conversation.status,
       aiScore: conversation.aiScore,
       isReviewedByTeacher: conversation.isReviewedByTeacher,
+    }));
+}
+
+function getConversationSummaries(filters = {}) {
+  return conversations
+    .filter((conversation) => {
+      if (filters.status && conversation.status !== filters.status) {
+        return false;
+      }
+
+      if (
+        typeof filters.studentId === 'number' &&
+        Number(conversation.studentId) !== filters.studentId
+      ) {
+        return false;
+      }
+
+      if (
+        Array.isArray(filters.studentIds) &&
+        !filters.studentIds.map(String).includes(String(conversation.studentId))
+      ) {
+        return false;
+      }
+
+      if (
+        typeof filters.lessonId === 'number' &&
+        Number(conversation.lessonId) !== filters.lessonId
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .map((conversation) => ({
+      conversationId: conversation.conversationId,
+      studentId: conversation.studentId,
+      lessonId: conversation.lessonId,
+      status: conversation.status,
+      aiScore: conversation.aiScore,
+      teacherScore: conversation.teacherScore,
+      isReviewedByTeacher: conversation.isReviewedByTeacher,
+      createdAt: conversation.createdAt,
     }));
 }
 
@@ -195,6 +244,7 @@ module.exports = {
   addTeacherComment,
   endConversation,
   getAllConversations,
+  getConversationSummaries,
   getScoredCompletedConversationsByStudentId,
   getConversationById,
   addMessageToConversation,

@@ -1,5 +1,6 @@
 const { getLessonById } = require('../models/lessons.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
+const { getActiveStudentIdsByTeacherId } = require('../models/relations.model');
 const {
   addConversationReply,
   addTeacherComment,
@@ -8,6 +9,7 @@ const {
   endConversation,
   getAllConversations,
   getConversationById,
+  getConversationSummaries,
 } = require('../models/conversations.model');
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
@@ -17,6 +19,7 @@ const FILTERABLE_CONVERSATION_STATUSES = ['active', 'completed'];
 
 function listConversations(req, res) {
   const filters = {};
+  const userRole = req.header('x-user-role');
 
   if (req.query.status !== undefined) {
     const normalizedStatus = String(req.query.status).trim().toLowerCase();
@@ -69,7 +72,100 @@ function listConversations(req, res) {
     filters.lessonId = validatedLessonId.value;
   }
 
+  if (userRole === 'teacher') {
+    const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+    if (!validatedTeacherId.isValid) {
+      return sendError(
+        res,
+        400,
+        'VALIDATION_ERROR',
+        validatedTeacherId.message,
+        validatedTeacherId.details
+      );
+    }
+
+    const activeStudentIds = getActiveStudentIdsByTeacherId(validatedTeacherId.value);
+
+    if (
+      typeof filters.studentId === 'number' &&
+      !activeStudentIds.map(String).includes(String(filters.studentId))
+    ) {
+      return sendError(
+        res,
+        403,
+        'FORBIDDEN',
+        'You do not have permission to view conversations for this student.',
+        {
+          teacherId: validatedTeacherId.value,
+          studentId: filters.studentId,
+        }
+      );
+    }
+
+    filters.studentIds = activeStudentIds;
+  }
+
   return sendSuccess(res, 200, getAllConversations(filters));
+}
+
+function listStudentConversations(req, res) {
+  const validatedStudentId = validateIdParam(req.params.studentId, 'studentId');
+  const userRole = req.header('x-user-role');
+
+  if (!validatedStudentId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedStudentId.message,
+      validatedStudentId.details
+    );
+  }
+
+  if (userRole === 'teacher') {
+    const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+    if (!validatedTeacherId.isValid) {
+      return sendError(
+        res,
+        400,
+        'VALIDATION_ERROR',
+        validatedTeacherId.message,
+        validatedTeacherId.details
+      );
+    }
+
+    const activeStudentIds = getActiveStudentIdsByTeacherId(validatedTeacherId.value);
+
+    if (!activeStudentIds.map(String).includes(String(validatedStudentId.value))) {
+      return sendError(
+        res,
+        403,
+        'FORBIDDEN',
+        'You do not have permission to view conversations for this student.',
+        {
+          teacherId: validatedTeacherId.value,
+          studentId: validatedStudentId.value,
+        }
+      );
+    }
+  }
+
+  const conversations = getConversationSummaries({ studentId: validatedStudentId.value }).map(
+    (conversation) => ({
+      conversationId: conversation.conversationId,
+      lessonId: conversation.lessonId,
+      lessonTitle: getLessonById(conversation.lessonId)?.title || null,
+      status: conversation.status,
+      aiScore: conversation.aiScore,
+      teacherScore: conversation.teacherScore,
+      isReviewedByTeacher: conversation.isReviewedByTeacher,
+      createdAt: conversation.createdAt,
+    })
+  );
+
+  return sendSuccess(res, 200, conversations);
 }
 
 function startConversation(req, res) {
@@ -366,6 +462,7 @@ module.exports = {
   commentOnConversation,
   finishConversation,
   getConversation,
+  listStudentConversations,
   listConversations,
   replyToConversation,
   sendConversationMessage,

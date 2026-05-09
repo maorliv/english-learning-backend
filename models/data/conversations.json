@@ -1,1 +1,103 @@
-[]
+[
+	{
+		"conversationId": 1,
+		"studentId": 1,
+		"lessonId": 101,
+		"status": "completed",
+		"messages": [
+			{
+				"role": "student",
+				"content": "Hello, I maintain the servers and deploy updates every Friday.",
+				"createdAt": "2026-05-09T09:00:00.000Z"
+			},
+			{
+				"role": "assistant",
+				"content": "Mock AI reply: I understood your message about lesson 101.",
+				"createdAt": "2026-05-09T09:00:05.000Z"
+			}
+		],
+		"unusedVocab": [],
+		"usedWords": ["Maintain", "Deploy"],
+		"aiScore": 80,
+		"aiFeedback": "Good job using lesson vocabulary in the conversation.",
+		"teacherScore": 88,
+		"teacherComment": "Good fluency and strong use of lesson vocabulary.",
+		"isReviewedByTeacher": true,
+		"commentsThread": [
+			{
+				"role": "teacher",
+				"content": "Nice job. Try to expand your answer with one more example.",
+				"createdAt": "2026-05-09T09:10:00.000Z"
+			},
+			{
+				"role": "student",
+				"content": "Sure, I also maintain deployment scripts for the team.",
+				"createdAt": "2026-05-09T09:12:00.000Z"
+			}
+		],
+		"createdAt": "2026-05-09T08:58:00.000Z",
+		"endedAt": "2026-05-09T09:05:00.000Z"
+	},
+	{
+		"conversationId": 2,
+		"studentId": 7,
+		"lessonId": 102,
+		"status": "active",
+		"messages": [
+			{
+				"role": "student",
+				"content": "Yesterday I report my progress in the standup meeting.",
+				"createdAt": "2026-05-09T10:30:00.000Z"
+			},
+			{
+				"role": "assistant",
+				"content": "Mock AI reply: I understood your message about lesson 102.",
+				"createdAt": "2026-05-09T10:30:03.000Z"
+			}
+		],
+		"unusedVocab": [],
+		"usedWords": ["Report"],
+		"aiScore": null,
+		"aiFeedback": null,
+		"teacherScore": null,
+		"teacherComment": null,
+		"isReviewedByTeacher": false,
+		"commentsThread": [],
+		"createdAt": "2026-05-09T10:28:00.000Z",
+		"endedAt": null
+	},
+	{
+		"conversationId": 3,
+		"studentId": 8,
+		"lessonId": 103,
+		"status": "completed",
+		"messages": [
+			{
+				"role": "student",
+				"content": "We investigate the production incident immediately.",
+				"createdAt": "2026-05-09T11:15:00.000Z"
+			},
+			{
+				"role": "assistant",
+				"content": "Mock AI reply: I understood your message about lesson 103.",
+				"createdAt": "2026-05-09T11:15:04.000Z"
+			}
+		],
+		"unusedVocab": [],
+		"usedWords": ["Investigate"],
+		"aiScore": 70,
+		"aiFeedback": "Good job using lesson vocabulary in the conversation.",
+		"teacherScore": null,
+		"teacherComment": null,
+		"isReviewedByTeacher": false,
+		"commentsThread": [
+			{
+				"role": "teacher",
+				"content": "Please explain what you are doing next after the investigation.",
+				"createdAt": "2026-05-09T11:20:00.000Z"
+			}
+		],
+		"createdAt": "2026-05-09T11:13:00.000Z",
+		"endedAt": "2026-05-09T11:18:00.000Z"
+	}
+]

@@ -3,6 +3,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const { getUserById } = require('../models/users.model');
 const {
   createRelationRequest,
+  getActiveRelationsByTeacherId,
   getRelationById,
   getRelationByTeacherAndStudent,
   getPendingRelationsByTeacherId,
@@ -104,6 +105,34 @@ function listPendingRelations(req, res) {
   return sendSuccess(res, 200, pendingRelations);
 }
 
+function listMyStudents(req, res) {
+  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedTeacherId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedTeacherId.message,
+      validatedTeacherId.details
+    );
+  }
+
+  const activeStudents = getActiveRelationsByTeacherId(validatedTeacherId.value).map((relation) => {
+    const student = getUserById(relation.studentId);
+
+    return {
+      studentId: relation.studentId,
+      firstName: student ? student.firstName : null,
+      lastName: student ? student.lastName : null,
+      currentLevel: null,
+      lastActivityDate: null,
+    };
+  });
+
+  return sendSuccess(res, 200, activeStudents);
+}
+
 function updateRelationStatus(req, res) {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');
@@ -195,6 +224,7 @@ function updateRelationStatus(req, res) {
 }
 
 module.exports = {
+  listMyStudents,
   listPendingRelations,
   requestRelation,
   updateRelationStatus,

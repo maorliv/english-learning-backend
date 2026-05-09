@@ -1,6 +1,7 @@
 const { getLessonById } = require('../models/lessons.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const {
+  addConversationReply,
   addTeacherComment,
   addMessageToConversation,
   createConversation,
@@ -9,6 +10,8 @@ const {
 } = require('../models/conversations.model');
 const { sendError, sendSuccess } = require('../utils/response');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
+
+const ALLOWED_REPLY_ROLES = ['student', 'teacher'];
 
 function startConversation(req, res) {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
@@ -237,10 +240,74 @@ function commentOnConversation(req, res) {
   return sendSuccess(res, 200, result);
 }
 
+function replyToConversation(req, res) {
+  const validatedConversationId = validateIdParam(req.params.id, 'id');
+  const requiredFieldsValidation = validateRequiredFields(req.body, ['role', 'content']);
+
+  if (!validatedConversationId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedConversationId.message,
+      validatedConversationId.details
+    );
+  }
+
+  if (!requiredFieldsValidation.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      requiredFieldsValidation.message,
+      requiredFieldsValidation.details
+    );
+  }
+
+  const normalizedRole = String(req.body.role).trim().toLowerCase();
+
+  if (!ALLOWED_REPLY_ROLES.includes(normalizedRole)) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      'Invalid role value',
+      {
+        field: 'role',
+        allowedValues: ALLOWED_REPLY_ROLES,
+        receivedValue: req.body.role,
+      }
+    );
+  }
+
+  const conversation = getConversationById(validatedConversationId.value);
+
+  if (!conversation) {
+    return sendError(
+      res,
+      404,
+      'CONVERSATION_NOT_FOUND',
+      'Conversation not found',
+      {
+        conversationId: validatedConversationId.value,
+      }
+    );
+  }
+
+  const result = addConversationReply(
+    validatedConversationId.value,
+    normalizedRole,
+    req.body.content
+  );
+
+  return sendSuccess(res, 200, result);
+}
+
 module.exports = {
   commentOnConversation,
   finishConversation,
   getConversation,
+  replyToConversation,
   sendConversationMessage,
   startConversation,
 };

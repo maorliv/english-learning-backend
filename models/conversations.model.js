@@ -115,7 +115,29 @@ function addTeacherComment(conversationId, teacherScore, teacherComment) {
   };
 }
 
+function addConversationReply(conversationId, role, content) {
+  const conversation = getConversationById(conversationId);
+
+  if (!conversation) {
+    return null;
+  }
+
+  const reply = {
+    role,
+    content,
+    createdAt: new Date().toISOString(),
+  };
+
+  conversation.commentsThread.push(reply);
+
+  return {
+    conversationId: conversation.conversationId,
+    reply,
+  };
+}
+
 module.exports = {
+  addConversationReply,
   addTeacherComment,
   endConversation,
   getConversationById,

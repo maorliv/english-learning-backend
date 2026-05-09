@@ -1,7 +1,9 @@
 const { getLessonById } = require('../models/lessons.model');
+const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const {
   addMessageToConversation,
   createConversation,
+  endConversation,
   getConversationById,
 } = require('../models/conversations.model');
 const { sendError, sendSuccess } = require('../utils/response');
@@ -57,7 +59,13 @@ function startConversation(req, res) {
     );
   }
 
-  const conversation = createConversation(validatedStudentId.value, validatedLessonId.value);
+  const lessonVocabulary = getVocabularyByLessonId(validatedLessonId.value);
+  const unusedVocab = lessonVocabulary.map((item) => item.word);
+  const conversation = createConversation(
+    validatedStudentId.value,
+    validatedLessonId.value,
+    unusedVocab
+  );
 
   return sendSuccess(res, 201, {
     conversationId: conversation.conversationId,
@@ -109,7 +117,40 @@ function sendConversationMessage(req, res) {
   return sendSuccess(res, 200, result);
 }
 
+function finishConversation(req, res) {
+  const validatedConversationId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedConversationId.isValid) {
+    return sendError(
+      res,
+      400,
+      'VALIDATION_ERROR',
+      validatedConversationId.message,
+      validatedConversationId.details
+    );
+  }
+
+  const conversation = getConversationById(validatedConversationId.value);
+
+  if (!conversation) {
+    return sendError(
+      res,
+      404,
+      'CONVERSATION_NOT_FOUND',
+      'Conversation not found',
+      {
+        conversationId: validatedConversationId.value,
+      }
+    );
+  }
+
+  const result = endConversation(validatedConversationId.value);
+
+  return sendSuccess(res, 200, result);
+}
+
 module.exports = {
+  finishConversation,
   sendConversationMessage,
   startConversation,
 };

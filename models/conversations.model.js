@@ -8,7 +8,7 @@ function getConversationById(conversationId) {
   );
 }
 
-function createConversation(studentId, lessonId) {
+function createConversation(studentId, lessonId, unusedVocab = []) {
   const nextConversationId = conversations.reduce((maxConversationId, conversation) => {
     return Math.max(maxConversationId, Number(conversation.conversationId) || 0);
   }, 0) + 1;
@@ -19,7 +19,7 @@ function createConversation(studentId, lessonId) {
     lessonId: Number(lessonId),
     status: 'active',
     messages: [],
-    unusedVocab: [],
+    unusedVocab,
     usedWords: [],
     aiScore: null,
     aiFeedback: null,
@@ -74,7 +74,33 @@ function addMessageToConversation(conversationId, content) {
   };
 }
 
+function endConversation(conversationId) {
+  const conversation = getConversationById(conversationId);
+
+  if (!conversation) {
+    return null;
+  }
+
+  const usedWordsCount = Array.isArray(conversation.usedWords) ? conversation.usedWords.length : 0;
+  const aiScore = Math.min(100, 60 + usedWordsCount * 10);
+
+  conversation.status = 'completed';
+  conversation.endedAt = new Date().toISOString();
+  conversation.aiScore = aiScore;
+  conversation.aiFeedback =
+    usedWordsCount > 0
+      ? 'Good job using lesson vocabulary in the conversation.'
+      : 'Good effort. Try using more lesson vocabulary next time.';
+
+  return {
+    conversationId: conversation.conversationId,
+    aiScore: conversation.aiScore,
+    aiFeedback: conversation.aiFeedback,
+  };
+}
+
 module.exports = {
+  endConversation,
   getConversationById,
   addMessageToConversation,
   createConversation,

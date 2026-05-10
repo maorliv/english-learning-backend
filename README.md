@@ -1,6 +1,17 @@
 # English Learning Backend
 
-This project is a mock backend for an English learning platform built with Node.js and Express. Data is loaded from JSON files under `models/data` and then mutated in memory while the server is running.
+A RESTful backend for an English learning platform built with Node.js and Express. Students can browse lessons, practise with an AI conversation partner, track their progress over time, and get matched with a real teacher based on their learning goals and budget. Teachers can manage their student relationships, review completed conversations, and leave scored feedback. Admins have full access to all resources.
+
+The project is entirely self-contained — no database setup required. All data lives in JSON files that are loaded into memory at startup, so anyone can clone the repo, run two commands, and have a fully working API.
+
+**What makes this backend well-structured:**
+
+- **Role-based access control** on every protected route, enforced through a single reusable `authorize` middleware. Three roles — `student`, `teacher`, `admin` — with self-access exceptions where appropriate.
+- **Consistent response envelope** across all endpoints: every response, success or error, uses the same JSON shape, making client-side handling predictable.
+- **Realistic domain model** covering lessons, vocabulary, grammar rules, warm-up exercises, teacher matching, conversation scoring, and teacher-student relations — not just a simple CRUD example.
+- **Zero infrastructure dependencies** — no database, no environment variables, no Docker. Runs with `npm install` + `npm start`.
+
+---
 
 ## Requirements
 
@@ -15,50 +26,53 @@ npm install
 
 ## Start The Server
 
-Use either of these commands from the project root:
-
 ```bash
 npm start
 ```
 
-or
+or equivalently:
 
 ```bash
 node index.js
 ```
 
-Notes:
-
-- The package script `npm start` runs `node index.js`.
-- There is no `server.js` file in this project.
+> Note: the entry point is `index.js`. There is no `server.js` file in this project.
 
 ## Port And Base URL
 
-- Port: `3000`
-- Base URL: `http://localhost:3000`
-- API base path: `/`
-- Resource endpoints are mounted under `/api/...`
-- Health check endpoint: `GET /`
+| Setting | Value |
+|---|---|
+| Port | `3000` |
+| Base URL | `http://localhost:3000` |
+| API base path | `/` |
+| Resource endpoints | mounted under `/api/...` |
+| Health check | `GET /` |
 
 Example full URLs:
 
-- `http://localhost:3000/`
-- `http://localhost:3000/api/users/login`
-- `http://localhost:3000/api/lessons/101/vocab-warmup`
+```
+http://localhost:3000/
+http://localhost:3000/api/users/login
+http://localhost:3000/api/lessons
+http://localhost:3000/api/lessons/101/vocab-warmup
+http://localhost:3000/api/conversations/start
+```
 
 ## How To Test The API
 
-You can test the API with Postman, Thunder Client, Insomnia, or `curl.exe` in Windows PowerShell.
+You can use Postman, Thunder Client, Insomnia, or `curl.exe` in Windows PowerShell.
 
-### Common Headers
+### Authentication Headers
 
-Most protected routes expect mock authorization headers:
+Authentication is mocked via custom request headers — there is no real JWT flow. Add these headers to every protected request:
 
-- `x-user-role`: `student`, `teacher`, or `admin`
-- `x-user-id`: numeric user id for the acting user on routes that need ownership checks
-- `Content-Type: application/json` for POST, PUT, and PATCH requests
+| Header | Value |
+|---|---|
+| `x-user-role` | `student`, `teacher`, or `admin` |
+| `x-user-id` | numeric ID of the acting user |
+| `Content-Type` | `application/json` (for POST, PUT, PATCH) |
 
-Example headers for a student request:
+Example — student request:
 
 ```http
 x-user-role: student
@@ -66,7 +80,7 @@ x-user-id: 1
 Content-Type: application/json
 ```
 
-Example headers for an admin request:
+Example — admin request:
 
 ```http
 x-user-role: admin
@@ -76,11 +90,11 @@ Content-Type: application/json
 
 ### Suggested Smoke Test Order
 
-1. `GET /` to confirm the server is running.
-2. `POST /api/users/login` to simulate authentication.
-3. `GET /api/lessons` with `x-user-role: student`.
-4. `GET /api/teachers` with `x-user-role: student`.
-5. `POST /api/conversations/start` with `x-user-role: student` and a valid `lessonId`.
+1. `GET /` — confirm the server is running.
+2. `POST /api/users/login` — simulate login and get a token back.
+3. `GET /api/lessons` with `x-user-role: student` — browse available lessons.
+4. `GET /api/teachers` with `x-user-role: student` — browse available teachers.
+5. `POST /api/conversations/start` with `x-user-role: student` and a valid `lessonId` — start a practice conversation.
 
 ### Example Requests
 
@@ -118,9 +132,9 @@ curl.exe -X POST "http://localhost:3000/api/conversations/start" `
 
 ## Response Format
 
-Every endpoint returns the same envelope:
+Every endpoint — success or error — returns the same envelope:
 
-Successful response:
+**Success:**
 
 ```json
 {
@@ -130,7 +144,7 @@ Successful response:
 }
 ```
 
-Error response:
+**Error:**
 
 ```json
 {
@@ -148,22 +162,23 @@ Error response:
 
 ## Assumptions And Implementation Notes
 
-- This backend uses mock JSON seed data. It does not use a real database.
-- Data changes are stored in memory for the running Node process. They are not persisted back to the JSON files.
-- Most numeric ids are generated as `max(existingId) + 1` inside the relevant model.
-- Grammar rule ids are string ids supplied by the client, for example `present_simple`.
-- Authentication is mocked through request headers. The `token` returned by login is informational and is not verified by middleware.
-- Some routes support self-access by comparing `x-user-id` to the resource owner id.
-- Teacher-only conversation views are filtered by teacher-student relations data.
-- The API currently mounts the health route at `/`, so the API base path for the whole app is `/`.
+- **No database.** All data is seeded from JSON files under `models/data/`. Changes are held in memory only and reset when the server restarts.
+- **Numeric IDs** are auto-generated as `max(existingId) + 1` inside each model. They are not UUIDs and not guaranteed to be stable across restarts.
+- **Grammar rule IDs** are strings supplied by the client (e.g. `"present-simple"`), not auto-incremented numbers.
+- **Authentication is simulated.** The `token` value returned by `POST /api/users/login` is a plain string for display purposes only. No middleware validates it. Access is controlled entirely by the `x-user-role` and `x-user-id` request headers.
+- **Self-access** is supported on select routes: a user can access their own resource even without the admin role, determined by comparing `x-user-id` to the resource owner's ID.
+- **Teacher profile ownership** is resolved via a `getOwnerId` lookup that maps a `teacherId` to the linked `userId`, so the `x-user-id` header (which carries a user ID) can be compared correctly.
+- **Teacher conversation views** are scoped to the teacher's active students, determined from the relations data.
 
 ## Seed Users For Quick Testing
 
-These seeded users are available in `models/data/users.json`:
+These users are pre-loaded in `models/data/users.json`:
 
-- Student: email `dana.levi@example.com`, password `1234`, user id `1`
-- Teacher: email `omer.cohen@example.com`, password `1234`, user id `2`
-- Admin: email `maya.benami@example.com`, password `1234`, user id `3`
+| Role | Email | Password | User ID |
+|---|---|---|---|
+| Student | `dana.levi@example.com` | `1234` | `1` |
+| Teacher | `omer.cohen@example.com` | `1234` | `2` |
+| Admin | `maya.benami@example.com` | `1234` | `3` |
 
 ## API Reference
 

@@ -5,7 +5,7 @@ const { sendError } = require('../utils/response');
  * In Express, a function with exactly 4 parameters (err, req, res, next) is treated as an
  * error handler. It is triggered when a route or middleware calls next(err) or throws an error.
  *
- * This should be registered LAST in index.js, after all routes.
+ * This should be registered LAST in server.js, after all routes.
  */
 function errorHandler(err, req, res, next) {
   console.error(err); // Print the full error to the server console for debugging

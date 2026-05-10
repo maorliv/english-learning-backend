@@ -33,10 +33,10 @@ npm start
 or equivalently:
 
 ```bash
-node index.js
+node server.js
 ```
 
-> Note: the entry point is `index.js`. There is no `server.js` file in this project.
+> Note: the entry point is `server.js`.
 
 ## Port And Base URL
 

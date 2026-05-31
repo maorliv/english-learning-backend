@@ -19,6 +19,6 @@ router.post('/login', loginUser);           // Public — no auth required
 router.post('/register', registerUser);     // Public — no auth required
 router.put('/:id', authorize(['admin'], { allowSelf: true }), updateUser);
 router.delete('/:id', authorize(['admin']), deleteUser);
-router.get('/:id', authorize(['admin'], { allowSelf: true }), getUser);
+router.get('/:id', authorize(['admin','student','teacher'], { allowSelf: true }), getUser);
 
 module.exports = router;

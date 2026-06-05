@@ -4,6 +4,7 @@
 const express = require('express');
 
 // Route modules — each file handles one resource (e.g. /api/users, /api/lessons)
+const assessmentRouter = require('./routes/assessment.routes');
 const authRouter = require('./routes/auth.routes');
 const conversationsRouter = require('./routes/conversations.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
@@ -30,6 +31,7 @@ app.use(express.json());      // Parse JSON request bodies (populates req.body)
 
 // Route mounting — each router handles all routes under the given path prefix
 app.use('/', healthRouter);
+app.use('/api/assessment', assessmentRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/conversations', conversationsRouter);
 app.use('/api/grammar-rules', grammarRulesRouter);

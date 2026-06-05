@@ -11,6 +11,7 @@
     "feedback": "weekly",
     "available": true,
     "experience": "5 years in Tech English",
+    "onlineOnly": false,
     "updateDate": "2024-04-15T09:00:00Z"
   },
   {
@@ -25,6 +26,7 @@
     "feedback": "daily",
     "available": false,
     "experience": "7 years coaching software students",
+    "onlineOnly": true,
     "updateDate": "2024-05-01T08:30:00Z"
   },
   {
@@ -39,6 +41,7 @@
     "feedback": "weekly",
     "available": true,
     "experience": "4 years teaching English for developers",
+    "onlineOnly": true,
     "updateDate": "2024-05-03T10:15:00Z"
   }
 ]

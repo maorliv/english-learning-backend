@@ -40,6 +40,11 @@ function saveStudentPreferences(userId, preferencesData) {
     learning_goal: preferencesData.learning_goal,
     onboarding_text: preferencesData.onboarding_text,
     currentLevel: preferencesData.currentLevel,
+    // Optional onboarding fields — stored as-is; undefined if not provided by the client
+    availability: preferencesData.availability ?? null,
+    teacherGender: preferencesData.teacherGender ?? null,
+    mainGoal: preferencesData.mainGoal ?? null,
+    onlineOnly: preferencesData.onlineOnly ?? null,
   };
 
   if (existingPreferencesIndex !== -1) {
@@ -53,7 +58,14 @@ function saveStudentPreferences(userId, preferencesData) {
 
 /**
  * Computes a mock match score between a teacher and a set of student preferences.
- * Score = (number of shared tokens between preference text and teacher profile) * 10 + teacher rank.
+ *
+ * Scoring breakdown:
+ *   +10  per token overlap between preference text (learning_goal, onboarding_text, currentLevel)
+ *        and teacher profile (specialties, experience)
+ *   + 8  if student mainGoal matches any teacher specialty token
+ *   + 5  if student onlineOnly preference matches teacher.onlineOnly
+ *   + teacher.rank (base quality signal)
+ *
  * Higher score = better match.
  */
 function calculateMockMatchScore(teacher, preferences) {
@@ -67,12 +79,25 @@ function calculateMockMatchScore(teacher, preferences) {
     ...tokenizeText(teacher.experience),
   ]);
 
-  // Count overlapping tokens; each overlap adds 10 to the score
+  // Base: count overlapping tokens between preference text and teacher profile
   const overlapScore = Array.from(preferenceTokens).reduce((score, token) => {
     return teacherTokens.has(token) ? score + 10 : score;
   }, 0);
 
-  return overlapScore + Number(teacher.rank || 0);
+  // Bonus: mainGoal token overlap against teacher specialties (+8 per matching token)
+  const mainGoalTokens = tokenizeText(preferences.mainGoal);
+  const specialtyTokens = new Set(
+    tokenizeText(Array.isArray(teacher.specialties) ? teacher.specialties.join(' ') : '')
+  );
+  const mainGoalBonus = mainGoalTokens.reduce((score, token) => {
+    return specialtyTokens.has(token) ? score + 8 : score;
+  }, 0);
+
+  // Bonus: onlineOnly alignment — student wants online-only and teacher is online-only (+5)
+  const onlineBonus =
+    preferences.onlineOnly === true && teacher.onlineOnly === true ? 5 : 0;
+
+  return overlapScore + mainGoalBonus + onlineBonus + Number(teacher.rank || 0);
 }
 
 /**

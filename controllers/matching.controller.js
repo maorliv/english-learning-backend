@@ -47,6 +47,11 @@ const saveMatchingPreferences = withErrorHandling((req, res) => {
     learning_goal: req.body.learning_goal,
     onboarding_text: req.body.onboarding_text,
     currentLevel: req.body.currentLevel,
+    // Optional onboarding fields — accepted if provided, ignored if absent
+    availability: req.body.availability,
+    teacherGender: req.body.teacherGender,
+    mainGoal: req.body.mainGoal,
+    onlineOnly: req.body.onlineOnly,
   });
 
   // Return recommendations immediately after saving (no need for a second request)

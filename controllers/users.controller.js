@@ -1,6 +1,7 @@
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
+const { createProgressRecord } = require('../models/progress.model');
 const {
   createUser,
   deleteUserById,
@@ -51,6 +52,12 @@ const registerUser = withErrorHandling((req, res) => {
     userRole,
     sex,
   });
+
+  // Automatically create a blank progress record for new students.
+  // Level starts as null and is set after the AI assessment is completed.
+  if (userRole === 'student') {
+    createProgressRecord(newUser.userID);
+  }
 
   // Return only public-safe fields (never return the password)
   return sendSuccess(res, 201, {

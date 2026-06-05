@@ -4,6 +4,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const { getGrammarRuleById } = require('../models/grammarRules.model');
 const { getWarmUpGrammarByLessonId } = require('../models/warmUpGrammar.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
+const { getProgressByStudentId } = require('../models/progress.model');
 const {
   createLesson,
   deleteLessonById,
@@ -296,8 +297,91 @@ const deleteLesson = withErrorHandling((req, res) => {
   });
 });
 
+/**
+ * GET /api/lessons/catalog
+ * Returns an enriched lesson list tailored to the logged-in student.
+ * Reads the student's current level and completed lesson IDs from their progress record,
+ * then builds a card-ready response for each lesson that includes:
+ *   - Human-readable grammar rule name and category
+ *   - Vocabulary word count
+ *   - Lock status with a plain-English reason
+ *   - Completion status and timestamp
+ * Lessons are sorted so incomplete lessons appear first and completed lessons appear last.
+ */
+const getLessonsCatalog = withErrorHandling((req, res) => {
+  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedStudentId.isValid) {
+    throw createHttpError(
+      400,
+      'VALIDATION_ERROR',
+      validatedStudentId.message,
+      validatedStudentId.details
+    );
+  }
+
+  const progress = getProgressByStudentId(validatedStudentId.value);
+
+  if (!progress) {
+    throw createHttpError(
+      404,
+      'PROGRESS_NOT_FOUND',
+      'Progress not found for this student',
+      { studentId: validatedStudentId.value }
+    );
+  }
+
+  // Build a Set of completed lesson IDs for O(1) lookup
+  const completedLessonIds = new Set((progress.completedLessonIds || []).map(String));
+  const completedAtMap = progress.completedAt || {};
+
+  // getAllLessons with currentLevel applies the cumulative lock logic from the model
+  const lessons = getAllLessons(progress.currentLevel);
+
+  const catalog = lessons.map((lesson) => {
+    const isLocked = lesson.locked;
+    const isCompleted = completedLessonIds.has(String(lesson.lessonId));
+
+    // Derive a human-readable name from the grammarRuleId (e.g. "present_simple" → "Present Simple")
+    const grammarRuleName = lesson.grammarRuleId
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    const grammarRule = getGrammarRuleById(lesson.grammarRuleId);
+
+    return {
+      lessonId: lesson.lessonId,
+      title: lesson.title,
+      scene: lesson.scene,
+      level: lesson.level,
+      grammarRuleName,
+      grammarRuleCategory: grammarRule ? grammarRule.category : null,
+      vocabularyCount: getVocabularyByLessonId(lesson.lessonId).length,
+      isLocked,
+      lockReason: isLocked
+        ? `This lesson requires ${lesson.level} level or above.`
+        : null,
+      canStart: !isLocked,
+      isCompleted,
+      completedAt: isCompleted ? (completedAtMap[String(lesson.lessonId)] || null) : null,
+      canRestart: true,
+      showCompletedIcon: isCompleted,
+    };
+  });
+
+  // Sort: incomplete lessons first (isCompleted = false), completed lessons last
+  catalog.sort((a, b) => {
+    if (a.isCompleted === b.isCompleted) return 0;
+    return a.isCompleted ? 1 : -1;
+  });
+
+  return sendSuccess(res, 200, catalog);
+});
+
 module.exports = {
   createLessonHandler,
+  getLessonsCatalog,
   listLessons,
   getLesson,
   getLessonGrammar,

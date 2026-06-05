@@ -17,6 +17,7 @@ const {
 	getLessonGrammar,
 	getLessonGrammarWarmUp,
 	getLessonVocabularyWarmUp,
+	getLessonsCatalog,
 	listLessons,
 	updateLesson,
 } = require('../controllers/lessons.controller');
@@ -25,6 +26,8 @@ const router = express.Router();
 
 router.get('/', authorize(['student', 'admin']), listLessons);
 router.post('/', authorize(['admin']), createLessonHandler);
+// /catalog must be registered before /:id to prevent Express matching "catalog" as a lesson ID
+router.get('/catalog', authorize(['student']), getLessonsCatalog);
 router.get('/:id/grammar', authorize(['student', 'admin']), getLessonGrammar);
 router.get('/:id/grammar-warmup', authorize(['student']), getLessonGrammarWarmUp);       // Student warm-up only
 router.get('/:id/vocab-warmup', authorize(['student', 'admin']), getLessonVocabularyWarmUp);

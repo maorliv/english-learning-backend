@@ -1,4 +1,4 @@
-const { sendError } = require('../utils/response');
+const { createHttpError } = require('../utils/httpError');
 
 /**
  * Factory function that creates an Express authorization middleware.
@@ -41,18 +41,19 @@ function authorize(allowedRoles, options = {}) {
 
     if (!isAllowedRole && !isSelfAllowed) {
       // 403 Forbidden — the user is authenticated but not authorized for this action
-      return sendError(
-        res,
-        403,
-        'FORBIDDEN',
-        'You do not have permission to perform this action.',
-        {
-          allowedRoles,
-          receivedRole: userRole || null,
-          receivedUserId: userId || null,
-          routeId: routeId || null,
-          ownerId: ownerId || null,
-        }
+      return next(
+        createHttpError(
+          403,
+          'FORBIDDEN',
+          'You do not have permission to perform this action.',
+          {
+            allowedRoles,
+            receivedRole: userRole || null,
+            receivedUserId: userId || null,
+            routeId: routeId || null,
+            ownerId: ownerId || null,
+          }
+        )
       );
     }
 

@@ -1,4 +1,5 @@
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getAllTeachers, getTeacherById, updateTeacherById } = require('../models/teachers.model');
 const { getReviewedRelationsByTeacherId } = require('../models/relations.model');
@@ -9,13 +10,12 @@ const { getReviewedRelationsByTeacherId } = require('../models/relations.model')
  * The teacher's ID is read from the x-user-id request header.
  * Also computes the average rating across all reviews.
  */
-function getMyReviews(req, res) {
+const getMyReviews = withErrorHandling((req, res) => {
   // x-user-id header identifies the logged-in teacher (set by the client, simulating auth)
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedTeacherId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedTeacherId.message,
@@ -42,7 +42,7 @@ function getMyReviews(req, res) {
     avgRating,
     reviews,
   });
-}
+});
 
 /**
  * GET /api/teachers
@@ -50,7 +50,7 @@ function getMyReviews(req, res) {
  *   ?available=true|false  \u2014 filter by availability
  *   ?maxPrice=<number>     \u2014 filter by maximum price per week
  */
-function listTeachers(req, res) {
+const listTeachers = withErrorHandling((req, res) => {
   // req.query contains values from the URL query string (e.g. ?available=true&maxPrice=100)
   const { available, maxPrice } = req.query;
   const filters = {};
@@ -58,7 +58,7 @@ function listTeachers(req, res) {
   if (available !== undefined) {
     // Query strings are always strings; validate before converting to boolean
     if (available !== 'true' && available !== 'false') {
-      return sendError(res, 400, 'VALIDATION_ERROR', 'Invalid available filter', {
+      throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid available filter', {
         available,
         expected: ['true', 'false'],
       });
@@ -71,7 +71,7 @@ function listTeachers(req, res) {
     const parsedMaxPrice = Number(maxPrice); // Convert string to number
 
     if (Number.isNaN(parsedMaxPrice)) {
-      return sendError(res, 400, 'VALIDATION_ERROR', 'Invalid maxPrice filter', {
+      throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid maxPrice filter', {
         maxPrice,
         expected: 'number',
       });
@@ -81,18 +81,17 @@ function listTeachers(req, res) {
   }
 
   return sendSuccess(res, 200, getAllTeachers(filters));
-}
+});
 
 /**
  * GET /api/teachers/:id
  * Returns a single teacher by their numeric teacherId.
  */
-function getTeacher(req, res) {
+const getTeacher = withErrorHandling((req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -103,20 +102,20 @@ function getTeacher(req, res) {
   const teacher = getTeacherById(validatedId.value);
 
   if (!teacher) {
-    return sendError(res, 404, 'TEACHER_NOT_FOUND', 'Teacher not found', {
+    throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher not found', {
       teacherId: validatedId.value,
     });
   }
 
   return sendSuccess(res, 200, teacher);
-}
+});
 
 /**
  * PUT /api/teachers/:id
  * Updates a teacher's profile fields (experience, price, specialties, availability, feedback).
  * Can be called by admin or by the teacher themselves (allowSelf is set in the route).
  */
-function updateTeacher(req, res) {
+const updateTeacher = withErrorHandling((req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'experience',
@@ -127,8 +126,7 @@ function updateTeacher(req, res) {
   ]);
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -137,8 +135,7 @@ function updateTeacher(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -155,7 +152,7 @@ function updateTeacher(req, res) {
   });
 
   if (!updatedTeacher) {
-    return sendError(res, 404, 'TEACHER_NOT_FOUND', 'Teacher not found', {
+    throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher not found', {
       teacherId: validatedId.value,
     });
   }
@@ -163,7 +160,7 @@ function updateTeacher(req, res) {
   return sendSuccess(res, 200, {
     teacherId: updatedTeacher.teacherId,
   });
-}
+});
 
 module.exports = {
   getMyReviews,

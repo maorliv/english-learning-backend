@@ -8,13 +8,17 @@ const { sendError } = require('../utils/response');
  * This should be registered LAST in server.js, after all routes.
  */
 function errorHandler(err, req, res, next) {
+  if (res.headersSent) {
+    return next(err);
+  }
+
   console.error(err); // Print the full error to the server console for debugging
 
   // Fall back to generic 500 values if the error object does not provide specifics
   const statusCode = err.statusCode || 500;
   const code = err.code || 'INTERNAL_SERVER_ERROR';
   const message = err.message || 'Unexpected server error';
-  const details = err.details || {};
+  const details = err.details && typeof err.details === 'object' ? err.details : {};
 
   return sendError(res, statusCode, code, message, details);
 }

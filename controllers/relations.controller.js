@@ -1,4 +1,5 @@
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getUserById } = require('../models/users.model');
 const {
@@ -23,13 +24,12 @@ const FILTERABLE_RELATION_STATUSES = ['pending', 'active', 'rejected'];
  * Returns all student-teacher relations. Accepts an optional ?status= filter.
  * Restricted to admin.
  */
-function listRelations(req, res) {
+const listRelations = withErrorHandling((req, res) => {
   // Normalize status from query string (e.g. ?status=pending)
   const status = req.query.status ? String(req.query.status).trim().toLowerCase() : undefined;
 
   if (status && !FILTERABLE_RELATION_STATUSES.includes(status)) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       'Invalid status filter',
@@ -41,7 +41,7 @@ function listRelations(req, res) {
   }
 
   return sendSuccess(res, 200, getAllRelations(status));
-}
+});
 
 /**
  * POST /api/relations/request
@@ -49,13 +49,12 @@ function listRelations(req, res) {
  * The student's ID comes from the x-user-id header; the teacher's ID comes from req.body.
  * Returns 409 if a relation between this pair already exists.
  */
-function requestRelation(req, res) {
+const requestRelation = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['teacherId']);
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -64,8 +63,7 @@ function requestRelation(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -77,8 +75,7 @@ function requestRelation(req, res) {
   const validatedTeacherId = validateIdParam(req.body.teacherId, 'teacherId');
 
   if (!validatedTeacherId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedTeacherId.message,
@@ -93,8 +90,7 @@ function requestRelation(req, res) {
   );
 
   if (existingRelation) {
-    return sendError(
-      res,
+    throw createHttpError(
       409,
       'RELATION_ALREADY_EXISTS',
       'Relation already exists between this student and teacher',
@@ -112,19 +108,18 @@ function requestRelation(req, res) {
     relationId: relation.relationId,
     status: relation.status,
   });
-}
+});
 
 /**
  * GET /api/relations/pending
  * Returns all pending relation requests for the logged-in teacher.
  * Enriches each record with the student's first and last name.
  */
-function listPendingRelations(req, res) {
+const listPendingRelations = withErrorHandling((req, res) => {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedTeacherId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedTeacherId.message,
@@ -147,19 +142,18 @@ function listPendingRelations(req, res) {
   );
 
   return sendSuccess(res, 200, pendingRelations);
-}
+});
 
 /**
  * GET /api/relations/my-students
  * Returns all students with an active relation with the logged-in teacher.
  * Enriches each record with the student's name from the users model.
  */
-function listMyStudents(req, res) {
+const listMyStudents = withErrorHandling((req, res) => {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedTeacherId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedTeacherId.message,
@@ -180,20 +174,19 @@ function listMyStudents(req, res) {
   });
 
   return sendSuccess(res, 200, activeStudents);
-}
+});
 
 /**
  * POST /api/relations/my-teacher/review
  * Lets the logged-in student submit a rating and feedback for their current teacher.
  * Requires an active relation; returns 404 if none is found.
  */
-function reviewMyTeacher(req, res) {
+const reviewMyTeacher = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['rating', 'student_feedback']);
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -202,8 +195,7 @@ function reviewMyTeacher(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -215,8 +207,7 @@ function reviewMyTeacher(req, res) {
   const relation = getActiveRelationByStudentId(validatedStudentId.value);
 
   if (!relation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'RELATION_NOT_FOUND',
       'Active relation not found for this student',
@@ -236,7 +227,7 @@ function reviewMyTeacher(req, res) {
   return sendSuccess(res, 200, {
     relationId: updatedRelation.relationId,
   });
-}
+});
 
 /**
  * PATCH /api/relations/:id/status
@@ -244,14 +235,13 @@ function reviewMyTeacher(req, res) {
  * Verifies that the relation belongs to this teacher before updating.
  * Only 'active' and 'rejected' are valid status values.
  */
-function updateRelationStatus(req, res) {
+const updateRelationStatus = withErrorHandling((req, res) => {
   const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['status']);
 
   if (!validatedTeacherId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedTeacherId.message,
@@ -260,8 +250,7 @@ function updateRelationStatus(req, res) {
   }
 
   if (!validatedRelationId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedRelationId.message,
@@ -270,8 +259,7 @@ function updateRelationStatus(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -282,8 +270,7 @@ function updateRelationStatus(req, res) {
   const normalizedStatus = String(req.body.status).trim().toLowerCase(); // Normalize before comparison
 
   if (!ALLOWED_RELATION_STATUSES.includes(normalizedStatus)) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       'Invalid status value',
@@ -298,8 +285,7 @@ function updateRelationStatus(req, res) {
   const relation = getRelationById(validatedRelationId.value);
 
   if (!relation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'RELATION_NOT_FOUND',
       'Relation not found',
@@ -311,8 +297,7 @@ function updateRelationStatus(req, res) {
 
   // Ensure the teacher is updating their own relation, not someone else's
   if (String(relation.teacherId) !== String(validatedTeacherId.value)) {
-    return sendError(
-      res,
+    throw createHttpError(
       403,
       'FORBIDDEN',
       'You do not have permission to update this relation.',
@@ -333,7 +318,7 @@ function updateRelationStatus(req, res) {
     relationId: updatedRelation.relationId,
     status: updatedRelation.status,
   });
-}
+});
 
 module.exports = {
   listRelations,

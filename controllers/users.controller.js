@@ -1,4 +1,5 @@
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const {
   createUser,
@@ -15,7 +16,7 @@ const {
  * Reads all fields from req.body. Returns the new user's ID and basic info on success.
  * Returns 400 if required fields are missing, 409 if the email is already taken.
  */
-function registerUser(req, res) {
+const registerUser = withErrorHandling((req, res) => {
   const { firstName, lastName, email, password, userRole, sex } = req.body;
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'firstName',
@@ -27,8 +28,7 @@ function registerUser(req, res) {
   ]);
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -38,7 +38,7 @@ function registerUser(req, res) {
 
   // 409 Conflict — prevent duplicate accounts for the same email
   if (getUserByEmail(email)) {
-    return sendError(res, 409, 'EMAIL_ALREADY_EXISTS', 'Email already exists', {
+    throw createHttpError(409, 'EMAIL_ALREADY_EXISTS', 'Email already exists', {
       email,
     });
   }
@@ -59,63 +59,23 @@ function registerUser(req, res) {
     lastName: newUser.lastName,
     userRole: newUser.role,
   });
-}
-
-/**
- * POST /api/users/login
- * Simulated login — checks email and password against in-memory data.
- * Returns a mock token and the user's role on success.
- * Returns 401 if credentials don't match.
- */
-function loginUser(req, res) {
-  const { email, password } = req.body;
-  const requiredFieldsValidation = validateRequiredFields(req.body, [
-    'email',
-    'password',
-  ]);
-
-  if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
-      400,
-      'VALIDATION_ERROR',
-      requiredFieldsValidation.message,
-      requiredFieldsValidation.details
-    );
-  }
-
-  const user = getUserByEmail(email);
-
-  // 401 Unauthorized — wrong email or wrong password (same message to avoid info leakage)
-  if (!user || user.password !== password) {
-    return sendError(res, 401, 'INVALID_CREDENTIALS', 'Invalid email or password', {
-      email,
-    });
-  }
-
-  return sendSuccess(res, 200, {
-    userId: user.userID,
-    userRole: user.role,
-    token: `mock-token-user-${user.userID}`, // Placeholder token (no real JWT in this project)
-  });
-}
+});
 
 /** GET /api/users — Returns the full list of all users. Restricted to admin. */
-function listUsers(req, res) {
+const listUsers = withErrorHandling((req, res) => {
   return sendSuccess(res, 200, getAllUsers());
-}
+});
 
 /**
  * GET /api/users/:id
  * Returns a single user by their numeric ID.
  * req.params.id is always a string from the URL, so it is validated and converted to a number.
  */
-function getUser(req, res) {
+const getUser = withErrorHandling((req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id'); // req.params.id — the :id segment from the URL
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -126,20 +86,20 @@ function getUser(req, res) {
   const user = getUserById(validatedId.value);
 
   if (!user) {
-    return sendError(res, 404, 'USER_NOT_FOUND', 'User not found', {
+    throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', {
       userID: validatedId.value,
     });
   }
 
   return sendSuccess(res, 200, user);
-}
+});
 
 /**
  * PUT /api/users/:id
  * Updates a user's firstName, lastName, and userRole.
  * Only admin can update any user; a user can also update their own profile (allowSelf in routes).
  */
-function updateUser(req, res) {
+const updateUser = withErrorHandling((req, res) => {
   const { firstName, lastName, userRole } = req.body; // Fields allowed to be updated
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -149,8 +109,7 @@ function updateUser(req, res) {
   ]);
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -159,8 +118,7 @@ function updateUser(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -175,7 +133,7 @@ function updateUser(req, res) {
   });
 
   if (!updatedUser) {
-    return sendError(res, 404, 'USER_NOT_FOUND', 'User not found', {
+    throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', {
       userID: validatedId.value,
     });
   }
@@ -183,19 +141,18 @@ function updateUser(req, res) {
   return sendSuccess(res, 200, {
     userId: updatedUser.userID,
   });
-}
+});
 
 /**
  * DELETE /api/users/:id
  * Removes a user from the in-memory store by their numeric ID.
  * Restricted to admin.
  */
-function deleteUser(req, res) {
+const deleteUser = withErrorHandling((req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -206,7 +163,7 @@ function deleteUser(req, res) {
   const deletedUser = deleteUserById(validatedId.value);
 
   if (!deletedUser) {
-    return sendError(res, 404, 'USER_NOT_FOUND', 'User not found', {
+    throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', {
       userID: validatedId.value,
     });
   }
@@ -214,12 +171,34 @@ function deleteUser(req, res) {
   return sendSuccess(res, 200, {
     userId: deletedUser.userID,
   });
-}
+});
+
+/**
+ * GET /api/users/me
+ * Returns the profile of the currently logged-in user.
+ * Reads the user's ID from the x-user-id request header (set by the frontend after login).
+ * Returns 400 if the header is missing, 404 if the user no longer exists.
+ */
+const getMe = withErrorHandling((req, res) => {
+  const userId = req.header('x-user-id');
+
+  if (!userId) {
+    throw createHttpError(400, 'MISSING_HEADER', 'x-user-id header is required');
+  }
+
+  const user = getUserById(userId);
+
+  if (!user) {
+    throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', { userId });
+  }
+
+  return sendSuccess(res, 200, user);
+});
 
 module.exports = {
   registerUser,
-  loginUser,
   listUsers,
+  getMe,
   getUser,
   updateUser,
   deleteUser,

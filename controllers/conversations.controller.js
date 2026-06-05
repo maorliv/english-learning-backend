@@ -11,7 +11,8 @@ const {
   getConversationById,
   getConversationSummaries,
 } = require('../models/conversations.model');
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 
 // Valid roles that can post a reply in a conversation comment thread
@@ -28,7 +29,7 @@ const FILTERABLE_CONVERSATION_STATUSES = ['active', 'completed'];
  *   - teacher: can only see conversations for their own active students;
  *              if a specific studentId filter is given, it is validated against the teacher's students
  */
-function listConversations(req, res) {
+const listConversations = withErrorHandling((req, res) => {
   const filters = {};
   const userRole = req.header('x-user-role'); // Used to apply teacher-specific filtering
 
@@ -36,8 +37,7 @@ function listConversations(req, res) {
     const normalizedStatus = String(req.query.status).trim().toLowerCase();
 
     if (!FILTERABLE_CONVERSATION_STATUSES.includes(normalizedStatus)) {
-      return sendError(
-        res,
+      throw createHttpError(
         400,
         'VALIDATION_ERROR',
         'Invalid status filter',
@@ -55,8 +55,7 @@ function listConversations(req, res) {
     const validatedStudentId = validateIdParam(req.query.studentId, 'studentId');
 
     if (!validatedStudentId.isValid) {
-      return sendError(
-        res,
+      throw createHttpError(
         400,
         'VALIDATION_ERROR',
         validatedStudentId.message,
@@ -71,8 +70,7 @@ function listConversations(req, res) {
     const validatedLessonId = validateIdParam(req.query.lessonId, 'lessonId');
 
     if (!validatedLessonId.isValid) {
-      return sendError(
-        res,
+      throw createHttpError(
         400,
         'VALIDATION_ERROR',
         validatedLessonId.message,
@@ -87,8 +85,7 @@ function listConversations(req, res) {
     const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
     if (!validatedTeacherId.isValid) {
-      return sendError(
-        res,
+      throw createHttpError(
         400,
         'VALIDATION_ERROR',
         validatedTeacherId.message,
@@ -104,8 +101,7 @@ function listConversations(req, res) {
       typeof filters.studentId === 'number' &&
       !activeStudentIds.map(String).includes(String(filters.studentId))
     ) {
-      return sendError(
-        res,
+      throw createHttpError(
         403,
         'FORBIDDEN',
         'You do not have permission to view conversations for this student.',
@@ -121,20 +117,19 @@ function listConversations(req, res) {
   }
 
   return sendSuccess(res, 200, getAllConversations(filters));
-}
+});
 
 /**
  * GET /api/students/:studentId/conversations
  * Returns conversation summaries for a specific student.
  * Teachers can only view their own students; the check is enforced here as well.
  */
-function listStudentConversations(req, res) {
+const listStudentConversations = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.params.studentId, 'studentId'); // :studentId from URL
   const userRole = req.header('x-user-role');
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -146,8 +141,7 @@ function listStudentConversations(req, res) {
     const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
     if (!validatedTeacherId.isValid) {
-      return sendError(
-        res,
+      throw createHttpError(
         400,
         'VALIDATION_ERROR',
         validatedTeacherId.message,
@@ -159,8 +153,7 @@ function listStudentConversations(req, res) {
 
     // Teacher may only view conversations for their own students
     if (!activeStudentIds.map(String).includes(String(validatedStudentId.value))) {
-      return sendError(
-        res,
+      throw createHttpError(
         403,
         'FORBIDDEN',
         'You do not have permission to view conversations for this student.',
@@ -187,7 +180,7 @@ function listStudentConversations(req, res) {
   );
 
   return sendSuccess(res, 200, conversations);
-}
+});
 
 /**
  * POST /api/conversations/start
@@ -195,13 +188,12 @@ function listStudentConversations(req, res) {
  * Initializes the unusedVocab list from the lesson's vocabulary so progress can be tracked.
  * Returns the new conversation's ID and initial state.
  */
-function startConversation(req, res) {
+const startConversation = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['lessonId']);
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -210,8 +202,7 @@ function startConversation(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -223,8 +214,7 @@ function startConversation(req, res) {
   const validatedLessonId = validateIdParam(req.body.lessonId, 'lessonId');
 
   if (!validatedLessonId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedLessonId.message,
@@ -235,8 +225,7 @@ function startConversation(req, res) {
   const lesson = getLessonById(validatedLessonId.value);
 
   if (!lesson) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'LESSON_NOT_FOUND',
       'Lesson not found',
@@ -260,7 +249,7 @@ function startConversation(req, res) {
     messages: conversation.messages,
     unusedVocab: conversation.unusedVocab,
   });
-}
+});
 
 /**
  * POST /api/conversations/:id/message
@@ -268,13 +257,12 @@ function startConversation(req, res) {
  * The message content is scanned for lesson vocabulary words, which are then moved
  * from unusedVocab to usedWords. A mock AI reply is appended automatically.
  */
-function sendConversationMessage(req, res) {
+const sendConversationMessage = withErrorHandling((req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['content']);
 
   if (!validatedConversationId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedConversationId.message,
@@ -283,8 +271,7 @@ function sendConversationMessage(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -295,8 +282,7 @@ function sendConversationMessage(req, res) {
   const conversation = getConversationById(validatedConversationId.value);
 
   if (!conversation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
@@ -309,19 +295,18 @@ function sendConversationMessage(req, res) {
   const result = addMessageToConversation(validatedConversationId.value, req.body.content);
 
   return sendSuccess(res, 200, result);
-}
+});
 
 /**
  * POST /api/conversations/:id/end
  * Marks a conversation as completed and calculates an AI score based on vocabulary usage.
  * Returns the final score and AI feedback.
  */
-function finishConversation(req, res) {
+const finishConversation = withErrorHandling((req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
 
   if (!validatedConversationId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedConversationId.message,
@@ -332,8 +317,7 @@ function finishConversation(req, res) {
   const conversation = getConversationById(validatedConversationId.value);
 
   if (!conversation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
@@ -346,19 +330,18 @@ function finishConversation(req, res) {
   const result = endConversation(validatedConversationId.value);
 
   return sendSuccess(res, 200, result);
-}
+});
 
 /**
  * GET /api/conversations/:id
  * Returns the full details of a single conversation, including all messages,
  * scores, and teacher feedback.
  */
-function getConversation(req, res) {
+const getConversation = withErrorHandling((req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
 
   if (!validatedConversationId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedConversationId.message,
@@ -369,8 +352,7 @@ function getConversation(req, res) {
   const conversation = getConversationById(validatedConversationId.value);
 
   if (!conversation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
@@ -388,14 +370,14 @@ function getConversation(req, res) {
     teacherComment: conversation.teacherComment,
     status: conversation.status,
   });
-}
+});
 
 /**
  * POST /api/conversations/:id/teacher-comment
  * Lets a teacher add a score and written feedback to a completed conversation.
  * Marks the conversation as reviewed by teacher.
  */
-function commentOnConversation(req, res) {
+const commentOnConversation = withErrorHandling((req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'teacherScore',
@@ -403,8 +385,7 @@ function commentOnConversation(req, res) {
   ]);
 
   if (!validatedConversationId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedConversationId.message,
@@ -413,8 +394,7 @@ function commentOnConversation(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -425,8 +405,7 @@ function commentOnConversation(req, res) {
   const conversation = getConversationById(validatedConversationId.value);
 
   if (!conversation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
@@ -443,7 +422,7 @@ function commentOnConversation(req, res) {
   );
 
   return sendSuccess(res, 200, result);
-}
+});
 
 /**
  * POST /api/conversations/:id/reply
@@ -451,13 +430,12 @@ function commentOnConversation(req, res) {
  * Used for back-and-forth discussion between student and teacher after the conversation ends.
  * The 'role' field in the body must be 'student' or 'teacher'.
  */
-function replyToConversation(req, res) {
+const replyToConversation = withErrorHandling((req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['role', 'content']);
 
   if (!validatedConversationId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedConversationId.message,
@@ -466,8 +444,7 @@ function replyToConversation(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -478,8 +455,7 @@ function replyToConversation(req, res) {
   const normalizedRole = String(req.body.role).trim().toLowerCase(); // Normalize before validation
 
   if (!ALLOWED_REPLY_ROLES.includes(normalizedRole)) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       'Invalid role value',
@@ -494,8 +470,7 @@ function replyToConversation(req, res) {
   const conversation = getConversationById(validatedConversationId.value);
 
   if (!conversation) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
@@ -512,7 +487,7 @@ function replyToConversation(req, res) {
   );
 
   return sendSuccess(res, 200, result);
-}
+});
 
 module.exports = {
   commentOnConversation,

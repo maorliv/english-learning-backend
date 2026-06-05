@@ -1,4 +1,5 @@
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getLessonById } = require('../models/lessons.model');
 const {
@@ -14,12 +15,11 @@ const {
  * Returns all vocabulary items belonging to the given lesson.
  * Returns 404 if the lesson itself does not exist.
  */
-function listLessonVocabulary(req, res) {
+const listLessonVocabulary = withErrorHandling((req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -30,26 +30,25 @@ function listLessonVocabulary(req, res) {
   const lesson = getLessonById(validatedId.value);
 
   if (!lesson) {
-    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+    throw createHttpError(404, 'LESSON_NOT_FOUND', 'Lesson not found', {
       lessonId: validatedId.value,
     });
   }
 
   return sendSuccess(res, 200, getVocabularyByLessonId(validatedId.value));
-}
+});
 
 /**
  * GET /api/lessons/:id/vocab/:vocabId
  * Returns a single vocabulary item identified by both its lessonId and vocabularyId.
  * Both IDs come from req.params and must be valid positive integers.
  */
-function getLessonVocabularyItem(req, res) {
+const getLessonVocabularyItem = withErrorHandling((req, res) => {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId'); // :vocabId is the second URL segment
 
   if (!validatedLessonId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedLessonId.message,
@@ -58,8 +57,7 @@ function getLessonVocabularyItem(req, res) {
   }
 
   if (!validatedVocabId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedVocabId.message,
@@ -70,7 +68,7 @@ function getLessonVocabularyItem(req, res) {
   const lesson = getLessonById(validatedLessonId.value);
 
   if (!lesson) {
-    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+    throw createHttpError(404, 'LESSON_NOT_FOUND', 'Lesson not found', {
       lessonId: validatedLessonId.value,
     });
   }
@@ -81,14 +79,14 @@ function getLessonVocabularyItem(req, res) {
   );
 
   if (!vocabularyItem) {
-    return sendError(res, 404, 'VOCABULARY_NOT_FOUND', 'Vocabulary item not found', {
+    throw createHttpError(404, 'VOCABULARY_NOT_FOUND', 'Vocabulary item not found', {
       lessonId: validatedLessonId.value,
       vocabId: validatedVocabId.value,
     });
   }
 
   return sendSuccess(res, 200, vocabularyItem);
-}
+});
 
 /**
  * POST /api/lessons/:id/vocab
@@ -96,7 +94,7 @@ function getLessonVocabularyItem(req, res) {
  * All word fields (word, translation, example, definition, completeSentence) are required.
  * Returns the new item's vocabularyId on success (201 Created).
  */
-function createLessonVocabularyItem(req, res) {
+const createLessonVocabularyItem = withErrorHandling((req, res) => {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'word',
@@ -107,8 +105,7 @@ function createLessonVocabularyItem(req, res) {
   ]);
 
   if (!validatedLessonId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedLessonId.message,
@@ -117,8 +114,7 @@ function createLessonVocabularyItem(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -129,7 +125,7 @@ function createLessonVocabularyItem(req, res) {
   const lesson = getLessonById(validatedLessonId.value);
 
   if (!lesson) {
-    return sendError(res, 404, 'LESSON_NOT_FOUND', 'Lesson not found', {
+    throw createHttpError(404, 'LESSON_NOT_FOUND', 'Lesson not found', {
       lessonId: validatedLessonId.value,
     });
   }
@@ -145,14 +141,14 @@ function createLessonVocabularyItem(req, res) {
   return sendSuccess(res, 201, {
     vocabularyId: createdVocabularyItem.vocabularyId,
   });
-}
+});
 
 /**
  * PUT /api/lessons/:id/vocab/:vocabId
  * Replaces all fields of an existing vocabulary item.
  * Both the lesson ID and vocab ID must exist and match.
  */
-function updateLessonVocabularyItem(req, res) {
+const updateLessonVocabularyItem = withErrorHandling((req, res) => {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -164,8 +160,7 @@ function updateLessonVocabularyItem(req, res) {
   ]);
 
   if (!validatedLessonId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedLessonId.message,
@@ -174,8 +169,7 @@ function updateLessonVocabularyItem(req, res) {
   }
 
   if (!validatedVocabId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedVocabId.message,
@@ -184,8 +178,7 @@ function updateLessonVocabularyItem(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -206,7 +199,7 @@ function updateLessonVocabularyItem(req, res) {
   );
 
   if (!updatedVocabularyItem) {
-    return sendError(res, 404, 'VOCABULARY_NOT_FOUND', 'Vocabulary item not found', {
+    throw createHttpError(404, 'VOCABULARY_NOT_FOUND', 'Vocabulary item not found', {
       lessonId: validatedLessonId.value,
       vocabId: validatedVocabId.value,
     });
@@ -215,19 +208,18 @@ function updateLessonVocabularyItem(req, res) {
   return sendSuccess(res, 200, {
     vocabularyId: updatedVocabularyItem.vocabularyId,
   });
-}
+});
 
 /**
  * DELETE /api/lessons/:id/vocab/:vocabId
  * Removes the specified vocabulary item from the given lesson.
  */
-function deleteLessonVocabularyItem(req, res) {
+const deleteLessonVocabularyItem = withErrorHandling((req, res) => {
   const validatedLessonId = validateIdParam(req.params.id, 'id');
   const validatedVocabId = validateIdParam(req.params.vocabId, 'vocabId');
 
   if (!validatedLessonId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedLessonId.message,
@@ -236,8 +228,7 @@ function deleteLessonVocabularyItem(req, res) {
   }
 
   if (!validatedVocabId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedVocabId.message,
@@ -251,7 +242,7 @@ function deleteLessonVocabularyItem(req, res) {
   );
 
   if (!deletedVocabularyItem) {
-    return sendError(res, 404, 'VOCABULARY_NOT_FOUND', 'Vocabulary item not found', {
+    throw createHttpError(404, 'VOCABULARY_NOT_FOUND', 'Vocabulary item not found', {
       lessonId: validatedLessonId.value,
       vocabId: validatedVocabId.value,
     });
@@ -260,7 +251,7 @@ function deleteLessonVocabularyItem(req, res) {
   return sendSuccess(res, 200, {
     vocabularyId: deletedVocabularyItem.vocabularyId,
   });
-}
+});
 
 module.exports = {
   createLessonVocabularyItem,

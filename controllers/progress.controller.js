@@ -2,7 +2,8 @@ const { getProgressByStudentId } = require('../models/progress.model');
 const { getScoredCompletedConversationsByStudentId } = require('../models/conversations.model');
 const { getAllLessons, getLessonById } = require('../models/lessons.model');
 const { getStudentPreferencesByUserId } = require('../models/matching.model');
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam } = require('../utils/validators');
 
 /**
@@ -63,12 +64,11 @@ function buildRecommendedLesson(progress, preferences) {
  * Returns summary statistics for the logged-in student's learning progress.
  * The student ID is read from the x-user-id header.
  */
-function getProgressStats(req, res) {
+const getProgressStats = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -79,8 +79,7 @@ function getProgressStats(req, res) {
   const progress = getProgressByStudentId(validatedStudentId.value);
 
   if (!progress) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'PROGRESS_NOT_FOUND',
       'Progress not found for this student',
@@ -97,19 +96,18 @@ function getProgressStats(req, res) {
     overallAverage: progress.overallAverage,
     lastActivityDate: progress.lastActivityDate,
   });
-}
+});
 
 /**
  * GET /api/progress/chart
  * Returns a list of the student's recent scored conversations for display in a progress chart.
  * Each item includes the lesson title (looked up by lessonId), AI score, teacher score, and date.
  */
-function getProgressChart(req, res) {
+const getProgressChart = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -129,18 +127,17 @@ function getProgressChart(req, res) {
   );
 
   return sendSuccess(res, 200, scoredConversations);
-}
+});
 
 /**
  * GET /api/progress/skills
  * Returns the student's skills radar data (breakdown of performance by skill area).
  */
-function getProgressSkills(req, res) {
+const getProgressSkills = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -151,8 +148,7 @@ function getProgressSkills(req, res) {
   const progress = getProgressByStudentId(validatedStudentId.value);
 
   if (!progress) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'PROGRESS_NOT_FOUND',
       'Progress not found for this student',
@@ -165,19 +161,18 @@ function getProgressSkills(req, res) {
   return sendSuccess(res, 200, {
     skillsRadar: progress.skillsRadar,
   });
-}
+});
 
 /**
  * GET /api/progress/next-lesson
  * Returns the recommended next lesson for the logged-in student based on their
  * current level and learning preferences. Returns 404 if progress or preferences are missing.
  */
-function getNextLesson(req, res) {
+const getNextLesson = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -188,8 +183,7 @@ function getNextLesson(req, res) {
   const progress = getProgressByStudentId(validatedStudentId.value);
 
   if (!progress) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'PROGRESS_NOT_FOUND',
       'Progress not found for this student',
@@ -202,8 +196,7 @@ function getNextLesson(req, res) {
   const preferences = getStudentPreferencesByUserId(validatedStudentId.value);
 
   if (!preferences) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'PREFERENCES_NOT_FOUND',
       'Student preferences not found',
@@ -214,19 +207,18 @@ function getNextLesson(req, res) {
   }
 
   return sendSuccess(res, 200, buildRecommendedLesson(progress, preferences));
-}
+});
 
 /**
  * GET /api/progress/:studentId
  * Returns full progress data for a specific student by their studentId URL param.
  * Restricted to teacher and admin roles (set in the route file).
  */
-function getStudentProgress(req, res) {
+const getStudentProgress = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.params.studentId, 'studentId'); // comes from :studentId in the URL
 
   if (!validatedStudentId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedStudentId.message,
@@ -237,8 +229,7 @@ function getStudentProgress(req, res) {
   const progress = getProgressByStudentId(validatedStudentId.value);
 
   if (!progress) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'PROGRESS_NOT_FOUND',
       'Progress not found for this student',
@@ -255,7 +246,7 @@ function getStudentProgress(req, res) {
     overallAverage: progress.overallAverage,
     skillsRadar: progress.skillsRadar,
   });
-}
+});
 
 module.exports = {
   getProgressChart,

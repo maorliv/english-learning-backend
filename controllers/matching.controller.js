@@ -3,7 +3,8 @@ const {
   getMockTeacherRecommendationsForPreferences,
   saveStudentPreferences,
 } = require('../models/matching.model');
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 
 /**
@@ -13,7 +14,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
  * The student's ID is read from the x-user-id header.
  * Returns the recommendations on success (201 Created).
  */
-function saveMatchingPreferences(req, res) {
+const saveMatchingPreferences = withErrorHandling((req, res) => {
   // Read the logged-in student's ID from the request header
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -24,8 +25,7 @@ function saveMatchingPreferences(req, res) {
   ]);
 
   if (!validatedUserId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedUserId.message,
@@ -34,8 +34,7 @@ function saveMatchingPreferences(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -52,19 +51,18 @@ function saveMatchingPreferences(req, res) {
 
   // Return recommendations immediately after saving (no need for a second request)
   return sendSuccess(res, 201, getMockTeacherRecommendationsForPreferences(savedPreferences));
-}
+});
 
 /**
  * GET /api/matching/recommendations
  * Returns teacher recommendations based on the student's previously saved preferences.
  * Returns 404 if the student has not saved preferences yet.
  */
-function getMatchingRecommendations(req, res) {
+const getMatchingRecommendations = withErrorHandling((req, res) => {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedUserId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedUserId.message,
@@ -75,8 +73,7 @@ function getMatchingRecommendations(req, res) {
   const preferences = getStudentPreferencesByUserId(validatedUserId.value);
 
   if (!preferences) {
-    return sendError(
-      res,
+    throw createHttpError(
       404,
       'PREFERENCES_NOT_FOUND',
       'Student preferences not found',
@@ -87,7 +84,7 @@ function getMatchingRecommendations(req, res) {
   }
 
   return sendSuccess(res, 200, getMockTeacherRecommendationsForPreferences(preferences));
-}
+});
 
 module.exports = {
   saveMatchingPreferences,

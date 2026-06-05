@@ -1,4 +1,5 @@
-const { sendError, sendSuccess } = require('../utils/response');
+const { sendSuccess } = require('../utils/response');
+const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateRequiredFields, validateStringIdParam } = require('../utils/validators');
 const {
   createGrammarRule,
@@ -14,7 +15,7 @@ const {
  * All fields are required.
  * Returns the new rule's ID on success (201 Created).
  */
-function createGrammarRuleHandler(req, res) {
+const createGrammarRuleHandler = withErrorHandling((req, res) => {
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'id',
     'category',
@@ -26,8 +27,7 @@ function createGrammarRuleHandler(req, res) {
   ]);
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -48,30 +48,29 @@ function createGrammarRuleHandler(req, res) {
   return sendSuccess(res, 201, {
     grammarRuleId: createdGrammarRule.id,
   });
-}
+});
 
 /**
  * GET /api/grammar-rules
  * Returns all grammar rules. Accepts an optional ?category= query string filter.
  */
-function listGrammarRules(req, res) {
+const listGrammarRules = withErrorHandling((req, res) => {
   // Normalize the category from the query string if provided
   const category = req.query.category ? String(req.query.category).trim() : undefined;
 
   return sendSuccess(res, 200, getAllGrammarRules(category));
-}
+});
 
 /**
  * GET /api/grammar-rules/:id
  * Returns a single grammar rule by its string ID (e.g. 'present-simple').
  * Uses validateStringIdParam because IDs here are strings, not numbers.
  */
-function getGrammarRule(req, res) {
+const getGrammarRule = withErrorHandling((req, res) => {
   const validatedId = validateStringIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -82,20 +81,20 @@ function getGrammarRule(req, res) {
   const grammarRule = getGrammarRuleById(validatedId.value);
 
   if (!grammarRule) {
-    return sendError(res, 404, 'GRAMMAR_RULE_NOT_FOUND', 'Grammar rule not found', {
+    throw createHttpError(404, 'GRAMMAR_RULE_NOT_FOUND', 'Grammar rule not found', {
       id: validatedId.value,
     });
   }
 
   return sendSuccess(res, 200, grammarRule);
-}
+});
 
 /**
  * PUT /api/grammar-rules/:id
  * Replaces all editable fields of the given grammar rule.
  * Note: the rule's 'id' field itself is not updatable.
  */
-function updateGrammarRule(req, res) {
+const updateGrammarRule = withErrorHandling((req, res) => {
   const validatedId = validateStringIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'category',
@@ -107,8 +106,7 @@ function updateGrammarRule(req, res) {
   ]);
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -117,8 +115,7 @@ function updateGrammarRule(req, res) {
   }
 
   if (!requiredFieldsValidation.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       requiredFieldsValidation.message,
@@ -136,7 +133,7 @@ function updateGrammarRule(req, res) {
   });
 
   if (!updatedGrammarRule) {
-    return sendError(res, 404, 'GRAMMAR_RULE_NOT_FOUND', 'Grammar rule not found', {
+    throw createHttpError(404, 'GRAMMAR_RULE_NOT_FOUND', 'Grammar rule not found', {
       id: validatedId.value,
     });
   }
@@ -144,15 +141,14 @@ function updateGrammarRule(req, res) {
   return sendSuccess(res, 200, {
     grammarRuleId: updatedGrammarRule.id,
   });
-}
+});
 
 /** DELETE /api/grammar-rules/:id \u2014 Removes a grammar rule by its string ID. */
-function deleteGrammarRule(req, res) {
+const deleteGrammarRule = withErrorHandling((req, res) => {
   const validatedId = validateStringIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
-    return sendError(
-      res,
+    throw createHttpError(
       400,
       'VALIDATION_ERROR',
       validatedId.message,
@@ -163,7 +159,7 @@ function deleteGrammarRule(req, res) {
   const deletedGrammarRule = deleteGrammarRuleById(validatedId.value);
 
   if (!deletedGrammarRule) {
-    return sendError(res, 404, 'GRAMMAR_RULE_NOT_FOUND', 'Grammar rule not found', {
+    throw createHttpError(404, 'GRAMMAR_RULE_NOT_FOUND', 'Grammar rule not found', {
       id: validatedId.value,
     });
   }
@@ -171,7 +167,7 @@ function deleteGrammarRule(req, res) {
   return sendSuccess(res, 200, {
     grammarRuleId: deletedGrammarRule.id,
   });
-}
+});
 
 module.exports = {
   createGrammarRuleHandler,

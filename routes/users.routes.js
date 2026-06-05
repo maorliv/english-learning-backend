@@ -5,8 +5,8 @@ const express = require('express');
 const authorize = require('../middleware/authorize.middleware');
 const {
 	deleteUser,
+	getMe,
 	getUser,
-	loginUser,
 	listUsers,
 	registerUser,
 	updateUser,
@@ -15,7 +15,7 @@ const {
 const router = express.Router();
 
 router.get('/', authorize(['admin']), listUsers);
-router.post('/login', loginUser);           // Public — no auth required
+router.get('/me', authorize(['admin', 'student', 'teacher']), getMe); // Must be before /:id
 router.post('/register', registerUser);     // Public — no auth required
 router.put('/:id', authorize(['admin'], { allowSelf: true }), updateUser);
 router.delete('/:id', authorize(['admin']), deleteUser);

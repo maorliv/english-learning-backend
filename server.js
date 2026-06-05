@@ -4,6 +4,7 @@
 const express = require('express');
 
 // Route modules — each file handles one resource (e.g. /api/users, /api/lessons)
+const authRouter = require('./routes/auth.routes');
 const conversationsRouter = require('./routes/conversations.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
 const grammarRulesRouter = require('./routes/grammarRules.routes');
@@ -14,6 +15,7 @@ const progressRouter = require('./routes/progress.routes');
 const relationsRouter = require('./routes/relations.routes');
 const healthRouter = require('./routes/health.routes');
 const lessonsRouter = require('./routes/lessons.routes');
+const settingsRouter = require('./routes/settings.routes');
 const studentsRouter = require('./routes/students.routes');
 const teachersRouter = require('./routes/teachers.routes');
 const usersRouter = require('./routes/users.routes');
@@ -28,12 +30,14 @@ app.use(express.json());      // Parse JSON request bodies (populates req.body)
 
 // Route mounting — each router handles all routes under the given path prefix
 app.use('/', healthRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/conversations', conversationsRouter);
 app.use('/api/grammar-rules', grammarRulesRouter);
 app.use('/api/lessons', lessonsRouter);
 app.use('/api/matching', matchingRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/relations', relationsRouter);
+app.use('/api/settings', settingsRouter);
 app.use('/api/students', studentsRouter);
 app.use('/api/teachers', teachersRouter);
 app.use('/api/users', usersRouter);

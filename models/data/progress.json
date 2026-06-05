@@ -7,7 +7,11 @@
     "successedLessonsCount": 5,
     "overallAverage": 84,
     "lastActivityDate": "2026-05-09T10:30:00.000Z",
-    "skillsRadar": "Practice more present simple and technical vocabulary."
+    "skillsRadar": "Practice more present simple and technical vocabulary.",
+    "completedLessonIds": [101],
+    "completedAt": {
+      "101": "2026-05-09T09:05:00.000Z"
+    }
   },
   {
     "progressId": 2,
@@ -17,6 +21,8 @@
     "successedLessonsCount": 2,
     "overallAverage": 71,
     "lastActivityDate": "2026-05-08T15:20:00.000Z",
-    "skillsRadar": "Focus on past simple sentence building and basic reporting vocabulary."
+    "skillsRadar": "Focus on past simple sentence building and basic reporting vocabulary.",
+    "completedLessonIds": [],
+    "completedAt": {}
   }
 ]

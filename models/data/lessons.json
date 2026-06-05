@@ -25,5 +25,59 @@
     "aiRole": "Engineering Manager",
     "grammarRuleId": "present_continuous",
     "level": "Advanced"
+  },
+  {
+    "lessonId": 104,
+    "vocabularyId": 305,
+    "title": "Email to Your Manager",
+    "scene": "You need to write and explain a formal email to your manager about a task you completed yesterday.",
+    "aiRole": "Team Manager",
+    "grammarRuleId": "past_simple",
+    "level": "Beginner"
+  },
+  {
+    "lessonId": 105,
+    "vocabularyId": 306,
+    "title": "System Setup Instructions",
+    "scene": "A new team member joined and you are explaining the steps needed to set up the local development environment.",
+    "aiRole": "Senior Developer",
+    "grammarRuleId": "present_simple",
+    "level": "Beginner"
+  },
+  {
+    "lessonId": 106,
+    "vocabularyId": 307,
+    "title": "Code Review Discussion",
+    "scene": "You are in a code review session and need to explain the changes you are currently making to a component.",
+    "aiRole": "Tech Lead",
+    "grammarRuleId": "present_continuous",
+    "level": "Intermediate"
+  },
+  {
+    "lessonId": 107,
+    "vocabularyId": 308,
+    "title": "Sprint Planning Meeting",
+    "scene": "The team is planning the next sprint and you are explaining what tasks you worked on and what went wrong last sprint.",
+    "aiRole": "Product Manager",
+    "grammarRuleId": "past_simple",
+    "level": "Intermediate"
+  },
+  {
+    "lessonId": 108,
+    "vocabularyId": 309,
+    "title": "System Architecture Proposal",
+    "scene": "You are presenting a new system architecture to the engineering team and explaining how each component works.",
+    "aiRole": "Principal Engineer",
+    "grammarRuleId": "present_simple",
+    "level": "Advanced"
+  },
+  {
+    "lessonId": 109,
+    "vocabularyId": 310,
+    "title": "Client Escalation Call",
+    "scene": "A client is upset about a service outage and you need to explain what is currently happening and what steps are being taken.",
+    "aiRole": "Account Manager",
+    "grammarRuleId": "present_continuous",
+    "level": "Advanced"
   }
 ]

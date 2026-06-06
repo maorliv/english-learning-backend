@@ -18,7 +18,7 @@ router.get('/', authorize(['student', 'admin']), listTeachers);
 router.get('/my-reviews', authorize(['teacher']), getMyReviews);
 router.put(
 	'/:id',
-	authorize(['admin'], {
+	authorize(['admin','teacher'], {
 		allowSelf: true,
 		// Resolve teacherId → userId so allowSelf can compare against x-user-id header
 		getOwnerId: (req) => getTeacherById(req.params.id)?.userId,

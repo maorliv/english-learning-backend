@@ -112,7 +112,9 @@ const getTeacher = withErrorHandling((req, res) => {
 
 /**
  * PUT /api/teachers/:id
- * Updates a teacher's profile fields (experience, price, specialties, availability, feedback).
+ * Updates a teacher's profile fields.
+ * Required: experience, pricePerWeek, specialties, available, feedbackFrequency.
+ * Optional: bio, teachingLevels, availability, onlineOnly.
  * Can be called by admin or by the teacher themselves (allowSelf is set in the route).
  */
 const updateTeacher = withErrorHandling((req, res) => {
@@ -122,7 +124,7 @@ const updateTeacher = withErrorHandling((req, res) => {
     'pricePerWeek',
     'specialties',
     'available',
-    'feedback',
+    'feedbackFrequency',
   ]);
 
   if (!validatedId.isValid) {
@@ -148,7 +150,12 @@ const updateTeacher = withErrorHandling((req, res) => {
     pricePerWeek: req.body.pricePerWeek,
     specialties: req.body.specialties,
     available: req.body.available,
-    feedback: req.body.feedback,
+    feedbackFrequency: req.body.feedbackFrequency,
+    // Optional profile setup fields
+    bio: req.body.bio ?? null,
+    teachingLevels: req.body.teachingLevels ?? [],
+    availability: req.body.availability ?? null,
+    onlineOnly: req.body.onlineOnly ?? null,
   });
 
   if (!updatedTeacher) {

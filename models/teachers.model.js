@@ -33,6 +33,11 @@ function getAllTeachers(filters = {}) {
       specialties: teacher.specialties,
       available: teacher.available,
       experience: teacher.experience,
+      bio: teacher.bio || null,
+      teachingLevels: teacher.teachingLevels || [],
+      availability: teacher.availability || null,
+      onlineOnly: teacher.onlineOnly ?? null,
+      feedbackFrequency: teacher.feedbackFrequency || null,
     }));
 }
 
@@ -57,7 +62,11 @@ function getTeacherById(id) {
     specialties: teacher.specialties,
     available: teacher.available,
     experience: teacher.experience,
-    feedback: teacher.feedback,
+    bio: teacher.bio || null,
+    teachingLevels: teacher.teachingLevels || [],
+    availability: teacher.availability || null,
+    onlineOnly: teacher.onlineOnly ?? null,
+    feedbackFrequency: teacher.feedbackFrequency || null,
   };
 }
 
@@ -76,7 +85,11 @@ function updateTeacherById(id, teacherData) {
   teacher.pricePerWeek = teacherData.pricePerWeek;
   teacher.specialties = teacherData.specialties;
   teacher.available = teacherData.available;
-  teacher.feedback = teacherData.feedback;
+  teacher.feedbackFrequency = teacherData.feedbackFrequency;
+  teacher.bio = teacherData.bio;
+  teacher.teachingLevels = teacherData.teachingLevels;
+  teacher.availability = teacherData.availability;
+  teacher.onlineOnly = teacherData.onlineOnly;
   teacher.updateDate = new Date().toISOString();
 
   return {
@@ -89,12 +102,57 @@ function updateTeacherById(id, teacherData) {
     specialties: teacher.specialties,
     available: teacher.available,
     experience: teacher.experience,
-    feedback: teacher.feedback,
+    bio: teacher.bio || null,
+    teachingLevels: teacher.teachingLevels || [],
+    availability: teacher.availability || null,
+    onlineOnly: teacher.onlineOnly ?? null,
+    feedbackFrequency: teacher.feedbackFrequency || null,
   };
+}
+
+/**
+ * Creates a blank teacher profile record for a newly registered teacher.
+ * All professional fields are null/empty until the teacher completes profile setup.
+ * Called automatically by the registration handler.
+ *
+ * @param {number|string} userId      - The userID from the users table
+ * @param {string}        firstName
+ * @param {string}        lastName
+ * @returns {object} The new teacher profile record
+ */
+function createTeacherProfile(userId, firstName, lastName) {
+  const nextTeacherId =
+    teachers.reduce((maxId, t) => Math.max(maxId, Number(t.teacherId) || 0), 0) + 1;
+
+  const now = new Date().toISOString();
+
+  const newTeacher = {
+    teacherId: nextTeacherId,
+    userID: Number(userId),
+    firstName,
+    lastName,
+    rank: 0,
+    pricePerWeek: null,
+    specialties: [],
+    feedbackFrequency: null,
+    available: false,
+    experience: null,
+    onlineOnly: null,
+    bio: null,
+    teachingLevels: [],
+    availability: null,
+    createdAt: now,
+    updateDate: now,
+  };
+
+  teachers.push(newTeacher);
+
+  return newTeacher;
 }
 
 module.exports = {
   getAllTeachers,
   getTeacherById,
   updateTeacherById,
+  createTeacherProfile,
 };

@@ -14,7 +14,7 @@
     "exerciseId": 301,
     "lessonId": 102,
     "grammarRuleId": "past_simple",
-    "type": "fill_in_the_blanks",
+    "type": "multiple_choice",
     "instruction": "Complete the sentence",
     "content": "Yesterday we ____ the deployment issue.",
     "options": ["fix", "fixed", "fixes", "fixing"],

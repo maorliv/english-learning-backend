@@ -4,7 +4,7 @@
     "firstName": "Dana",
     "lastName": "Levi",
     "email": "dana.levi@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "student",
     "createDate": "2026-05-01T09:00:00.000Z",
     "sex": "female"

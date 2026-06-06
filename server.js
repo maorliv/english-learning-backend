@@ -2,6 +2,7 @@
 // Creates the Express app, registers middleware, mounts all route handlers, and starts the server.
 
 const express = require('express');
+const cors = require('cors');
 
 // Route modules — each file handles one resource (e.g. /api/users, /api/lessons)
 const assessmentRouter = require('./routes/assessment.routes');
@@ -27,6 +28,12 @@ const PORT = 3000;
 
 // Global middleware — runs for every request, in order
 app.use(logger);              // Log each request with method, URL, status, and response time
+app.use(
+	cors({
+		origin: 'http://localhost:5173',
+		credentials: true,
+	})
+);
 app.use(express.json());      // Parse JSON request bodies (populates req.body)
 
 // Route mounting — each router handles all routes under the given path prefix

@@ -34,7 +34,7 @@
     "firstName": "Yael",
     "lastName": "Levi",
     "email": "yael.levi@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "teacher",
     "createDate": "2026-05-04T09:20:00.000Z",
     "sex": "female"
@@ -44,7 +44,7 @@
     "firstName": "Eitan",
     "lastName": "Sharon",
     "email": "eitan.sharon@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "student",
     "createDate": "2026-05-05T08:45:00.000Z",
     "sex": "male"
@@ -54,7 +54,7 @@
     "firstName": "Noa",
     "lastName": "Ben-David",
     "email": "noa.bendavid@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "teacher",
     "createDate": "2026-05-06T11:10:00.000Z",
     "sex": "female"
@@ -64,7 +64,7 @@
     "firstName": "Lior",
     "lastName": "Azran",
     "email": "lior.azran@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "student",
     "createDate": "2026-05-07T10:05:00.000Z",
     "sex": "male"
@@ -74,7 +74,7 @@
     "firstName": "Roni",
     "lastName": "Hadad",
     "email": "roni.hadad@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "student",
     "createDate": "2026-05-08T13:40:00.000Z",
     "sex": "female"

@@ -14,7 +14,7 @@
     "firstName": "Omer",
     "lastName": "Cohen",
     "email": "omer.cohen@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "teacher",
     "createDate": "2026-05-02T10:30:00.000Z",
     "sex": "male"
@@ -24,7 +24,7 @@
     "firstName": "Maya",
     "lastName": "Ben-Ami",
     "email": "maya.benami@example.com",
-    "password": "1234",
+    "password": "1234567",
     "role": "admin",
     "createDate": "2026-05-03T12:15:00.000Z",
     "sex": "female"

@@ -61,7 +61,7 @@ const listTeachers = withErrorHandling((req, res) => {
       throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid available filter', {
         available,
         expected: ['true', 'false'],
-      });
+      }); 
     }
 
     filters.available = available === 'true'; // Convert string 'true'/'false' to boolean

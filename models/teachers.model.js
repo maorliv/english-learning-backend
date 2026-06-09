@@ -41,6 +41,11 @@ function getAllTeachers(filters = {}) {
     }));
 }
 
+/** Finds a teacher profile by the linked userID. Returns null if not found. */
+function getTeacherByUserId(userId) {
+  return teachers.find((item) => String(item.userID) === String(userId)) || null;
+}
+
 /**
  * Finds a teacher by their numeric teacherId and returns their full profile.
  * Returns null if no match is found.
@@ -153,6 +158,7 @@ function createTeacherProfile(userId, firstName, lastName) {
 module.exports = {
   getAllTeachers,
   getTeacherById,
+  getTeacherByUserId,
   updateTeacherById,
   createTeacherProfile,
 };

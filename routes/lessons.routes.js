@@ -24,7 +24,7 @@ const {
 
 const router = express.Router();
 
-router.get('/', authorize(['student', 'admin']), listLessons);
+router.get('/', authorize(['student', 'admin', 'teacher']), listLessons);
 router.post('/', authorize(['admin']), createLessonHandler);
 // /catalog must be registered before /:id to prevent Express matching "catalog" as a lesson ID
 router.get('/catalog', authorize(['student']), getLessonsCatalog);
@@ -38,6 +38,6 @@ router.put('/:id/vocab/:vocabId', authorize(['admin']), updateLessonVocabularyIt
 router.delete('/:id/vocab/:vocabId', authorize(['admin']), deleteLessonVocabularyItem);
 router.put('/:id', authorize(['admin']), updateLesson);
 router.delete('/:id', authorize(['admin']), deleteLesson);
-router.get('/:id', authorize(['student', 'admin']), getLesson);
+router.get('/:id', authorize(['student', 'admin', 'teacher']), getLesson);
 
 module.exports = router;

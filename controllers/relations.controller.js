@@ -2,6 +2,7 @@ const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getUserById } = require('../models/users.model');
+const { getTeacherByUserId } = require('../models/teachers.model');
 const {
   createRelationRequest,
   getAllRelations,
@@ -116,18 +117,29 @@ const requestRelation = withErrorHandling((req, res) => {
  * Enriches each record with the student's first and last name.
  */
 const listPendingRelations = withErrorHandling((req, res) => {
-  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
-  if (!validatedTeacherId.isValid) {
+  if (!validatedUserId.isValid) {
     throw createHttpError(
       400,
       'VALIDATION_ERROR',
-      validatedTeacherId.message,
-      validatedTeacherId.details
+      validatedUserId.message,
+      validatedUserId.details
     );
   }
 
-  const pendingRelations = getPendingRelationsByTeacherId(validatedTeacherId.value).map(
+  const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+  if (!teacherProfile) {
+    throw createHttpError(
+      404,
+      'TEACHER_NOT_FOUND',
+      'Teacher profile not found for this user.',
+      { userId: validatedUserId.value }
+    );
+  }
+
+  const pendingRelations = getPendingRelationsByTeacherId(teacherProfile.teacherId).map(
     (relation) => {
       const student = getUserById(relation.studentId); // Look up the student's name from the users model
 
@@ -150,18 +162,29 @@ const listPendingRelations = withErrorHandling((req, res) => {
  * Enriches each record with the student's name from the users model.
  */
 const listMyStudents = withErrorHandling((req, res) => {
-  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
-  if (!validatedTeacherId.isValid) {
+  if (!validatedUserId.isValid) {
     throw createHttpError(
       400,
       'VALIDATION_ERROR',
-      validatedTeacherId.message,
-      validatedTeacherId.details
+      validatedUserId.message,
+      validatedUserId.details
     );
   }
 
-  const activeStudents = getActiveRelationsByTeacherId(validatedTeacherId.value).map((relation) => {
+  const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+  if (!teacherProfile) {
+    throw createHttpError(
+      404,
+      'TEACHER_NOT_FOUND',
+      'Teacher profile not found for this user.',
+      { userId: validatedUserId.value }
+    );
+  }
+
+  const activeStudents = getActiveRelationsByTeacherId(teacherProfile.teacherId).map((relation) => {
     const student = getUserById(relation.studentId);
 
     return {
@@ -236,16 +259,16 @@ const reviewMyTeacher = withErrorHandling((req, res) => {
  * Only 'active' and 'rejected' are valid status values.
  */
 const updateRelationStatus = withErrorHandling((req, res) => {
-  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['status']);
 
-  if (!validatedTeacherId.isValid) {
+  if (!validatedUserId.isValid) {
     throw createHttpError(
       400,
       'VALIDATION_ERROR',
-      validatedTeacherId.message,
-      validatedTeacherId.details
+      validatedUserId.message,
+      validatedUserId.details
     );
   }
 
@@ -282,6 +305,17 @@ const updateRelationStatus = withErrorHandling((req, res) => {
     );
   }
 
+  const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+  if (!teacherProfile) {
+    throw createHttpError(
+      404,
+      'TEACHER_NOT_FOUND',
+      'Teacher profile not found for this user.',
+      { userId: validatedUserId.value }
+    );
+  }
+
   const relation = getRelationById(validatedRelationId.value);
 
   if (!relation) {
@@ -296,21 +330,21 @@ const updateRelationStatus = withErrorHandling((req, res) => {
   }
 
   // Ensure the teacher is updating their own relation, not someone else's
-  if (String(relation.teacherId) !== String(validatedTeacherId.value)) {
+  if (String(relation.teacherId) !== String(teacherProfile.teacherId)) {
     throw createHttpError(
       403,
       'FORBIDDEN',
       'You do not have permission to update this relation.',
       {
         relationId: validatedRelationId.value,
-        teacherId: validatedTeacherId.value,
+        teacherId: teacherProfile.teacherId,
       }
     );
   }
 
   const updatedRelation = updateRelationStatusById(
     validatedRelationId.value,
-    validatedTeacherId.value,
+    teacherProfile.teacherId,
     normalizedStatus
   );
 

@@ -42,11 +42,11 @@
 		"conversationId": 2,
 		"studentId": 7,
 		"lessonId": 102,
-		"status": "active",
+		"status": "completed",
 		"messages": [
 			{
 				"role": "student",
-				"content": "Yesterday I report my progress in the standup meeting.",
+				"content": "Yesterday I reported my progress in the standup meeting.",
 				"createdAt": "2026-05-09T10:30:00.000Z"
 			},
 			{
@@ -57,14 +57,14 @@
 		],
 		"unusedVocab": [],
 		"usedWords": ["Report"],
-		"aiScore": null,
-		"aiFeedback": null,
+		"aiScore": 70,
+		"aiFeedback": "Good effort. Try using more lesson vocabulary next time.",
 		"teacherScore": null,
 		"teacherComment": null,
 		"isReviewedByTeacher": false,
 		"commentsThread": [],
 		"createdAt": "2026-05-09T10:28:00.000Z",
-		"endedAt": null
+		"endedAt": "2026-05-09T10:35:00.000Z"
 	},
 	{
 		"conversationId": 3,

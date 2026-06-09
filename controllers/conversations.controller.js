@@ -1,6 +1,7 @@
 const { getLessonById } = require('../models/lessons.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const { getActiveStudentIdsByTeacherId } = require('../models/relations.model');
+const { getTeacherByUserId } = require('../models/teachers.model');
 const {
   addConversationReply,
   addTeacherComment,
@@ -82,19 +83,31 @@ const listConversations = withErrorHandling((req, res) => {
   }
 
   if (userRole === 'teacher') {
-    const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+    const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
-    if (!validatedTeacherId.isValid) {
+    if (!validatedUserId.isValid) {
       throw createHttpError(
         400,
         'VALIDATION_ERROR',
-        validatedTeacherId.message,
-        validatedTeacherId.details
+        validatedUserId.message,
+        validatedUserId.details
+      );
+    }
+
+    // Resolve the teacher's teacherId from their userID — these are separate fields
+    const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+    if (!teacherProfile) {
+      throw createHttpError(
+        404,
+        'TEACHER_NOT_FOUND',
+        'Teacher profile not found for this user.',
+        { userId: validatedUserId.value }
       );
     }
 
     // Get the list of student IDs this teacher is actively connected to
-    const activeStudentIds = getActiveStudentIdsByTeacherId(validatedTeacherId.value);
+    const activeStudentIds = getActiveStudentIdsByTeacherId(teacherProfile.teacherId);
 
     // If the teacher is filtering by a specific student, verify that student is theirs
     if (
@@ -106,7 +119,7 @@ const listConversations = withErrorHandling((req, res) => {
         'FORBIDDEN',
         'You do not have permission to view conversations for this student.',
         {
-          teacherId: validatedTeacherId.value,
+          teacherId: teacherProfile.teacherId,
           studentId: filters.studentId,
         }
       );
@@ -138,18 +151,29 @@ const listStudentConversations = withErrorHandling((req, res) => {
   }
 
   if (userRole === 'teacher') {
-    const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+    const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
-    if (!validatedTeacherId.isValid) {
+    if (!validatedUserId.isValid) {
       throw createHttpError(
         400,
         'VALIDATION_ERROR',
-        validatedTeacherId.message,
-        validatedTeacherId.details
+        validatedUserId.message,
+        validatedUserId.details
       );
     }
 
-    const activeStudentIds = getActiveStudentIdsByTeacherId(validatedTeacherId.value);
+    const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+    if (!teacherProfile) {
+      throw createHttpError(
+        404,
+        'TEACHER_NOT_FOUND',
+        'Teacher profile not found for this user.',
+        { userId: validatedUserId.value }
+      );
+    }
+
+    const activeStudentIds = getActiveStudentIdsByTeacherId(teacherProfile.teacherId);
 
     // Teacher may only view conversations for their own students
     if (!activeStudentIds.map(String).includes(String(validatedStudentId.value))) {
@@ -158,7 +182,7 @@ const listStudentConversations = withErrorHandling((req, res) => {
         'FORBIDDEN',
         'You do not have permission to view conversations for this student.',
         {
-          teacherId: validatedTeacherId.value,
+          teacherId: teacherProfile.teacherId,
           studentId: validatedStudentId.value,
         }
       );

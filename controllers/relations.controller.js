@@ -259,6 +259,7 @@ const reviewMyTeacher = withErrorHandling((req, res) => {
  * Only 'active' and 'rejected' are valid status values.
  */
 const updateRelationStatus = withErrorHandling((req, res) => {
+  const userRole = req.header('x-user-role');
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['status']);
@@ -290,7 +291,7 @@ const updateRelationStatus = withErrorHandling((req, res) => {
     );
   }
 
-  const normalizedStatus = String(req.body.status).trim().toLowerCase(); // Normalize before comparison
+  const normalizedStatus = String(req.body.status).trim().toLowerCase();
 
   if (!ALLOWED_RELATION_STATUSES.includes(normalizedStatus)) {
     throw createHttpError(
@@ -305,17 +306,6 @@ const updateRelationStatus = withErrorHandling((req, res) => {
     );
   }
 
-  const teacherProfile = getTeacherByUserId(validatedUserId.value);
-
-  if (!teacherProfile) {
-    throw createHttpError(
-      404,
-      'TEACHER_NOT_FOUND',
-      'Teacher profile not found for this user.',
-      { userId: validatedUserId.value }
-    );
-  }
-
   const relation = getRelationById(validatedRelationId.value);
 
   if (!relation) {
@@ -323,28 +313,41 @@ const updateRelationStatus = withErrorHandling((req, res) => {
       404,
       'RELATION_NOT_FOUND',
       'Relation not found',
-      {
-        relationId: validatedRelationId.value,
-      }
+      { relationId: validatedRelationId.value }
     );
   }
 
-  // Ensure the teacher is updating their own relation, not someone else's
-  if (String(relation.teacherId) !== String(teacherProfile.teacherId)) {
-    throw createHttpError(
-      403,
-      'FORBIDDEN',
-      'You do not have permission to update this relation.',
-      {
-        relationId: validatedRelationId.value,
-        teacherId: teacherProfile.teacherId,
-      }
-    );
+  // For teachers: resolve their profile and verify ownership.
+  // For admins: skip ownership check — they can update any relation.
+  let effectiveTeacherId = relation.teacherId;
+
+  if (userRole === 'teacher') {
+    const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+    if (!teacherProfile) {
+      throw createHttpError(
+        404,
+        'TEACHER_NOT_FOUND',
+        'Teacher profile not found for this user.',
+        { userId: validatedUserId.value }
+      );
+    }
+
+    if (String(relation.teacherId) !== String(teacherProfile.teacherId)) {
+      throw createHttpError(
+        403,
+        'FORBIDDEN',
+        'You do not have permission to update this relation.',
+        { relationId: validatedRelationId.value, teacherId: teacherProfile.teacherId }
+      );
+    }
+
+    effectiveTeacherId = teacherProfile.teacherId;
   }
 
   const updatedRelation = updateRelationStatusById(
     validatedRelationId.value,
-    teacherProfile.teacherId,
+    effectiveTeacherId,
     normalizedStatus
   );
 

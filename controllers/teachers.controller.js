@@ -1,7 +1,7 @@
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
-const { getAllTeachers, getTeacherById, updateTeacherById } = require('../models/teachers.model');
+const { getAllTeachers, getTeacherById, getTeacherByUserId, updateTeacherById } = require('../models/teachers.model');
 const { getReviewedRelationsByTeacherId } = require('../models/relations.model');
 
 /**
@@ -11,19 +11,19 @@ const { getReviewedRelationsByTeacherId } = require('../models/relations.model')
  * Also computes the average rating across all reviews.
  */
 const getMyReviews = withErrorHandling((req, res) => {
-  // x-user-id header identifies the logged-in teacher (set by the client, simulating auth)
-  const validatedTeacherId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
-  if (!validatedTeacherId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedTeacherId.message,
-      validatedTeacherId.details
-    );
+  if (!validatedUserId.isValid) {
+    throw createHttpError(400, 'VALIDATION_ERROR', validatedUserId.message, validatedUserId.details);
   }
 
-  const reviewedRelations = getReviewedRelationsByTeacherId(validatedTeacherId.value);
+  const teacherProfile = getTeacherByUserId(validatedUserId.value);
+
+  if (!teacherProfile) {
+    throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: validatedUserId.value });
+  }
+
+  const reviewedRelations = getReviewedRelationsByTeacherId(teacherProfile.teacherId);
 
   // Extract only the review-relevant fields from each relation record
   const reviews = reviewedRelations.map((relation) => ({
@@ -169,7 +169,29 @@ const updateTeacher = withErrorHandling((req, res) => {
   });
 });
 
+/**
+ * GET /api/teachers/me
+ * Returns the currently logged-in teacher's own profile.
+ * Resolves teacherId from the x-user-id header via getTeacherByUserId.
+ */
+const getMyProfile = withErrorHandling((req, res) => {
+  const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedUserId.isValid) {
+    throw createHttpError(400, 'VALIDATION_ERROR', validatedUserId.message, validatedUserId.details);
+  }
+
+  const teacherRaw = getTeacherByUserId(validatedUserId.value);
+
+  if (!teacherRaw) {
+    throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: validatedUserId.value });
+  }
+
+  return sendSuccess(res, 200, getTeacherById(teacherRaw.teacherId));
+});
+
 module.exports = {
+  getMyProfile,
   getMyReviews,
   listTeachers,
   getTeacher,

@@ -6,6 +6,7 @@ const express = require('express');
 const authorize = require('../middleware/authorize.middleware');
 const { getTeacherById } = require('../models/teachers.model');
 const {
+	getMyProfile,
 	getMyReviews,
 	getTeacher,
 	listTeachers,
@@ -15,6 +16,7 @@ const {
 const router = express.Router();
 
 router.get('/', authorize(['student', 'admin']), listTeachers);
+router.get('/me', authorize(['teacher']), getMyProfile);
 router.get('/my-reviews', authorize(['teacher']), getMyReviews);
 router.put(
 	'/:id',

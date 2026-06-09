@@ -393,6 +393,7 @@ const getConversation = withErrorHandling((req, res) => {
     teacherScore: conversation.teacherScore,
     teacherComment: conversation.teacherComment,
     status: conversation.status,
+    replies: conversation.commentsThread || [],
   });
 });
 

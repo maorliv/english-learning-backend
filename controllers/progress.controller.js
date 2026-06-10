@@ -130,40 +130,6 @@ const getProgressChart = withErrorHandling((req, res) => {
 });
 
 /**
- * GET /api/progress/skills
- * Returns the student's skills radar data (breakdown of performance by skill area).
- */
-const getProgressSkills = withErrorHandling((req, res) => {
-  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
-
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
-  }
-
-  const progress = getProgressByStudentId(validatedStudentId.value);
-
-  if (!progress) {
-    throw createHttpError(
-      404,
-      'PROGRESS_NOT_FOUND',
-      'Progress not found for this student',
-      {
-        studentId: validatedStudentId.value,
-      }
-    );
-  }
-
-  return sendSuccess(res, 200, {
-    skillsRadar: progress.skillsRadar,
-  });
-});
-
-/**
  * GET /api/progress/next-lesson
  * Returns the recommended next lesson for the logged-in student based on their
  * current level and learning preferences. Returns 404 if progress or preferences are missing.
@@ -244,14 +210,12 @@ const getStudentProgress = withErrorHandling((req, res) => {
     completedLessonsCount: progress.completedLessonsCount,
     successedLessonsCount: progress.successedLessonsCount,
     overallAverage: progress.overallAverage,
-    skillsRadar: progress.skillsRadar,
   });
 });
 
 module.exports = {
   getProgressChart,
   getNextLesson,
-  getProgressSkills,
   getProgressStats,
   getStudentProgress,
 };

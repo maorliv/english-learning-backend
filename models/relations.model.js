@@ -77,6 +77,13 @@ function getActiveRelationByStudentId(studentId) {
   );
 }
 
+/** Returns all active relations for a given student (a student may have more than one teacher). */
+function getRelationsByStudentId(studentId) {
+  return relations.filter(
+    (relation) => String(relation.studentId) === String(studentId) && relation.status === 'active'
+  );
+}
+
 /**
  * Creates a new relation request (status: 'pending') between a teacher and student.
  * The new relation's ID is one greater than the current maximum.
@@ -149,6 +156,7 @@ module.exports = {
   getActiveRelationsByTeacherId,
   getActiveStudentIdsByTeacherId,
   getActiveRelationByStudentId,
+  getRelationsByStudentId,
   getPendingRelationsByTeacherId,
   getReviewedRelationsByTeacherId,
   createRelationRequest,

@@ -6,6 +6,7 @@ const authorize = require('../middleware/authorize.middleware');
 const {
 	listRelations,
 	listMyStudents,
+	listMyTeachers,
 	listPendingRelations,
 	requestRelation,
 	reviewMyTeacher,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.get('/', authorize(['admin']), listRelations);
 router.get('/my-students', authorize(['teacher']), listMyStudents);
+router.get('/my-teachers', authorize(['student']), listMyTeachers);
 router.post('/my-teacher/review', authorize(['student']), reviewMyTeacher);
 router.get('/pending', authorize(['teacher']), listPendingRelations);
 router.patch('/:id/status', authorize(['teacher']), updateRelationStatus); // PATCH — partial update (status only)

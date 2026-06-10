@@ -1,0 +1,35 @@
+[
+  {
+    "exerciseId": 300,
+    "lessonId": 101,
+    "grammarRuleId": "present_simple",
+    "type": "multiple_choice",
+    "instruction": "Choose the correct answer",
+    "content": "How often ____ you update the server?",
+    "options": ["do", "does", "is", "are"],
+    "correctAnswer": "do",
+    "difficulty": "INTERMEDIATE"
+  },
+  {
+    "exerciseId": 301,
+    "lessonId": 102,
+    "grammarRuleId": "past_simple",
+    "type": "multiple_choice",
+    "instruction": "Complete the sentence",
+    "content": "Yesterday we ____ the deployment issue.",
+    "options": ["fix", "fixed", "fixes", "fixing"],
+    "correctAnswer": "fixed",
+    "difficulty": "BEGINNER"
+  },
+  {
+    "exerciseId": 302,
+    "lessonId": 103,
+    "grammarRuleId": "present_continuous",
+    "type": "multiple_choice",
+    "instruction": "Choose the best answer",
+    "content": "The engineers ____ the production issue right now.",
+    "options": ["investigate", "investigates", "are investigating", "investigated"],
+    "correctAnswer": "are investigating",
+    "difficulty": "ADVANCED"
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "userId": 1,
+    "budget_max": 100,
+    "learning_goal": "tech english interview grammar",
+    "onboarding_text": "I want help speaking more clearly in technical interviews.",
+    "currentLevel": "Intermediate",
+    "availability": "evenings",
+    "teacherGender": "no_preference",
+    "mainGoal": "interview_prep",
+    "onlineOnly": true
+  }
+]

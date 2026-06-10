@@ -1,0 +1,82 @@
+[
+  {
+    "userID": 1,
+    "firstName": "Dana",
+    "lastName": "Levi",
+    "email": "dana.levi@example.com",
+    "password": "1234567",
+    "role": "student",
+    "createDate": "2026-05-01T09:00:00.000Z",
+    "sex": "female"
+  },
+  {
+    "userID": 2,
+    "firstName": "Omer",
+    "lastName": "Cohen",
+    "email": "omer.cohen@example.com",
+    "password": "1234567",
+    "role": "teacher",
+    "createDate": "2026-05-02T10:30:00.000Z",
+    "sex": "male"
+  },
+  {
+    "userID": 3,
+    "firstName": "Maya",
+    "lastName": "Ben-Ami",
+    "email": "maya.benami@example.com",
+    "password": "1234567",
+    "role": "admin",
+    "createDate": "2026-05-03T12:15:00.000Z",
+    "sex": "female"
+  },
+  {
+    "userID": 4,
+    "firstName": "Yael",
+    "lastName": "Levi",
+    "email": "yael.levi@example.com",
+    "password": "1234567",
+    "role": "teacher",
+    "createDate": "2026-05-04T09:20:00.000Z",
+    "sex": "female"
+  },
+  {
+    "userID": 5,
+    "firstName": "Eitan",
+    "lastName": "Sharon",
+    "email": "eitan.sharon@example.com",
+    "password": "1234567",
+    "role": "student",
+    "createDate": "2026-05-05T08:45:00.000Z",
+    "sex": "male"
+  },
+  {
+    "userID": 6,
+    "firstName": "Noa",
+    "lastName": "Ben-David",
+    "email": "noa.bendavid@example.com",
+    "password": "1234567",
+    "role": "teacher",
+    "createDate": "2026-05-06T11:10:00.000Z",
+    "sex": "female"
+  },
+  {
+    "userID": 7,
+    "firstName": "Lior",
+    "lastName": "Azran",
+    "email": "lior.azran@example.com",
+    "password": "1234567",
+    "role": "student",
+    "createDate": "2026-05-07T10:05:00.000Z",
+    "sex": "male"
+  },
+  {
+    "userID": 8,
+    "firstName": "Roni",
+    "lastName": "Hadad",
+    "email": "roni.hadad@example.com",
+    "password": "1234567",
+    "role": "student",
+    "createDate": "2026-05-08T13:40:00.000Z",
+    "sex": "female"
+  }
+]

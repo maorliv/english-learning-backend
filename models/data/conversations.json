@@ -1,103 +1,558 @@
 [
-	{
-		"conversationId": 1,
-		"studentId": 1,
-		"lessonId": 101,
-		"status": "completed",
-		"messages": [
-			{
-				"role": "student",
-				"content": "Hello, I maintain the servers and deploy updates every Friday.",
-				"createdAt": "2026-05-09T09:00:00.000Z"
-			},
-			{
-				"role": "assistant",
-				"content": "Mock AI reply: I understood your message about lesson 101.",
-				"createdAt": "2026-05-09T09:00:05.000Z"
-			}
-		],
-		"unusedVocab": [],
-		"usedWords": ["Maintain", "Deploy"],
-		"aiScore": 80,
-		"aiFeedback": "Good job using lesson vocabulary in the conversation.",
-		"teacherScore": 88,
-		"teacherComment": "Good fluency and strong use of lesson vocabulary.",
-		"isReviewedByTeacher": true,
-		"commentsThread": [
-			{
-				"role": "teacher",
-				"content": "Nice job. Try to expand your answer with one more example.",
-				"createdAt": "2026-05-09T09:10:00.000Z"
-			},
-			{
-				"role": "student",
-				"content": "Sure, I also maintain deployment scripts for the team.",
-				"createdAt": "2026-05-09T09:12:00.000Z"
-			}
-		],
-		"createdAt": "2026-05-09T08:58:00.000Z",
-		"endedAt": "2026-05-09T09:05:00.000Z"
-	},
-	{
-		"conversationId": 2,
-		"studentId": 7,
-		"lessonId": 102,
-		"status": "completed",
-		"messages": [
-			{
-				"role": "student",
-				"content": "Yesterday I reported my progress in the standup meeting.",
-				"createdAt": "2026-05-09T10:30:00.000Z"
-			},
-			{
-				"role": "assistant",
-				"content": "Mock AI reply: I understood your message about lesson 102.",
-				"createdAt": "2026-05-09T10:30:03.000Z"
-			}
-		],
-		"unusedVocab": [],
-		"usedWords": ["Report"],
-		"aiScore": 70,
-		"aiFeedback": "Good effort. Try using more lesson vocabulary next time.",
-		"teacherScore": null,
-		"teacherComment": null,
-		"isReviewedByTeacher": false,
-		"commentsThread": [],
-		"createdAt": "2026-05-09T10:28:00.000Z",
-		"endedAt": "2026-05-09T10:35:00.000Z"
-	},
-	{
-		"conversationId": 3,
-		"studentId": 8,
-		"lessonId": 103,
-		"status": "completed",
-		"messages": [
-			{
-				"role": "student",
-				"content": "We investigate the production incident immediately.",
-				"createdAt": "2026-05-09T11:15:00.000Z"
-			},
-			{
-				"role": "assistant",
-				"content": "Mock AI reply: I understood your message about lesson 103.",
-				"createdAt": "2026-05-09T11:15:04.000Z"
-			}
-		],
-		"unusedVocab": [],
-		"usedWords": ["Investigate"],
-		"aiScore": 70,
-		"aiFeedback": "Good job using lesson vocabulary in the conversation.",
-		"teacherScore": null,
-		"teacherComment": null,
-		"isReviewedByTeacher": false,
-		"commentsThread": [
-			{
-				"role": "teacher",
-				"content": "Please explain what you are doing next after the investigation.",
-				"createdAt": "2026-05-09T11:20:00.000Z"
-			}
-		],
-		"createdAt": "2026-05-09T11:13:00.000Z",
-		"endedAt": "2026-05-09T11:18:00.000Z"
-	}
+  {
+    "conversationId": 1, "studentId": 1, "lessonId": 101, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Hello, I maintain the servers and deploy updates every Friday.", "createdAt": "2026-05-09T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: I understood your message about lesson 101.", "createdAt": "2026-05-09T09:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Maintain", "Deploy"], "aiScore": 80, "aiFeedback": "Good job using lesson vocabulary in the conversation.",
+    "teacherScore": 88, "teacherComment": "Good fluency and strong use of lesson vocabulary.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [
+      { "role": "teacher", "content": "Nice job. Try to expand your answer with one more example.", "createdAt": "2026-05-09T09:10:00.000Z" },
+      { "role": "student", "content": "Sure, I also maintain deployment scripts for the team.", "createdAt": "2026-05-09T09:12:00.000Z" }
+    ],
+    "createdAt": "2026-05-09T08:58:00.000Z", "endedAt": "2026-05-09T09:05:00.000Z"
+  },
+  {
+    "conversationId": 2, "studentId": 7, "lessonId": 102, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Yesterday I reported my progress in the standup meeting.", "createdAt": "2026-05-09T10:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: I understood your message about lesson 102.", "createdAt": "2026-05-09T10:30:03.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Report"], "aiScore": 70, "aiFeedback": "Good effort. Try using more lesson vocabulary next time.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-09T10:28:00.000Z", "endedAt": "2026-05-09T10:35:00.000Z"
+  },
+  {
+    "conversationId": 3, "studentId": 8, "lessonId": 103, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "We are investigating the production incident right now.", "createdAt": "2026-05-09T11:15:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: I understood your message about lesson 103.", "createdAt": "2026-05-09T11:15:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Investigate"], "aiScore": 70, "aiFeedback": "Good job using lesson vocabulary in the conversation.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false,
+    "commentsThread": [
+      { "role": "teacher", "content": "Please explain what you are doing next after the investigation.", "createdAt": "2026-05-09T11:20:00.000Z" }
+    ],
+    "createdAt": "2026-05-09T11:13:00.000Z", "endedAt": "2026-05-09T11:18:00.000Z"
+  },
+  {
+    "conversationId": 4, "studentId": 5, "lessonId": 107, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Last sprint we estimated the tasks on Monday and prioritized the critical bugs first.", "createdAt": "2026-05-13T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Great use of past simple for sprint planning context.", "createdAt": "2026-05-13T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Estimate", "Prioritize"], "aiScore": 82, "aiFeedback": "Both key vocabulary items used correctly. Well done.",
+    "teacherScore": 85, "teacherComment": "Clear and accurate use of sprint planning vocabulary.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [
+      { "role": "teacher", "content": "Good sentence structure. Next time try to add more detail about what went wrong.", "createdAt": "2026-05-13T11:00:00.000Z" }
+    ],
+    "createdAt": "2026-05-13T09:55:00.000Z", "endedAt": "2026-05-13T10:10:00.000Z"
+  },
+  {
+    "conversationId": 5, "studentId": 1, "lessonId": 105, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "First, you install the dependencies. Then you configure the environment variables in the config file.", "createdAt": "2026-05-11T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Clear step-by-step instructions, well done.", "createdAt": "2026-05-11T09:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Install", "Configure"], "aiScore": 90, "aiFeedback": "Excellent clarity and correct vocabulary usage.",
+    "teacherScore": 92, "teacherComment": "Very natural and accurate explanation. Great work.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-11T08:55:00.000Z", "endedAt": "2026-05-11T09:08:00.000Z"
+  },
+  {
+    "conversationId": 6, "studentId": 10, "lessonId": 115, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "The team has accomplished all the sprint goals this week and we have delivered the new feature to production.", "createdAt": "2026-05-16T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Perfect use of present perfect for completed tasks.", "createdAt": "2026-05-16T09:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Accomplish", "Deliver"], "aiScore": 88, "aiFeedback": "Both vocabulary items used correctly. Present perfect tense accurate.",
+    "teacherScore": 90, "teacherComment": "Excellent work. The present perfect is used naturally here.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [
+      { "role": "teacher", "content": "Perfect. Could you also say what will happen next?", "createdAt": "2026-05-16T10:00:00.000Z" },
+      { "role": "student", "content": "Sure, next sprint we are going to focus on performance improvements.", "createdAt": "2026-05-16T10:05:00.000Z" }
+    ],
+    "createdAt": "2026-05-16T09:25:00.000Z", "endedAt": "2026-05-16T09:40:00.000Z"
+  },
+  {
+    "conversationId": 7, "studentId": 11, "lessonId": 106, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Right now I am refactoring the authentication module. We are also optimizing the slow database queries.", "createdAt": "2026-05-14T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good use of present continuous for current actions.", "createdAt": "2026-05-14T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Refactor", "Optimize"], "aiScore": 85, "aiFeedback": "Present continuous used correctly. Good vocabulary usage.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-14T09:55:00.000Z", "endedAt": "2026-05-14T10:12:00.000Z"
+  },
+  {
+    "conversationId": 8, "studentId": 13, "lessonId": 108, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Our new architecture scales automatically and each component integrates through a shared REST API.", "createdAt": "2026-05-14T11:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent technical English for a system architecture presentation.", "createdAt": "2026-05-14T11:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Scale", "Integrate"], "aiScore": 94, "aiFeedback": "Sophisticated use of architecture vocabulary. Excellent performance.",
+    "teacherScore": 95, "teacherComment": "Very advanced and accurate. You speak like a native engineer.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [
+      { "role": "teacher", "content": "Outstanding. Your English is at a professional native level for technical topics.", "createdAt": "2026-05-15T09:00:00.000Z" }
+    ],
+    "createdAt": "2026-05-14T10:55:00.000Z", "endedAt": "2026-05-14T11:10:00.000Z"
+  },
+  {
+    "conversationId": 9, "studentId": 9, "lessonId": 102, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Yesterday I reported my progress and fixed two bugs during the day.", "createdAt": "2026-05-15T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Well done. Clear and correct past simple usage.", "createdAt": "2026-05-15T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Report"], "aiScore": 85, "aiFeedback": "Clear communication in past simple. Good job.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-15T09:55:00.000Z", "endedAt": "2026-05-15T10:08:00.000Z"
+  },
+  {
+    "conversationId": 10, "studentId": 15, "lessonId": 113, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "We are going to allocate all the tasks to the team by Friday and review the backlog in tomorrow's meeting.", "createdAt": "2026-05-17T10:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Very good use of going to for planned future actions.", "createdAt": "2026-05-17T10:30:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Allocate", "Backlog"], "aiScore": 86, "aiFeedback": "Both vocabulary items used naturally. Future going to is accurate.",
+    "teacherScore": 88, "teacherComment": "Natural and professional. Good sprint planning English.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-17T10:25:00.000Z", "endedAt": "2026-05-17T10:40:00.000Z"
+  },
+  {
+    "conversationId": 11, "studentId": 17, "lessonId": 118, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "If the deployment failed, we would rollback to the previous version immediately.", "createdAt": "2026-05-19T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Correct second conditional usage. Well done.", "createdAt": "2026-05-19T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Rollback", "Failover"], "aiScore": 91, "aiFeedback": "Perfect second conditional. Vocabulary is accurately applied.",
+    "teacherScore": 93, "teacherComment": "Excellent. Very confident use of the second conditional.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [
+      { "role": "teacher", "content": "Can you also make a sentence using the failover vocabulary?", "createdAt": "2026-05-19T11:00:00.000Z" },
+      { "role": "student", "content": "If the primary region went down, the failover system would activate automatically.", "createdAt": "2026-05-19T11:05:00.000Z" }
+    ],
+    "createdAt": "2026-05-19T09:55:00.000Z", "endedAt": "2026-05-19T10:12:00.000Z"
+  },
+  {
+    "conversationId": 12, "studentId": 20, "lessonId": 109, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "We are currently resolving the service outage. The team is monitoring all recovery metrics in real time.", "createdAt": "2026-05-17T10:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Accurate and professional incident communication.", "createdAt": "2026-05-17T10:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Resolve", "Monitor"], "aiScore": 93, "aiFeedback": "Excellent vocabulary use and professional communication style.",
+    "teacherScore": 95, "teacherComment": "This is exactly how a senior engineer communicates during an incident.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-17T10:25:00.000Z", "endedAt": "2026-05-17T10:38:00.000Z"
+  },
+  {
+    "conversationId": 13, "studentId": 21, "lessonId": 119, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "React is more scalable than our old framework. In benchmark tests it is also faster.", "createdAt": "2026-05-21T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good comparatives usage for a framework comparison.", "createdAt": "2026-05-21T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Benchmark", "Scalable"], "aiScore": 82, "aiFeedback": "Comparatives used correctly. Good vocabulary integration.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-21T09:55:00.000Z", "endedAt": "2026-05-21T10:10:00.000Z"
+  },
+  {
+    "conversationId": 14, "studentId": 23, "lessonId": 127, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "The service that handles authentication is deployed as a separate microservice. Components that are decoupled can be updated independently.", "createdAt": "2026-05-20T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent use of relative clauses in a technical context.", "createdAt": "2026-05-20T09:30:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Microservice", "Decouple"], "aiScore": 95, "aiFeedback": "Near-perfect relative clause usage with accurate technical vocabulary.",
+    "teacherScore": 97, "teacherComment": "Truly impressive. You are using defining relative clauses precisely and naturally.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-20T09:25:00.000Z", "endedAt": "2026-05-20T09:40:00.000Z"
+  },
+  {
+    "conversationId": 15, "studentId": 29, "lessonId": 131, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Only by investing in our infrastructure can we demonstrate consistent performance to the board.", "createdAt": "2026-05-29T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent formal inversion. Very impressive.", "createdAt": "2026-05-29T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Demonstrate", "Justify"], "aiScore": 95, "aiFeedback": "Perfect formal inversion with strong technical vocabulary.",
+    "teacherScore": 96, "teacherComment": "Outstanding board-level English. The inversion is flawless.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-29T09:55:00.000Z", "endedAt": "2026-05-29T10:12:00.000Z"
+  },
+  {
+    "conversationId": 16, "studentId": 12, "lessonId": 104, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I submitted the weekly status report to my manager yesterday and completed all assigned tasks.", "createdAt": "2026-05-14T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good past simple usage in a formal email context.", "createdAt": "2026-05-14T09:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Submit", "Complete"], "aiScore": 78, "aiFeedback": "Both vocabulary items used correctly. Sentence structure is clear.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-14T08:55:00.000Z", "endedAt": "2026-05-14T09:08:00.000Z"
+  },
+  {
+    "conversationId": 17, "studentId": 32, "lessonId": 116, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "This API used to work fine, but it has now been deprecated. We migrated to the new endpoint last quarter.", "createdAt": "2026-05-28T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent use of used to for legacy system explanations.", "createdAt": "2026-05-28T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Migrate", "Deprecate"], "aiScore": 88, "aiFeedback": "Used to is handled very naturally. Vocabulary is accurate.",
+    "teacherScore": 90, "teacherComment": "Very professional. This is exactly how you would explain a legacy migration.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-28T09:55:00.000Z", "endedAt": "2026-05-28T10:10:00.000Z"
+  },
+  {
+    "conversationId": 18, "studentId": 36, "lessonId": 130, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "After the meeting, the manager said that the deadline had been moved. She explained that the team had already finished testing.", "createdAt": "2026-06-01T10:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good reported speech with correct backshifting.", "createdAt": "2026-06-01T10:30:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Summarise", "Relay"], "aiScore": 87, "aiFeedback": "Reported speech backshifting is accurate. Well done.",
+    "teacherScore": 89, "teacherComment": "Natural and grammatically correct. Your meeting summaries will sound very professional.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-06-01T10:25:00.000Z", "endedAt": "2026-06-01T10:40:00.000Z"
+  },
+  {
+    "conversationId": 19, "studentId": 41, "lessonId": 128, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "By the time we responded to the alert, the issue had already been detected. We had contained the breach before any data was stolen.", "createdAt": "2026-06-01T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent past perfect usage in a security context.", "createdAt": "2026-06-01T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Detect", "Contain"], "aiScore": 93, "aiFeedback": "Near-perfect past perfect usage. Technical vocabulary is highly accurate.",
+    "teacherScore": 95, "teacherComment": "This reads like a real post-mortem report. Excellent work.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-06-01T09:55:00.000Z", "endedAt": "2026-06-01T10:12:00.000Z"
+  },
+  {
+    "conversationId": 20, "studentId": 18, "lessonId": 120, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Each endpoint is documented in the Swagger file. User data is exposed through a secure REST API.", "createdAt": "2026-05-21T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Correct use of passive voice for API documentation.", "createdAt": "2026-05-21T09:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Document", "Expose"], "aiScore": 84, "aiFeedback": "Passive voice is used accurately. Vocabulary correctly applied.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-21T09:25:00.000Z", "endedAt": "2026-05-21T09:40:00.000Z"
+  },
+  {
+    "conversationId": 21, "studentId": 27, "lessonId": 122, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I want to propose a new caching strategy. Implementing it correctly requires careful planning.", "createdAt": "2026-05-29T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good gerund usage in a technical proposal context.", "createdAt": "2026-05-29T09:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Propose", "Implement"], "aiScore": 83, "aiFeedback": "Gerund after proposing used correctly. Vocabulary accurate.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-29T08:55:00.000Z", "endedAt": "2026-05-29T09:10:00.000Z"
+  },
+  {
+    "conversationId": 22, "studentId": 38, "lessonId": 128, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "By the time we responded to the incident, it had already impacted thousands of users. We had detected the issue but the breach had not been fully contained.", "createdAt": "2026-06-03T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Very strong past perfect usage in a post-mortem context.", "createdAt": "2026-06-03T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Detect", "Contain"], "aiScore": 89, "aiFeedback": "Excellent past perfect and passive combined. Very professional.",
+    "teacherScore": 91, "teacherComment": "This is post-mortem level English. Well done.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-06-03T09:55:00.000Z", "endedAt": "2026-06-03T10:15:00.000Z"
+  },
+  {
+    "conversationId": 23, "studentId": 45, "lessonId": 137, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "It is essential that every developer comply with GDPR regulations. The manager requested that the code be audited before deployment.", "createdAt": "2026-06-08T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Flawless subjunctive mood in a compliance context.", "createdAt": "2026-06-08T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Comply", "Audit"], "aiScore": 96, "aiFeedback": "Subjunctive used correctly in both cases. Highly impressive.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-08T09:55:00.000Z", "endedAt": "2026-06-08T10:12:00.000Z"
+  },
+  {
+    "conversationId": 24, "studentId": 47, "lessonId": 117, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Every PR should be reviewed by at least two developers. You ought to lint the code before committing.", "createdAt": "2026-06-03T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good use of modal verbs for recommendations.", "createdAt": "2026-06-03T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Review", "Lint"], "aiScore": 80, "aiFeedback": "Modal verbs used accurately for advice. Vocabulary correct.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-03T09:55:00.000Z", "endedAt": "2026-06-03T10:08:00.000Z"
+  },
+  {
+    "conversationId": 25, "studentId": 49, "lessonId": 136, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "By end of Q3, we will have released all three features. The team will have completed the roadmap milestones by then.", "createdAt": "2026-06-05T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent use of future perfect for roadmap planning.", "createdAt": "2026-06-05T09:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Release", "Roadmap"], "aiScore": 91, "aiFeedback": "Future perfect used correctly for milestone planning. Very professional.",
+    "teacherScore": 92, "teacherComment": "Board-ready language. This is exactly how you present a roadmap.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-06-05T08:55:00.000Z", "endedAt": "2026-06-05T09:12:00.000Z"
+  },
+  {
+    "conversationId": 26, "studentId": 54, "lessonId": 123, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "The monitoring system was sending alerts while the outage was spreading. We were diagnosing the issue when more users started reporting errors.", "createdAt": "2026-06-08T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Very accurate past continuous usage in an incident context.", "createdAt": "2026-06-08T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Alert", "Diagnose"], "aiScore": 86, "aiFeedback": "Past continuous correctly used to describe parallel past actions.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-08T09:55:00.000Z", "endedAt": "2026-06-08T10:10:00.000Z"
+  },
+  {
+    "conversationId": 27, "studentId": 26, "lessonId": 120, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "The API is fully documented. Each endpoint is exposed to external consumers through a secure gateway.", "createdAt": "2026-05-24T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good passive voice usage for API documentation.", "createdAt": "2026-05-24T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Document", "Expose"], "aiScore": 83, "aiFeedback": "Passive voice is correctly used throughout. Vocabulary is accurate.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-24T09:55:00.000Z", "endedAt": "2026-05-24T10:10:00.000Z"
+  },
+  {
+    "conversationId": 28, "studentId": 30, "lessonId": 107, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Last week we estimated all tasks. We prioritized the critical bugs over new features.", "createdAt": "2026-05-26T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Clear past simple for sprint retrospective context.", "createdAt": "2026-05-26T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Estimate", "Prioritize"], "aiScore": 77, "aiFeedback": "Good past simple use. Try to add more detail in your answers.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-26T09:55:00.000Z", "endedAt": "2026-05-26T10:08:00.000Z"
+  },
+  {
+    "conversationId": 29, "studentId": 34, "lessonId": 112, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I wrote an update in the project tracker. We hit the milestone ahead of schedule.", "createdAt": "2026-05-30T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good article usage in a status update context.", "createdAt": "2026-05-30T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Update", "Milestone"], "aiScore": 76, "aiFeedback": "Articles used correctly. Vocabulary is accurate.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-30T09:55:00.000Z", "endedAt": "2026-05-30T10:08:00.000Z"
+  },
+  {
+    "conversationId": 30, "studentId": 43, "lessonId": 130, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "In the meeting, the PM said that the new feature had been approved. She also explained that the timeline had been moved forward by two weeks.", "createdAt": "2026-06-07T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good reported speech with correct backshifting.", "createdAt": "2026-06-07T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Summarise", "Relay"], "aiScore": 81, "aiFeedback": "Reported speech is mostly correct. Good vocabulary integration.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-07T09:55:00.000Z", "endedAt": "2026-06-07T10:10:00.000Z"
+  },
+  {
+    "conversationId": 31, "studentId": 16, "lessonId": 102, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Yesterday I report my work in the standup.", "createdAt": "2026-05-17T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: I noticed a small tense error — use 'reported' for past.", "createdAt": "2026-05-17T09:00:04.000Z" }
+    ],
+    "unusedVocab": ["Report"], "usedWords": [], "aiScore": 55, "aiFeedback": "Tense error detected. Remember to use past simple for completed actions.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false,
+    "commentsThread": [
+      { "role": "teacher", "content": "The key word here is 'reported' not 'report'. Please revise this lesson.", "createdAt": "2026-05-17T10:00:00.000Z" }
+    ],
+    "createdAt": "2026-05-17T08:55:00.000Z", "endedAt": "2026-05-17T09:08:00.000Z"
+  },
+  {
+    "conversationId": 32, "studentId": 39, "lessonId": 119, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Vue is more scalable and the benchmark scores are better than the old solution.", "createdAt": "2026-06-01T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good comparatives. Vocabulary used correctly.", "createdAt": "2026-06-01T09:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Benchmark", "Scalable"], "aiScore": 82, "aiFeedback": "Comparatives used correctly. Good vocabulary integration.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-01T09:25:00.000Z", "endedAt": "2026-06-01T09:40:00.000Z"
+  },
+  {
+    "conversationId": 33, "studentId": 22, "lessonId": 110, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I was doing handover when the system started to escalate.", "createdAt": "2026-05-22T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good attempt. Note: 'the alert was escalating' is more natural.", "createdAt": "2026-05-22T09:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Handover", "Escalate"], "aiScore": 68, "aiFeedback": "Vocabulary used but phrasing needs improvement. Try again for better score.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-22T08:55:00.000Z", "endedAt": "2026-05-22T09:08:00.000Z"
+  },
+  {
+    "conversationId": 34, "studentId": 24, "lessonId": 117, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Code should be reviewed before merging. We ought to lint and run all tests before creating a PR.", "createdAt": "2026-05-26T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good modal verbs for code quality recommendations.", "createdAt": "2026-05-26T09:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Review", "Lint"], "aiScore": 85, "aiFeedback": "Modal verbs used correctly for recommendations.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-26T09:25:00.000Z", "endedAt": "2026-05-26T09:40:00.000Z"
+  },
+  {
+    "conversationId": 35, "studentId": 48, "lessonId": 134, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "All customer records will be transferred to the new schema. Old data will be archived after the cutover.", "createdAt": "2026-06-09T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent passive future for a migration plan.", "createdAt": "2026-06-09T09:30:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Transfer", "Archive"], "aiScore": 88, "aiFeedback": "Passive future used correctly. Professional migration language.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-09T09:25:00.000Z", "endedAt": "2026-06-09T09:40:00.000Z"
+  },
+  {
+    "conversationId": 36, "studentId": 13, "lessonId": 132, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "It was the misconfigured load balancer that caused the outage. What we found was a race condition in the auth flow.", "createdAt": "2026-05-22T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Perfect use of cleft sentences for root cause analysis.", "createdAt": "2026-05-22T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Analyse", "Trace"], "aiScore": 96, "aiFeedback": "Cleft sentences used perfectly. This is advanced technical English.",
+    "teacherScore": 98, "teacherComment": "One of the best responses I have seen. This is boardroom-level English.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-22T09:55:00.000Z", "endedAt": "2026-05-22T10:12:00.000Z"
+  },
+  {
+    "conversationId": 37, "studentId": 51, "lessonId": 115, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "We have accomplished all the sprint goals. The team has delivered three features to production this week.", "createdAt": "2026-06-05T09:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good present perfect for reviewing completed tasks.", "createdAt": "2026-06-05T09:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Accomplish", "Deliver"], "aiScore": 82, "aiFeedback": "Present perfect used correctly. Vocabulary integrated naturally.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-05T09:25:00.000Z", "endedAt": "2026-06-05T09:40:00.000Z"
+  },
+  {
+    "conversationId": 38, "studentId": 53, "lessonId": 123, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "When the pipeline broke, we were checking the logs. Alerts were firing while we were diagnosing the issue.", "createdAt": "2026-06-09T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good past continuous for parallel past actions.", "createdAt": "2026-06-09T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Alert", "Diagnose"], "aiScore": 84, "aiFeedback": "Past continuous handles overlapping actions well. Well done.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-09T09:55:00.000Z", "endedAt": "2026-06-09T10:10:00.000Z"
+  },
+  {
+    "conversationId": 39, "studentId": 25, "lessonId": 104, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I submitted the task update to my manager. She completed the review in the afternoon.", "createdAt": "2026-05-25T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good past simple usage for formal email context.", "createdAt": "2026-05-25T10:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Submit", "Complete"], "aiScore": 76, "aiFeedback": "Past simple used correctly. Try longer, more detailed sentences.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-25T09:55:00.000Z", "endedAt": "2026-05-25T10:08:00.000Z"
+  },
+  {
+    "conversationId": 40, "studentId": 52, "lessonId": 106, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I am currently refactoring the payment module. The team is also optimizing the query performance.", "createdAt": "2026-06-03T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good present continuous for current work descriptions.", "createdAt": "2026-06-03T09:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Refactor", "Optimize"], "aiScore": 79, "aiFeedback": "Present continuous used correctly. Grammar is accurate.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-03T08:55:00.000Z", "endedAt": "2026-06-03T09:10:00.000Z"
+  },
+  {
+    "conversationId": 41, "studentId": 42, "lessonId": 116, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "The old code used to run on PHP. We migrated it last year and now the endpoint is deprecated.", "createdAt": "2026-05-30T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good use of used to for legacy system context.", "createdAt": "2026-05-30T09:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Migrate", "Deprecate"], "aiScore": 83, "aiFeedback": "Used to applied naturally. Migration vocabulary is correct.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-30T08:55:00.000Z", "endedAt": "2026-05-30T09:10:00.000Z"
+  },
+  {
+    "conversationId": 42, "studentId": 44, "lessonId": 101, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I maintain the CI pipeline every week. We deploy new versions on Thursdays.", "createdAt": "2026-05-30T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Clear and correct present simple usage.", "createdAt": "2026-05-30T09:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Maintain", "Deploy"], "aiScore": 74, "aiFeedback": "Good attempt. Vocabulary used correctly. Expand on your answer.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-30T08:55:00.000Z", "endedAt": "2026-05-30T09:08:00.000Z"
+  },
+  {
+    "conversationId": 43, "studentId": 20, "lessonId": 131, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Rarely do we receive such detailed feedback from clients. Not only did we fix the bug, but we also improved the response time.", "createdAt": "2026-05-24T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Excellent formal inversion structures. Very advanced.", "createdAt": "2026-05-24T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Demonstrate", "Justify"], "aiScore": 95, "aiFeedback": "Multiple inversion structures used correctly. Very impressive.",
+    "teacherScore": 96, "teacherComment": "This is exactly the level of English needed for executive communications.",
+    "isReviewedByTeacher": true,
+    "commentsThread": [],
+    "createdAt": "2026-05-24T09:55:00.000Z", "endedAt": "2026-05-24T10:12:00.000Z"
+  },
+  {
+    "conversationId": 44, "studentId": 33, "lessonId": 111, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Hello, I can work on backend tasks. I could also help with code reviews.", "createdAt": "2026-05-28T08:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good introduction using modal verbs for ability.", "createdAt": "2026-05-28T08:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Collaborate", "Contribute"], "aiScore": 73, "aiFeedback": "Good use of can and could. Try to also mention collaboration.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-28T07:55:00.000Z", "endedAt": "2026-05-28T08:08:00.000Z"
+  },
+  {
+    "conversationId": 45, "studentId": 35, "lessonId": 102, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "Yesterday I report that I finish the bug fix task.", "createdAt": "2026-05-29T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Tense issues detected. Use reported and finished in past simple.", "createdAt": "2026-05-29T09:00:04.000Z" }
+    ],
+    "unusedVocab": ["Report"], "usedWords": [], "aiScore": 52, "aiFeedback": "Multiple tense errors. Practice past simple with more examples.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false,
+    "commentsThread": [
+      { "role": "teacher", "content": "Please revise past simple irregular verbs and try again.", "createdAt": "2026-05-29T10:00:00.000Z" }
+    ],
+    "createdAt": "2026-05-29T08:55:00.000Z", "endedAt": "2026-05-29T09:08:00.000Z"
+  },
+  {
+    "conversationId": 46, "studentId": 49, "lessonId": 142, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "The new infrastructure will reduce latency significantly. We would also need to increase capacity if the user base doubled.", "createdAt": "2026-06-09T10:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good use of will and would for projections.", "createdAt": "2026-06-09T10:00:05.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Forecast", "Capacity"], "aiScore": 88, "aiFeedback": "Modal will and would correctly used for business projections.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-09T09:55:00.000Z", "endedAt": "2026-06-09T10:10:00.000Z"
+  },
+  {
+    "conversationId": 47, "studentId": 50, "lessonId": 101, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I maintain the application logs. We deploy updates every two weeks.", "createdAt": "2026-06-04T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good present simple usage. Clear and correct.", "createdAt": "2026-06-04T09:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Maintain", "Deploy"], "aiScore": 72, "aiFeedback": "Correct and clear. Try to add more detail.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-04T08:55:00.000Z", "endedAt": "2026-06-04T09:08:00.000Z"
+  },
+  {
+    "conversationId": 48, "studentId": 46, "lessonId": 111, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "I can help with frontend work. I could also collaborate on testing tasks.", "createdAt": "2026-06-07T08:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good introduction with modal verbs for ability.", "createdAt": "2026-06-07T08:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Collaborate", "Contribute"], "aiScore": 70, "aiFeedback": "Can and could used correctly. Work on more detailed sentences.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-07T08:25:00.000Z", "endedAt": "2026-06-07T08:40:00.000Z"
+  },
+  {
+    "conversationId": 49, "studentId": 37, "lessonId": 105, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "First install the node modules. Then configure the database connection in the env file.", "createdAt": "2026-05-28T09:00:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Clear setup instructions. Vocabulary used correctly.", "createdAt": "2026-05-28T09:00:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Install", "Configure"], "aiScore": 75, "aiFeedback": "Instructions are clear and vocabulary is correct. Good work.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-05-28T08:55:00.000Z", "endedAt": "2026-05-28T09:08:00.000Z"
+  },
+  {
+    "conversationId": 50, "studentId": 40, "lessonId": 144, "status": "completed",
+    "messages": [
+      { "role": "student", "content": "We have several developers available this sprint but not much bandwidth for new features.", "createdAt": "2026-06-04T08:30:00.000Z" },
+      { "role": "assistant", "content": "Mock AI reply: Good use of quantifiers in a resource discussion.", "createdAt": "2026-06-04T08:30:04.000Z" }
+    ],
+    "unusedVocab": [], "usedWords": ["Headcount", "Bandwidth"], "aiScore": 78, "aiFeedback": "Quantifiers used correctly. Vocabulary accurately applied.",
+    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "createdAt": "2026-06-04T08:25:00.000Z", "endedAt": "2026-06-04T08:40:00.000Z"
+  }
 ]

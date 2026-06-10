@@ -1,0 +1,38 @@
+[
+	{
+		"relationId": 1,
+		"teacherId": 2,
+		"studentId": 5,
+		"status": "pending",
+		"createdAt": "2026-05-09T10:00:00.000Z",
+		"rating": null,
+		"student_feedback": null
+	},
+	{
+		"relationId": 2,
+		"teacherId": 2,
+		"studentId": 7,
+		"status": "active",
+		"createdAt": "2026-05-08T14:30:00.000Z",
+		"rating": 4,
+		"student_feedback": "Very clear explanations and useful weekly feedback."
+	},
+	{
+		"relationId": 3,
+		"teacherId": 3,
+		"studentId": 8,
+		"status": "active",
+		"createdAt": "2026-05-07T09:15:00.000Z",
+		"rating": null,
+		"student_feedback": null
+	},
+	{
+		"relationId": 4,
+		"teacherId": 2,
+		"studentId": 1,
+		"status": "active",
+		"createdAt": "2026-05-06T11:00:00.000Z",
+		"rating": null,
+		"student_feedback": null
+	}
+]

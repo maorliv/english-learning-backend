@@ -1,0 +1,50 @@
+[
+  {
+    "userId": 1,
+    "displayName": "Dana Levi",
+    "email": "dana.levi@example.com",
+    "theme": "light"
+  },
+  {
+    "userId": 2,
+    "displayName": "Omer Cohen",
+    "email": "omer.cohen@example.com",
+    "theme": "dark"
+  },
+  {
+    "userId": 3,
+    "displayName": "Maya Ben-Ami",
+    "email": "maya.benami@example.com",
+    "theme": "light"
+  },
+  {
+    "userId": 4,
+    "displayName": "Yael Levi",
+    "email": "yael.levi@example.com",
+    "theme": "light"
+  },
+  {
+    "userId": 5,
+    "displayName": "Eitan Sharon",
+    "email": "eitan.sharon@example.com",
+    "theme": "dark"
+  },
+  {
+    "userId": 6,
+    "displayName": "Noa Ben-David",
+    "email": "noa.bendavid@example.com",
+    "theme": "light"
+  },
+  {
+    "userId": 7,
+    "displayName": "Lior Azran",
+    "email": "lior.azran@example.com",
+    "theme": "dark"
+  },
+  {
+    "userId": 8,
+    "displayName": "Roni Hadad",
+    "email": "roni.hadad@example.com",
+    "theme": "light"
+  }
+]

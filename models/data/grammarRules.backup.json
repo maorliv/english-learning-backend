@@ -1,0 +1,74 @@
+[
+  {
+    "id": "present_simple",
+    "category": "Tenses",
+    "usage": "To talk about regular actions, facts, and general truths.",
+    "forms": {
+      "general_formula": "Subject + Verb",
+      "positive": "Subject + base verb (add -s/-es for he/she/it)",
+      "negative": "Subject + do/does not + base verb",
+      "question": "Do/Does + Subject + base verb?"
+    },
+    "keywords": ["always", "usually", "every day", "regularly"],
+    "spellingRules": "Verbs ending in -o, -sh, -ch add -es.",
+    "examples": [
+      {
+        "text": "The server runs on Linux.",
+        "type": "positive"
+      },
+      {
+        "text": "Does the system require a reboot?",
+        "type": "question"
+      }
+    ],
+    "exerciseID": 300
+  },
+  {
+    "id": "past_simple",
+    "category": "Tenses",
+    "usage": "To talk about completed actions in the past.",
+    "forms": {
+      "general_formula": "Subject + Verb in past form",
+      "positive": "Subject + past verb",
+      "negative": "Subject + did not + base verb",
+      "question": "Did + Subject + base verb?"
+    },
+    "keywords": ["yesterday", "last week", "ago"],
+    "spellingRules": "Regular verbs usually add -ed, but some verbs are irregular.",
+    "examples": [
+      {
+        "text": "The team fixed the bug yesterday.",
+        "type": "positive"
+      },
+      {
+        "text": "Did the deployment fail last night?",
+        "type": "question"
+      }
+    ],
+    "exerciseID": 301
+  },
+  {
+    "id": "present_continuous",
+    "category": "Tenses",
+    "usage": "To describe actions happening now or around the current time.",
+    "forms": {
+      "general_formula": "Subject + am/is/are + verb-ing",
+      "positive": "Subject + am/is/are + verb-ing",
+      "negative": "Subject + am/is/are not + verb-ing",
+      "question": "Am/Is/Are + Subject + verb-ing?"
+    },
+    "keywords": ["now", "currently", "at the moment"],
+    "spellingRules": "Some verbs drop the final e before adding -ing.",
+    "examples": [
+      {
+        "text": "The engineers are monitoring the production incident now.",
+        "type": "positive"
+      },
+      {
+        "text": "Is the system recovering at the moment?",
+        "type": "question"
+      }
+    ],
+    "exerciseID": 302
+  }
+]

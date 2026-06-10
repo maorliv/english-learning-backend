@@ -12,14 +12,8 @@
     "keywords": ["always", "usually", "every day", "regularly"],
     "spellingRules": "Verbs ending in -o, -sh, -ch add -es.",
     "examples": [
-      {
-        "text": "The server runs on Linux.",
-        "type": "positive"
-      },
-      {
-        "text": "Does the system require a reboot?",
-        "type": "question"
-      }
+      { "text": "The server runs on Linux.", "type": "positive" },
+      { "text": "Does the system require a reboot?", "type": "question" }
     ],
     "exerciseID": 300
   },
@@ -36,14 +30,8 @@
     "keywords": ["yesterday", "last week", "ago"],
     "spellingRules": "Regular verbs usually add -ed, but some verbs are irregular.",
     "examples": [
-      {
-        "text": "The team fixed the bug yesterday.",
-        "type": "positive"
-      },
-      {
-        "text": "Did the deployment fail last night?",
-        "type": "question"
-      }
+      { "text": "The team fixed the bug yesterday.", "type": "positive" },
+      { "text": "Did the deployment fail last night?", "type": "question" }
     ],
     "exerciseID": 301
   },
@@ -60,15 +48,855 @@
     "keywords": ["now", "currently", "at the moment"],
     "spellingRules": "Some verbs drop the final e before adding -ing.",
     "examples": [
-      {
-        "text": "The engineers are monitoring the production incident now.",
-        "type": "positive"
-      },
-      {
-        "text": "Is the system recovering at the moment?",
-        "type": "question"
-      }
+      { "text": "The engineers are monitoring the production incident now.", "type": "positive" },
+      { "text": "Is the system recovering at the moment?", "type": "question" }
     ],
     "exerciseID": 302
+  },
+  {
+    "id": "past_continuous",
+    "category": "Tenses",
+    "usage": "To describe actions that were in progress at a specific time in the past.",
+    "forms": {
+      "general_formula": "Subject + was/were + verb-ing",
+      "positive": "Subject + was/were + verb-ing",
+      "negative": "Subject + was/were not + verb-ing",
+      "question": "Was/Were + Subject + verb-ing?"
+    },
+    "keywords": ["while", "when", "at that time", "all morning"],
+    "spellingRules": "Same -ing spelling rules as present continuous.",
+    "examples": [
+      { "text": "The on-call engineer was investigating the alert when the outage started.", "type": "positive" },
+      { "text": "Were the servers crashing while you were running the migration?", "type": "question" }
+    ],
+    "exerciseID": 303
+  },
+  {
+    "id": "future_simple_will",
+    "category": "Tenses",
+    "usage": "To make predictions, promises, offers, or decisions made at the moment of speaking.",
+    "forms": {
+      "general_formula": "Subject + will + base verb",
+      "positive": "Subject + will + base verb",
+      "negative": "Subject + will not (won't) + base verb",
+      "question": "Will + Subject + base verb?"
+    },
+    "keywords": ["tomorrow", "soon", "I think", "probably", "I promise"],
+    "spellingRules": "Will does not change form for any subject.",
+    "examples": [
+      { "text": "We will deploy the fix to production at midnight.", "type": "positive" },
+      { "text": "Will the build pipeline finish before the meeting?", "type": "question" }
+    ],
+    "exerciseID": 304
+  },
+  {
+    "id": "future_going_to",
+    "category": "Tenses",
+    "usage": "To talk about intentions and plans already decided, or predictions based on evidence.",
+    "forms": {
+      "general_formula": "Subject + am/is/are + going to + base verb",
+      "positive": "Subject + am/is/are going to + base verb",
+      "negative": "Subject + am/is/are not going to + base verb",
+      "question": "Am/Is/Are + Subject + going to + base verb?"
+    },
+    "keywords": ["planning to", "intend to", "look!", "clearly"],
+    "spellingRules": "No spelling changes; 'going to' is a fixed phrase.",
+    "examples": [
+      { "text": "The team is going to refactor the payment module next sprint.", "type": "positive" },
+      { "text": "Are you going to attend the planning meeting tomorrow?", "type": "question" }
+    ],
+    "exerciseID": 305
+  },
+  {
+    "id": "present_perfect",
+    "category": "Tenses",
+    "usage": "To talk about past actions with a present result, or experiences up to now.",
+    "forms": {
+      "general_formula": "Subject + have/has + past participle",
+      "positive": "Subject + have/has + past participle",
+      "negative": "Subject + have/has not + past participle",
+      "question": "Have/Has + Subject + past participle?"
+    },
+    "keywords": ["already", "yet", "just", "recently", "ever", "never"],
+    "spellingRules": "Use the past participle form; irregular verbs must be memorised.",
+    "examples": [
+      { "text": "The team has already merged the pull request.", "type": "positive" },
+      { "text": "Have you ever handled a critical production incident?", "type": "question" }
+    ],
+    "exerciseID": 306
+  },
+  {
+    "id": "present_perfect_continuous",
+    "category": "Tenses",
+    "usage": "To describe ongoing actions that started in the past and continue to the present.",
+    "forms": {
+      "general_formula": "Subject + have/has + been + verb-ing",
+      "positive": "Subject + have/has been + verb-ing",
+      "negative": "Subject + have/has not been + verb-ing",
+      "question": "Have/Has + Subject + been + verb-ing?"
+    },
+    "keywords": ["for", "since", "how long", "all day"],
+    "spellingRules": "The main verb takes the -ing form.",
+    "examples": [
+      { "text": "We have been refactoring the authentication module for two weeks.", "type": "positive" },
+      { "text": "Has the CI pipeline been failing since the last merge?", "type": "question" }
+    ],
+    "exerciseID": 307
+  },
+  {
+    "id": "past_perfect",
+    "category": "Tenses",
+    "usage": "To describe an action completed before another past action.",
+    "forms": {
+      "general_formula": "Subject + had + past participle",
+      "positive": "Subject + had + past participle",
+      "negative": "Subject + had not + past participle",
+      "question": "Had + Subject + past participle?"
+    },
+    "keywords": ["before", "by the time", "already", "after"],
+    "spellingRules": "Use the past participle; 'had' is the same for all subjects.",
+    "examples": [
+      { "text": "By the time we responded, the system had already lost ten thousand requests.", "type": "positive" },
+      { "text": "Had the team finished testing before the release?", "type": "question" }
+    ],
+    "exerciseID": 308
+  },
+  {
+    "id": "past_perfect_continuous",
+    "category": "Tenses",
+    "usage": "To describe an ongoing past action that happened before another past event.",
+    "forms": {
+      "general_formula": "Subject + had been + verb-ing",
+      "positive": "Subject + had been + verb-ing",
+      "negative": "Subject + had not been + verb-ing",
+      "question": "Had + Subject + been + verb-ing?"
+    },
+    "keywords": ["for", "since", "before", "how long"],
+    "spellingRules": "The main verb takes the -ing form.",
+    "examples": [
+      { "text": "The attacker had been exploiting the vulnerability for weeks before we detected it.", "type": "positive" },
+      { "text": "Had the engineers been monitoring the logs before the breach occurred?", "type": "question" }
+    ],
+    "exerciseID": 309
+  },
+  {
+    "id": "future_perfect",
+    "category": "Tenses",
+    "usage": "To describe an action that will be completed before a specific future time.",
+    "forms": {
+      "general_formula": "Subject + will have + past participle",
+      "positive": "Subject + will have + past participle",
+      "negative": "Subject + will not have + past participle",
+      "question": "Will + Subject + have + past participle?"
+    },
+    "keywords": ["by", "by then", "by the time", "before"],
+    "spellingRules": "Use the past participle form.",
+    "examples": [
+      { "text": "By end of Q3, we will have shipped all three milestones.", "type": "positive" },
+      { "text": "Will the team have completed the migration before the deadline?", "type": "question" }
+    ],
+    "exerciseID": 310
+  },
+  {
+    "id": "future_perfect_continuous",
+    "category": "Tenses",
+    "usage": "To emphasise the duration of an action that will be ongoing up to a specific future point.",
+    "forms": {
+      "general_formula": "Subject + will have been + verb-ing",
+      "positive": "Subject + will have been + verb-ing",
+      "negative": "Subject + will not have been + verb-ing",
+      "question": "Will + Subject + have been + verb-ing?"
+    },
+    "keywords": ["for", "by", "how long"],
+    "spellingRules": "The main verb takes the -ing form.",
+    "examples": [
+      { "text": "By December, this project will have been running for two years.", "type": "positive" },
+      { "text": "Will the server have been running for 90 days straight by the audit date?", "type": "question" }
+    ],
+    "exerciseID": 311
+  },
+  {
+    "id": "zero_conditional",
+    "category": "Conditionals",
+    "usage": "To describe general truths, scientific facts, or automatic results.",
+    "forms": {
+      "general_formula": "If + present simple, present simple",
+      "positive": "If you restart the server, it clears the cache.",
+      "negative": "If the tests don't pass, the build doesn't deploy.",
+      "question": "What happens if the server runs out of memory?"
+    },
+    "keywords": ["if", "when", "always", "every time"],
+    "spellingRules": "Both clauses use the present simple tense.",
+    "examples": [
+      { "text": "If you push to main, the pipeline triggers automatically.", "type": "positive" },
+      { "text": "The app crashes if the memory limit is exceeded.", "type": "positive" }
+    ],
+    "exerciseID": 312
+  },
+  {
+    "id": "first_conditional",
+    "category": "Conditionals",
+    "usage": "To talk about real, possible future conditions and their likely results.",
+    "forms": {
+      "general_formula": "If + present simple, will + base verb",
+      "positive": "If we test it today, we will release it tomorrow.",
+      "negative": "If it doesn't work, we won't deploy it.",
+      "question": "Will we meet the deadline if we start now?"
+    },
+    "keywords": ["if", "unless", "as long as", "provided that"],
+    "spellingRules": "Present simple in the if-clause; will + base verb in the result clause.",
+    "examples": [
+      { "text": "If we finish the feature today, we will include it in the release.", "type": "positive" },
+      { "text": "The team won't hit the deadline unless we add more resources.", "type": "negative" }
+    ],
+    "exerciseID": 313
+  },
+  {
+    "id": "second_conditional",
+    "category": "Conditionals",
+    "usage": "To talk about hypothetical or unlikely present/future situations.",
+    "forms": {
+      "general_formula": "If + past simple, would + base verb",
+      "positive": "If I had more time, I would rewrite the whole service.",
+      "negative": "If we didn't have deadlines, we wouldn't rush.",
+      "question": "What would you do if the database went down right now?"
+    },
+    "keywords": ["if", "would", "could", "might", "hypothetically"],
+    "spellingRules": "Past simple in the if-clause; would/could/might + base verb in the result.",
+    "examples": [
+      { "text": "If we had a bigger team, we would ship features faster.", "type": "positive" },
+      { "text": "What would you change if you could rewrite the architecture from scratch?", "type": "question" }
+    ],
+    "exerciseID": 314
+  },
+  {
+    "id": "third_conditional",
+    "category": "Conditionals",
+    "usage": "To talk about hypothetical past situations and their imagined results.",
+    "forms": {
+      "general_formula": "If + past perfect, would have + past participle",
+      "positive": "If we had caught the bug earlier, we would have avoided the outage.",
+      "negative": "If we hadn't deployed on Friday, it wouldn't have caused problems.",
+      "question": "Would you have escalated if you had known sooner?"
+    },
+    "keywords": ["if", "would have", "could have", "might have"],
+    "spellingRules": "Past perfect in the if-clause; would have + past participle in the result.",
+    "examples": [
+      { "text": "If the tests had covered that edge case, we would have caught the regression.", "type": "positive" },
+      { "text": "The client wouldn't have churned if we had communicated the delay proactively.", "type": "negative" }
+    ],
+    "exerciseID": 315
+  },
+  {
+    "id": "mixed_conditional",
+    "category": "Conditionals",
+    "usage": "To mix time frames — typically a past condition with a present result, or vice versa.",
+    "forms": {
+      "general_formula": "If + past perfect, would + base verb (past → present effect)",
+      "positive": "If we had set up monitoring, we would know about these errors now.",
+      "negative": "If the system weren't so fragile, we wouldn't have had so many incidents.",
+      "question": "Would the app be more stable now if we had refactored earlier?"
+    },
+    "keywords": ["if", "would", "still", "now", "currently"],
+    "spellingRules": "Combine third conditional if-clause with second conditional result.",
+    "examples": [
+      { "text": "If we had chosen a different cloud provider, we might have lower costs today.", "type": "positive" },
+      { "text": "The system would be faster now if we had optimised the queries last year.", "type": "positive" }
+    ],
+    "exerciseID": 316
+  },
+  {
+    "id": "modal_can_could",
+    "category": "Modal Verbs",
+    "usage": "Can for present ability or permission; could for past ability, polite requests, or possibility.",
+    "forms": {
+      "general_formula": "Subject + can/could + base verb",
+      "positive": "I can write unit tests in Jest.",
+      "negative": "She could not access the admin panel.",
+      "question": "Could you review my pull request?"
+    },
+    "keywords": ["can", "could", "be able to", "is possible"],
+    "spellingRules": "Modal verbs do not change form and are always followed by a base verb.",
+    "examples": [
+      { "text": "I can set up a CI pipeline from scratch.", "type": "positive" },
+      { "text": "Could you share your screen during the code review?", "type": "question" }
+    ],
+    "exerciseID": 317
+  },
+  {
+    "id": "modal_must_have_to",
+    "category": "Modal Verbs",
+    "usage": "Must expresses strong obligation or logical certainty; have to expresses external obligation.",
+    "forms": {
+      "general_formula": "Subject + must/have to + base verb",
+      "positive": "All passwords must be hashed before storage.",
+      "negative": "You don't have to attend every stand-up.",
+      "question": "Do we have to write tests for every function?"
+    },
+    "keywords": ["must", "have to", "need to", "required", "obligatory"],
+    "spellingRules": "Must has no past form; use 'had to' for past obligation.",
+    "examples": [
+      { "text": "Developers must encrypt sensitive data at rest.", "type": "positive" },
+      { "text": "Do you have to submit the report by end of day?", "type": "question" }
+    ],
+    "exerciseID": 318
+  },
+  {
+    "id": "modal_should_ought_to",
+    "category": "Modal Verbs",
+    "usage": "To give advice, express expectation, or make a recommendation.",
+    "forms": {
+      "general_formula": "Subject + should/ought to + base verb",
+      "positive": "You should write tests before pushing to main.",
+      "negative": "We shouldn't merge without a review.",
+      "question": "Should we adopt a stricter code review process?"
+    },
+    "keywords": ["should", "ought to", "advisable", "recommended"],
+    "spellingRules": "Both are followed by a base verb without 'to' (except ought to).",
+    "examples": [
+      { "text": "You should document every public API endpoint.", "type": "positive" },
+      { "text": "Shouldn't the CI check run before the PR can be merged?", "type": "question" }
+    ],
+    "exerciseID": 319
+  },
+  {
+    "id": "modal_may_might",
+    "category": "Modal Verbs",
+    "usage": "To express possibility or to give or ask for permission.",
+    "forms": {
+      "general_formula": "Subject + may/might + base verb",
+      "positive": "The service may experience downtime during the migration.",
+      "negative": "We might not finish the feature by Friday.",
+      "question": "May I push this hotfix directly to production?"
+    },
+    "keywords": ["may", "might", "possibly", "perhaps", "maybe"],
+    "spellingRules": "Both are followed by the base verb; might suggests lower probability.",
+    "examples": [
+      { "text": "The release might be delayed due to a critical bug.", "type": "positive" },
+      { "text": "May I take ownership of this task?", "type": "question" }
+    ],
+    "exerciseID": 320
+  },
+  {
+    "id": "modal_will_would",
+    "category": "Modal Verbs",
+    "usage": "Will for future facts and decisions; would for hypotheticals, polite requests, and reported speech.",
+    "forms": {
+      "general_formula": "Subject + will/would + base verb",
+      "positive": "The report will show projected growth.",
+      "negative": "We wouldn't recommend this approach at scale.",
+      "question": "Would you be available for a sync tomorrow?"
+    },
+    "keywords": ["will", "would", "forecast", "predict", "politely"],
+    "spellingRules": "Always followed by the base verb.",
+    "examples": [
+      { "text": "The new infrastructure will reduce latency by 40%.", "type": "positive" },
+      { "text": "Would you be able to present the roadmap to the board?", "type": "question" }
+    ],
+    "exerciseID": 321
+  },
+  {
+    "id": "passive_present",
+    "category": "Passive Voice",
+    "usage": "To focus on the action or result rather than who performs it, in the present.",
+    "forms": {
+      "general_formula": "Subject + am/is/are + past participle",
+      "positive": "The data is encrypted before storage.",
+      "negative": "The API is not documented yet.",
+      "question": "Is the build triggered automatically?"
+    },
+    "keywords": ["is done", "are made", "is written", "by"],
+    "spellingRules": "Use the past participle form of the main verb.",
+    "examples": [
+      { "text": "All API endpoints are documented in the Swagger file.", "type": "positive" },
+      { "text": "Is the payment processed through a third-party gateway?", "type": "question" }
+    ],
+    "exerciseID": 322
+  },
+  {
+    "id": "passive_past",
+    "category": "Passive Voice",
+    "usage": "To focus on the action or result in the past, when the agent is unknown or unimportant.",
+    "forms": {
+      "general_formula": "Subject + was/were + past participle",
+      "positive": "The vulnerability was discovered during a routine audit.",
+      "negative": "The breach was not detected for several days.",
+      "question": "Was the system patched before the deadline?"
+    },
+    "keywords": ["was done", "were made", "was found", "by"],
+    "spellingRules": "Use the past participle form; was for singular, were for plural.",
+    "examples": [
+      { "text": "The critical bug was fixed by the on-call team overnight.", "type": "positive" },
+      { "text": "Were all users notified after the data breach?", "type": "question" }
+    ],
+    "exerciseID": 323
+  },
+  {
+    "id": "passive_future",
+    "category": "Passive Voice",
+    "usage": "To describe future actions where the focus is on the result, not the actor.",
+    "forms": {
+      "general_formula": "Subject + will be + past participle",
+      "positive": "All records will be transferred to the new schema.",
+      "negative": "Outdated accounts will not be migrated.",
+      "question": "Will users be notified before the cutover?"
+    },
+    "keywords": ["will be done", "is going to be", "will have been"],
+    "spellingRules": "Use will be + past participle.",
+    "examples": [
+      { "text": "The old database will be archived after the migration is complete.", "type": "positive" },
+      { "text": "Will downtime be scheduled in advance?", "type": "question" }
+    ],
+    "exerciseID": 324
+  },
+  {
+    "id": "reported_speech_statements",
+    "category": "Reported Speech",
+    "usage": "To report what someone said without quoting them directly; verbs shift back in time.",
+    "forms": {
+      "general_formula": "Subject + said (that) + clause with backshifted verb",
+      "positive": "She said the deployment had been successful.",
+      "negative": "He told us the tests hadn't passed.",
+      "question": "Did she say when the release would happen?"
+    },
+    "keywords": ["said", "told", "explained", "reported", "mentioned"],
+    "spellingRules": "Present → past; past → past perfect; will → would.",
+    "examples": [
+      { "text": "The manager said that the deadline had been moved to the following Friday.", "type": "positive" },
+      { "text": "She explained that the team had already fixed the critical issue.", "type": "positive" }
+    ],
+    "exerciseID": 325
+  },
+  {
+    "id": "reported_speech_questions",
+    "category": "Reported Speech",
+    "usage": "To report questions using indirect speech; word order changes to statement order.",
+    "forms": {
+      "general_formula": "Subject + asked (if/whether/wh-word) + statement word order",
+      "positive": "She asked if the user had experienced any errors.",
+      "negative": "He asked why the build had not been triggered.",
+      "question": "Did the interviewer ask what your biggest technical challenge had been?"
+    },
+    "keywords": ["asked", "wondered", "wanted to know", "inquired"],
+    "spellingRules": "No question mark in reported questions; use statement word order.",
+    "examples": [
+      { "text": "The researcher asked whether users had trouble completing the onboarding flow.", "type": "positive" },
+      { "text": "He asked what tools the team had been using for testing.", "type": "positive" }
+    ],
+    "exerciseID": 326
+  },
+  {
+    "id": "relative_clauses_defining",
+    "category": "Clauses",
+    "usage": "To identify or define which person, thing, or place you mean; no commas used.",
+    "forms": {
+      "general_formula": "Noun + who/which/that + clause",
+      "positive": "The service that handles authentication is deployed separately.",
+      "negative": "There is no component that manages this automatically.",
+      "question": "Which is the module that processes payments?"
+    },
+    "keywords": ["who", "which", "that"],
+    "spellingRules": "No comma before the relative clause.",
+    "examples": [
+      { "text": "The engineer who wrote this module left the company last month.", "type": "positive" },
+      { "text": "The API that handles user data must be fully secured.", "type": "positive" }
+    ],
+    "exerciseID": 327
+  },
+  {
+    "id": "relative_clauses_non_defining",
+    "category": "Clauses",
+    "usage": "To add extra information about a noun already identified; commas are required.",
+    "forms": {
+      "general_formula": "Noun, + who/which + clause,",
+      "positive": "The CI/CD pipeline, which runs on every commit, was reviewed by the auditor.",
+      "negative": "This module, which was not updated, is still causing issues.",
+      "question": "Is this the new API, which was designed by the senior architect?"
+    },
+    "keywords": ["who", "which", "(commas)"],
+    "spellingRules": "Use commas before and after the clause; 'that' is not used here.",
+    "examples": [
+      { "text": "Our on-call rotation, which covers all time zones, is managed by PagerDuty.", "type": "positive" },
+      { "text": "The CTO, who joined last year, approved the new architecture proposal.", "type": "positive" }
+    ],
+    "exerciseID": 328
+  },
+  {
+    "id": "articles_a_an_the",
+    "category": "Determiners",
+    "usage": "A/an for first mention or non-specific nouns; the for specific, known, or unique nouns.",
+    "forms": {
+      "general_formula": "a/an/the + noun",
+      "positive": "We found a bug in the authentication module.",
+      "negative": "There is no update available for the system.",
+      "question": "Is this the right approach for the problem?"
+    },
+    "keywords": ["a", "an", "the", "first mention", "specific"],
+    "spellingRules": "Use 'an' before vowel sounds (e.g. an error, an update).",
+    "examples": [
+      { "text": "I wrote an email to the client explaining the delay.", "type": "positive" },
+      { "text": "A new developer joined the team this week.", "type": "positive" }
+    ],
+    "exerciseID": 329
+  },
+  {
+    "id": "comparatives",
+    "category": "Adjectives & Adverbs",
+    "usage": "To compare two things or actions.",
+    "forms": {
+      "general_formula": "adjective + -er + than / more + adjective + than",
+      "positive": "This framework is faster than the previous one.",
+      "negative": "React is not more complex than Angular for simple apps.",
+      "question": "Is the new API more efficient than the old one?"
+    },
+    "keywords": ["faster", "better", "more", "less", "than"],
+    "spellingRules": "Short adjectives add -er; longer adjectives use 'more'. Some are irregular (good → better).",
+    "examples": [
+      { "text": "The new database schema is more scalable than the legacy one.", "type": "positive" },
+      { "text": "This solution is cheaper and easier to maintain than the alternatives.", "type": "positive" }
+    ],
+    "exerciseID": 330
+  },
+  {
+    "id": "superlatives",
+    "category": "Adjectives & Adverbs",
+    "usage": "To describe the highest or lowest degree among three or more things.",
+    "forms": {
+      "general_formula": "the + adjective + -est / the most + adjective",
+      "positive": "This is the most efficient algorithm we have written.",
+      "negative": "That is not the worst solution we have seen.",
+      "question": "What is the fastest way to reduce build time?"
+    },
+    "keywords": ["the most", "the best", "the least", "-est"],
+    "spellingRules": "Short adjectives add -est; longer adjectives use 'the most'. Irregular: good → the best.",
+    "examples": [
+      { "text": "That was the most complex refactoring we had ever done.", "type": "positive" },
+      { "text": "Which team member has the most experience with cloud infrastructure?", "type": "question" }
+    ],
+    "exerciseID": 331
+  },
+  {
+    "id": "gerunds_vs_infinitives",
+    "category": "Verb Patterns",
+    "usage": "Gerunds (verb-ing) and infinitives (to + verb) follow certain verbs and prepositions.",
+    "forms": {
+      "general_formula": "verb + gerund (enjoy coding) or verb + infinitive (want to deploy)",
+      "positive": "She wants to propose a new architecture.",
+      "negative": "He avoids committing directly to main.",
+      "question": "Do you prefer to work remotely or working in the office?"
+    },
+    "keywords": ["enjoy", "avoid", "want to", "need to", "plan to", "consider"],
+    "spellingRules": "After prepositions, always use gerunds (e.g. good at testing, instead of writing).",
+    "examples": [
+      { "text": "The team agreed to implement the new logging strategy.", "type": "positive" },
+      { "text": "She suggested using a queue-based approach instead of direct calls.", "type": "positive" }
+    ],
+    "exerciseID": 332
+  },
+  {
+    "id": "phrasal_verbs_separable",
+    "category": "Phrasal Verbs",
+    "usage": "Separable phrasal verbs can have their object placed between the verb and the particle.",
+    "forms": {
+      "general_formula": "verb + particle (object can go between)",
+      "positive": "We shut the server down for maintenance.",
+      "negative": "Don't turn off the alerts during the deployment.",
+      "question": "Can you set the meeting up for Friday afternoon?"
+    },
+    "keywords": ["set up", "shut down", "turn off", "call off", "bring up"],
+    "spellingRules": "When the object is a pronoun, it must go between verb and particle (shut it down).",
+    "examples": [
+      { "text": "The DevOps team took the failing service down to apply the patch.", "type": "positive" },
+      { "text": "Could you set up the new environment before tomorrow's demo?", "type": "question" }
+    ],
+    "exerciseID": 333
+  },
+  {
+    "id": "phrasal_verbs_inseparable",
+    "category": "Phrasal Verbs",
+    "usage": "Inseparable phrasal verbs keep the verb and particle together; the object always follows.",
+    "forms": {
+      "general_formula": "verb + particle + object (cannot be separated)",
+      "positive": "We need to look into this performance issue.",
+      "negative": "The new developer has not caught on to the codebase yet.",
+      "question": "Did you come across any edge cases during testing?"
+    },
+    "keywords": ["look into", "come across", "catch on", "run into", "deal with"],
+    "spellingRules": "The object always comes after the particle; cannot split the phrasal verb.",
+    "examples": [
+      { "text": "The security team looked into the suspicious log entries.", "type": "positive" },
+      { "text": "We ran into a major compatibility issue after the library upgrade.", "type": "positive" }
+    ],
+    "exerciseID": 334
+  },
+  {
+    "id": "tag_questions",
+    "category": "Questions",
+    "usage": "Short questions added to the end of a statement to confirm or seek agreement.",
+    "forms": {
+      "general_formula": "Positive statement + negative tag? / Negative statement + positive tag?",
+      "positive": "The specs are finalised, aren't they?",
+      "negative": "You haven't pushed to production yet, have you?",
+      "question": "This approach will scale under load, won't it?"
+    },
+    "keywords": ["isn't it", "aren't they", "won't it", "did they", "has it"],
+    "spellingRules": "The auxiliary verb in the tag matches the main clause; subject becomes a pronoun.",
+    "examples": [
+      { "text": "The database migration is scheduled for tonight, isn't it?", "type": "question" },
+      { "text": "You've already reviewed this PR, haven't you?", "type": "question" }
+    ],
+    "exerciseID": 335
+  },
+  {
+    "id": "indirect_questions",
+    "category": "Questions",
+    "usage": "Questions embedded within a statement or another question; use statement word order.",
+    "forms": {
+      "general_formula": "Could you tell me + wh-word + statement order?",
+      "positive": "Could you tell me what the error code means?",
+      "negative": "I am not sure why the tests are failing.",
+      "question": "Do you know when the release is scheduled?"
+    },
+    "keywords": ["could you tell me", "I wonder", "do you know", "I'd like to know"],
+    "spellingRules": "No question mark if embedded in a statement; use statement word order after the wh-word.",
+    "examples": [
+      { "text": "I wonder if you could clarify what the acceptance criteria are.", "type": "positive" },
+      { "text": "Could you explain how the caching layer is implemented?", "type": "question" }
+    ],
+    "exerciseID": 336
+  },
+  {
+    "id": "used_to",
+    "category": "Past Habits",
+    "usage": "To describe habits, states, or repeated actions in the past that no longer happen.",
+    "forms": {
+      "general_formula": "Subject + used to + base verb",
+      "positive": "We used to deploy manually every Friday.",
+      "negative": "The team didn't use to have automated testing.",
+      "question": "Did the company use to run on-premise servers?"
+    },
+    "keywords": ["used to", "in the past", "before", "no longer"],
+    "spellingRules": "Negative and question form: 'didn't use to' (no 'd').",
+    "examples": [
+      { "text": "The application used to store passwords in plain text before the security audit.", "type": "positive" },
+      { "text": "Did your team use to do weekly releases before switching to CI/CD?", "type": "question" }
+    ],
+    "exerciseID": 337
+  },
+  {
+    "id": "would_habitual_past",
+    "category": "Past Habits",
+    "usage": "To describe repeated past actions (not states); often used in storytelling.",
+    "forms": {
+      "general_formula": "Subject + would + base verb",
+      "positive": "Every morning, the team would gather for the standup.",
+      "negative": "We wouldn't merge on Fridays; it was an unwritten rule.",
+      "question": "Would the senior developer review every PR personally back then?"
+    },
+    "keywords": ["every", "always", "would often", "back then"],
+    "spellingRules": "'Would' cannot replace 'used to' with state verbs (know, be, have).",
+    "examples": [
+      { "text": "In the early days, we would deploy features by copying files manually.", "type": "positive" },
+      { "text": "She would always write comprehensive documentation after each feature.", "type": "positive" }
+    ],
+    "exerciseID": 338
+  },
+  {
+    "id": "wish_if_only",
+    "category": "Unreal Situations",
+    "usage": "To express regret about the present or past, or a desire for things to be different.",
+    "forms": {
+      "general_formula": "I wish / If only + past simple (present wish) or past perfect (past regret)",
+      "positive": "I wish we had better monitoring tools.",
+      "negative": "If only the team hadn't deployed on a Friday.",
+      "question": "Don't you wish the legacy code had been documented properly?"
+    },
+    "keywords": ["I wish", "if only", "I regret", "unfortunately"],
+    "spellingRules": "Use past simple for present/future wishes; past perfect for past regrets.",
+    "examples": [
+      { "text": "I wish we had set up proper alerts before the incident.", "type": "positive" },
+      { "text": "If only the stakeholders had communicated the scope change earlier.", "type": "positive" }
+    ],
+    "exerciseID": 339
+  },
+  {
+    "id": "causative_have_get",
+    "category": "Causative Structures",
+    "usage": "To describe an action done by someone else on your behalf.",
+    "forms": {
+      "general_formula": "Subject + have/get + object + past participle",
+      "positive": "We had the server audited by an external firm.",
+      "negative": "We didn't get the design reviewed before launch.",
+      "question": "Can we get this feature tested by the QA team today?"
+    },
+    "keywords": ["have done", "get done", "arranged for", "commissioned"],
+    "spellingRules": "'Get' is more informal than 'have'. Both take object + past participle.",
+    "examples": [
+      { "text": "The company had the entire codebase audited for security vulnerabilities.", "type": "positive" },
+      { "text": "Did you get the report reviewed by the compliance team?", "type": "question" }
+    ],
+    "exerciseID": 340
+  },
+  {
+    "id": "have_something_done",
+    "category": "Causative Structures",
+    "usage": "To indicate that a service or task is performed by another party for the subject.",
+    "forms": {
+      "general_formula": "Subject + have + object + past participle",
+      "positive": "We are having the servers upgraded this weekend.",
+      "negative": "We haven't had the firewall rules reviewed yet.",
+      "question": "Have you had your application penetration tested recently?"
+    },
+    "keywords": ["have something done", "get something done", "arranged", "commissioned"],
+    "spellingRules": "The main verb (have) conjugates; the following verb is always past participle.",
+    "examples": [
+      { "text": "The start-up had its architecture reviewed by an AWS solution architect.", "type": "positive" },
+      { "text": "We should have our API security tested before the product launch.", "type": "positive" }
+    ],
+    "exerciseID": 341
+  },
+  {
+    "id": "quantifiers",
+    "category": "Determiners",
+    "usage": "Words that express quantity or amount before a noun.",
+    "forms": {
+      "general_formula": "quantifier + noun",
+      "positive": "We have several open tickets in the backlog.",
+      "negative": "There are few engineers available this sprint.",
+      "question": "How many developers are assigned to this task?"
+    },
+    "keywords": ["many", "much", "few", "several", "a lot of", "some", "any", "enough"],
+    "spellingRules": "'Many' and 'few' are for countable nouns; 'much' and 'little' for uncountable.",
+    "examples": [
+      { "text": "There are too many dependencies in this module.", "type": "positive" },
+      { "text": "Not much time remains before the release window closes.", "type": "positive" }
+    ],
+    "exerciseID": 342
+  },
+  {
+    "id": "too_enough",
+    "category": "Adjectives & Adverbs",
+    "usage": "Too (excess) and enough (sufficient) to evaluate whether something meets a requirement.",
+    "forms": {
+      "general_formula": "too + adj / adj + enough",
+      "positive": "The solution is fast enough to handle peak traffic.",
+      "negative": "The server is not powerful enough to run this workload.",
+      "question": "Is the team large enough to deliver this in time?"
+    },
+    "keywords": ["too", "enough", "too much", "too many", "not enough"],
+    "spellingRules": "'Enough' comes after the adjective but before the noun (enough time, fast enough).",
+    "examples": [
+      { "text": "The database is too slow to handle real-time queries at this scale.", "type": "positive" },
+      { "text": "We don't have enough budget to rewrite the entire backend this quarter.", "type": "positive" }
+    ],
+    "exerciseID": 343
+  },
+  {
+    "id": "so_such",
+    "category": "Emphasis",
+    "usage": "So (before adjective/adverb) and such (before noun/noun phrase) for emphasis.",
+    "forms": {
+      "general_formula": "so + adj/adv / such (a) + noun phrase",
+      "positive": "It was such a critical bug that we cancelled the release.",
+      "negative": "The fix was not so straightforward as we had hoped.",
+      "question": "Was it such a serious issue that you had to escalate to leadership?"
+    },
+    "keywords": ["so", "such", "so much", "so many", "such a"],
+    "spellingRules": "Use 'such a/an' before a singular countable noun; 'such' before plurals or uncountable.",
+    "examples": [
+      { "text": "The outage lasted so long that we had to issue a public statement.", "type": "positive" },
+      { "text": "It was such a complex system that only two engineers understood it fully.", "type": "positive" }
+    ],
+    "exerciseID": 344
+  },
+  {
+    "id": "inversion_formal",
+    "category": "Advanced Structures",
+    "usage": "To add formality or emphasis by placing a negative adverb or conditional at the start of a clause.",
+    "forms": {
+      "general_formula": "Negative/conditional adverb + auxiliary + subject + main verb",
+      "positive": "Only by automating tests can we guarantee code quality.",
+      "negative": "Never before have we seen such rapid system growth.",
+      "question": "Rarely do we encounter a bug of this severity."
+    },
+    "keywords": ["never", "rarely", "only", "not only", "seldom", "hardly", "no sooner"],
+    "spellingRules": "Inversion applies to the auxiliary verb; mirrors the question form.",
+    "examples": [
+      { "text": "Not only did the service fail, but it also caused a cascade of errors.", "type": "positive" },
+      { "text": "Rarely do we receive such detailed and actionable user feedback.", "type": "positive" }
+    ],
+    "exerciseID": 345
+  },
+  {
+    "id": "cleft_sentences",
+    "category": "Advanced Structures",
+    "usage": "To emphasise a specific part of a sentence using 'It is/was...' or 'What...' constructions.",
+    "forms": {
+      "general_formula": "It is/was + emphasis + that/who + rest of sentence",
+      "positive": "It was the misconfigured load balancer that caused the outage.",
+      "negative": "It wasn't the code changes that broke the build.",
+      "question": "Was it the network issue that caused the data loss?"
+    },
+    "keywords": ["it is/was ... that", "what ... is/was", "the reason why"],
+    "spellingRules": "Use 'who' for people and 'that' for things in the it-cleft structure.",
+    "examples": [
+      { "text": "What we really need is a more robust error handling strategy.", "type": "positive" },
+      { "text": "It was the missing index that was causing the slow query.", "type": "positive" }
+    ],
+    "exerciseID": 346
+  },
+  {
+    "id": "ellipsis",
+    "category": "Advanced Structures",
+    "usage": "To avoid repetition by omitting words that are understood from context.",
+    "forms": {
+      "general_formula": "Omit repeated or understood elements from later clauses",
+      "positive": "She can write unit tests and so can I.",
+      "negative": "He didn't update the docs and neither did she.",
+      "question": "You reviewed the PR, didn't you? — Yes, I did."
+    },
+    "keywords": ["so do I", "neither did", "nor", "too", "either"],
+    "spellingRules": "Only omit elements that are fully recoverable from context.",
+    "examples": [
+      { "text": "The back-end team fixed the bug and the front-end team did too.", "type": "positive" },
+      { "text": "She wanted to attend the demo but couldn't.", "type": "positive" }
+    ],
+    "exerciseID": 347
+  },
+  {
+    "id": "fronting",
+    "category": "Advanced Structures",
+    "usage": "Moving a non-subject element to the front of a sentence for emphasis or cohesion.",
+    "forms": {
+      "general_formula": "Fronted element + comma + rest of sentence",
+      "positive": "This approach, we have tested thoroughly.",
+      "negative": "The documentation, nobody had updated it for months.",
+      "question": "The final decision — have you made it yet?"
+    },
+    "keywords": ["topicalisation", "focus", "emphasis", "discourse cohesion"],
+    "spellingRules": "A comma often separates the fronted element from the rest of the sentence.",
+    "examples": [
+      { "text": "The root cause, we identified it within the first hour.", "type": "positive" },
+      { "text": "Security, that is the one area we never compromise on.", "type": "positive" }
+    ],
+    "exerciseID": 348
+  },
+  {
+    "id": "subjunctive_were",
+    "category": "Subjunctive Mood",
+    "usage": "Used in formal or hypothetical contexts; 'were' replaces 'was' for all subjects in unreal conditions.",
+    "forms": {
+      "general_formula": "It is essential/important that + subject + base verb (present subjunctive); If + subject + were... (past subjunctive)",
+      "positive": "It is crucial that every developer follow the coding standards.",
+      "negative": "The committee recommended that the release not proceed without testing.",
+      "question": "Were the system to fail, what would the recovery procedure be?"
+    },
+    "keywords": ["essential that", "important that", "if ... were", "as if", "lest"],
+    "spellingRules": "In present subjunctive, base verb used for all persons (she go, not she goes).",
+    "examples": [
+      { "text": "It is vital that the system be patched before the compliance audit.", "type": "positive" },
+      { "text": "If the data centre were to lose power, the backup generators would activate.", "type": "positive" }
+    ],
+    "exerciseID": 349
   }
 ]

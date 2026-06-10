@@ -1,0 +1,146 @@
+[
+  {
+    "vocabularyId": 301,
+    "lessonId": 101,
+    "word": "Maintain",
+    "translation": "לתחזק",
+    "example": "I maintain the servers every day.",
+    "definition": "to keep something working or in good condition",
+    "completeSentence": "I ________ the servers every day."
+  },
+  {
+    "vocabularyId": 302,
+    "lessonId": 101,
+    "word": "Deploy",
+    "translation": "לפרוס",
+    "example": "We deploy the new version on Friday.",
+    "definition": "to release software to an environment for use",
+    "completeSentence": "We ________ the new version on Friday."
+  },
+  {
+    "vocabularyId": 303,
+    "lessonId": 102,
+    "word": "Report",
+    "translation": "לדווח",
+    "example": "I report my progress in the standup meeting.",
+    "definition": "to give information about something",
+    "completeSentence": "I ________ my progress in the standup meeting."
+  },
+  {
+    "vocabularyId": 304,
+    "lessonId": 103,
+    "word": "Investigate",
+    "translation": "לחקור",
+    "example": "We investigate the production incident immediately.",
+    "definition": "to examine something carefully to discover facts",
+    "completeSentence": "We ________ the production incident immediately."
+  },
+  {
+    "vocabularyId": 305,
+    "lessonId": 104,
+    "word": "Submit",
+    "translation": "להגיש",
+    "example": "I submitted the report to my manager yesterday.",
+    "definition": "to send or hand in a document or piece of work",
+    "completeSentence": "I ________ the report to my manager yesterday."
+  },
+  {
+    "vocabularyId": 311,
+    "lessonId": 104,
+    "word": "Complete",
+    "translation": "להשלים",
+    "example": "She completed the task before the deadline.",
+    "definition": "to finish doing or making something",
+    "completeSentence": "She ________ the task before the deadline."
+  },
+  {
+    "vocabularyId": 306,
+    "lessonId": 105,
+    "word": "Install",
+    "translation": "להתקין",
+    "example": "You install the dependencies before running the project.",
+    "definition": "to set up software or tools so they are ready to use",
+    "completeSentence": "You ________ the dependencies before running the project."
+  },
+  {
+    "vocabularyId": 312,
+    "lessonId": 105,
+    "word": "Configure",
+    "translation": "להגדיר",
+    "example": "We configure the environment variables in the config file.",
+    "definition": "to set up a system or software with specific settings",
+    "completeSentence": "We ________ the environment variables in the config file."
+  },
+  {
+    "vocabularyId": 307,
+    "lessonId": 106,
+    "word": "Refactor",
+    "translation": "לשפץ קוד",
+    "example": "I am refactoring the authentication module right now.",
+    "definition": "to restructure existing code without changing its behavior",
+    "completeSentence": "I am ________ the authentication module right now."
+  },
+  {
+    "vocabularyId": 313,
+    "lessonId": 106,
+    "word": "Optimize",
+    "translation": "לייעל",
+    "example": "We are optimizing the database queries this week.",
+    "definition": "to make something as efficient or effective as possible",
+    "completeSentence": "We are ________ the database queries this week."
+  },
+  {
+    "vocabularyId": 308,
+    "lessonId": 107,
+    "word": "Estimate",
+    "translation": "להעריך",
+    "example": "We estimated the tasks for the upcoming sprint.",
+    "definition": "to calculate an approximate value, cost, or time",
+    "completeSentence": "We ________ the tasks for the upcoming sprint."
+  },
+  {
+    "vocabularyId": 314,
+    "lessonId": 107,
+    "word": "Prioritize",
+    "translation": "לתעדף",
+    "example": "The team prioritized the critical bugs before new features.",
+    "definition": "to arrange tasks in order of importance",
+    "completeSentence": "The team ________ the critical bugs before new features."
+  },
+  {
+    "vocabularyId": 309,
+    "lessonId": 108,
+    "word": "Scale",
+    "translation": "להרחיב",
+    "example": "The service scales automatically under heavy load.",
+    "definition": "to increase or decrease in size or capacity to meet demand",
+    "completeSentence": "The service ________ automatically under heavy load."
+  },
+  {
+    "vocabularyId": 315,
+    "lessonId": 108,
+    "word": "Integrate",
+    "translation": "לשלב",
+    "example": "The components integrate through a shared REST API.",
+    "definition": "to combine separate systems or parts into a working whole",
+    "completeSentence": "The components ________ through a shared REST API."
+  },
+  {
+    "vocabularyId": 310,
+    "lessonId": 109,
+    "word": "Resolve",
+    "translation": "לפתור",
+    "example": "The team is resolving the outage as quickly as possible.",
+    "definition": "to find a solution to a problem or bring an issue to an end",
+    "completeSentence": "The team is ________ the outage as quickly as possible."
+  },
+  {
+    "vocabularyId": 316,
+    "lessonId": 109,
+    "word": "Monitor",
+    "translation": "לנטר",
+    "example": "We are monitoring the system recovery in real time.",
+    "definition": "to observe and track the state of a system over time",
+    "completeSentence": "We are ________ the system recovery in real time."
+  }
+]

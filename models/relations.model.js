@@ -1,4 +1,4 @@
-const relations = require('./data/relations.json');
+const { relations } = require('./store');
 
 /**
  * Returns all relations, optionally filtered by status.
@@ -84,6 +84,24 @@ function getRelationsByStudentId(studentId) {
   );
 }
 
+/** Returns ALL relations for a given student regardless of status (pending, active, rejected). */
+function getAllRelationsByStudentId(studentId) {
+  return relations.filter(
+    (relation) => String(relation.studentId) === String(studentId)
+  );
+}
+
+/**
+ * Removes a relation from the in-memory store entirely.
+ * Returns the removed record, or null if not found.
+ */
+function removeRelationById(relationId) {
+  const index = relations.findIndex((r) => String(r.relationId) === String(relationId));
+  if (index === -1) return null;
+  const [removed] = relations.splice(index, 1);
+  return removed;
+}
+
 /**
  * Creates a new relation request (status: 'pending') between a teacher and student.
  * The new relation's ID is one greater than the current maximum.
@@ -157,9 +175,11 @@ module.exports = {
   getActiveStudentIdsByTeacherId,
   getActiveRelationByStudentId,
   getRelationsByStudentId,
+  getAllRelationsByStudentId,
   getPendingRelationsByTeacherId,
   getReviewedRelationsByTeacherId,
   createRelationRequest,
+  removeRelationById,
   updateRelationStatusById,
   updateRelationReviewById,
 };

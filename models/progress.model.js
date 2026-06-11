@@ -1,4 +1,4 @@
-const progress = require('./data/progress.json');
+const { progress } = require('./store');
 
 /**
  * Finds the progress record for a given student ID.

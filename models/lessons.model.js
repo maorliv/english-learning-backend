@@ -1,4 +1,4 @@
-const lessons = require('./data/lessons.json');
+const { lessons } = require('./store');
 
 // Defines the progression order of levels. Higher number = higher level.
 // A student can access any lesson at or below their own level rank.

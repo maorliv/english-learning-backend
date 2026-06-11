@@ -1,4 +1,4 @@
-const assessments = require('./data/assessments.json');
+const { assessments } = require('./store');
 
 /**
  * Creates a new assessment session for a student.

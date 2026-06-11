@@ -1,5 +1,8 @@
 const { getProgressByStudentId } = require('../models/progress.model');
-const { getScoredCompletedConversationsByStudentId } = require('../models/conversations.model');
+const {
+  getScoredCompletedConversationsByStudentId,
+  getAllCompletedConversationsByStudentId,
+} = require('../models/conversations.model');
 const { getAllLessons, getLessonById } = require('../models/lessons.model');
 const { getStudentPreferencesByUserId } = require('../models/matching.model');
 const { sendSuccess } = require('../utils/response');
@@ -59,10 +62,14 @@ function buildRecommendedLesson(progress, preferences) {
   };
 }
 
+// Minimum score to count a lesson as successfully completed
+const SUCCESS_THRESHOLD = 70;
+
 /**
  * GET /api/progress/stats
  * Returns summary statistics for the logged-in student's learning progress.
- * The student ID is read from the x-user-id header.
+ * All numeric stats are computed live from conversations so they stay in sync
+ * as new lessons are completed — the stored progress fields are never stale.
  */
 const getProgressStats = withErrorHandling((req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
@@ -83,18 +90,43 @@ const getProgressStats = withErrorHandling((req, res) => {
       404,
       'PROGRESS_NOT_FOUND',
       'Progress not found for this student',
-      {
-        studentId: validatedStudentId.value,
-      }
+      { studentId: validatedStudentId.value }
     );
   }
 
+  const completed = getAllCompletedConversationsByStudentId(validatedStudentId.value);
+
+  // Best score per lesson (teacherScore takes priority over aiScore)
+  const bestScoreByLesson = {};
+  for (const c of completed) {
+    const score = c.teacherScore ?? c.aiScore;
+    if (score !== null && score !== undefined) {
+      const prev = bestScoreByLesson[c.lessonId];
+      bestScoreByLesson[c.lessonId] = prev === undefined ? score : Math.max(prev, score);
+    }
+  }
+
+  const completedLessonsCount = new Set(completed.map((c) => c.lessonId)).size;
+  const lessonScores = Object.values(bestScoreByLesson);
+  const successedLessonsCount = lessonScores.filter((s) => s >= SUCCESS_THRESHOLD).length;
+  const overallAverage =
+    lessonScores.length > 0
+      ? Math.round(lessonScores.reduce((sum, s) => sum + s, 0) / lessonScores.length)
+      : 0;
+
+  // Most recent completed-conversation date; fall back to the stored value when there are none
+  const dates = completed.map((c) => c.date).filter(Boolean);
+  const lastActivityDate =
+    dates.length > 0
+      ? dates.reduce((latest, d) => (d > latest ? d : latest))
+      : progress.lastActivityDate;
+
   return sendSuccess(res, 200, {
     currentLevel: progress.currentLevel,
-    completedLessonsCount: progress.completedLessonsCount,
-    successedLessonsCount: progress.successedLessonsCount,
-    overallAverage: progress.overallAverage,
-    lastActivityDate: progress.lastActivityDate,
+    completedLessonsCount,
+    successedLessonsCount,
+    overallAverage,
+    lastActivityDate,
   });
 });
 

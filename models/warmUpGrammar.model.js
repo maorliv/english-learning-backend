@@ -1,4 +1,4 @@
-const warmUpGrammar = require('./data/warmUpGrammar.json');
+const { warmUpGrammar } = require('./store');
 
 /** Returns all warm-up grammar exercises (no filtering). Used by admin list endpoint. */
 function getAllWarmUpGrammar() {

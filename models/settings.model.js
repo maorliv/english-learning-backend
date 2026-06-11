@@ -1,5 +1,4 @@
-// In-memory data store — loaded from JSON at startup, reset when the server restarts
-const settings = require('./data/settings.json');
+const { settings } = require('./store');
 
 /**
  * Finds the settings record for a given user ID.

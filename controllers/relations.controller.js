@@ -5,8 +5,10 @@ const { getUserById } = require('../models/users.model');
 const { getTeacherByUserId, getTeacherById } = require('../models/teachers.model');
 const {
   createRelationRequest,
+  removeRelationById,
   getAllRelations,
   getRelationsByStudentId,
+  getAllRelationsByStudentId,
   getActiveRelationsByTeacherId,
   getRelationById,
   getRelationByTeacherAndStudent,
@@ -197,6 +199,35 @@ const listMyStudents = withErrorHandling((req, res) => {
   });
 
   return sendSuccess(res, 200, activeStudents);
+});
+
+/**
+ * GET /api/relations/my-relations
+ * Returns ALL relations for the logged-in student (pending, active, rejected).
+ * Used by the frontend to pre-populate request button states on page load.
+ */
+const listMyRelations = withErrorHandling((req, res) => {
+  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedStudentId.isValid) {
+    throw createHttpError(
+      400,
+      'VALIDATION_ERROR',
+      validatedStudentId.message,
+      validatedStudentId.details
+    );
+  }
+
+  const myRelations = getAllRelationsByStudentId(validatedStudentId.value);
+  return sendSuccess(
+    res,
+    200,
+    myRelations.map((r) => ({
+      relationId: r.relationId,
+      teacherId: r.teacherId,
+      status: r.status,
+    }))
+  );
 });
 
 /**
@@ -406,12 +437,74 @@ const updateRelationStatus = withErrorHandling((req, res) => {
   });
 });
 
+/**
+ * DELETE /api/relations/:id
+ * Lets the logged-in student remove an active connection with a teacher.
+ * Deletes the relation record entirely so either party can reconnect later.
+ */
+const removeRelation = withErrorHandling((req, res) => {
+  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const validatedRelationId = validateIdParam(req.params.id, 'id');
+
+  if (!validatedStudentId.isValid) {
+    throw createHttpError(
+      400,
+      'VALIDATION_ERROR',
+      validatedStudentId.message,
+      validatedStudentId.details
+    );
+  }
+
+  if (!validatedRelationId.isValid) {
+    throw createHttpError(
+      400,
+      'VALIDATION_ERROR',
+      validatedRelationId.message,
+      validatedRelationId.details
+    );
+  }
+
+  const relation = getRelationById(validatedRelationId.value);
+
+  if (!relation) {
+    throw createHttpError(
+      404,
+      'RELATION_NOT_FOUND',
+      'Relation not found.',
+      { relationId: validatedRelationId.value }
+    );
+  }
+
+  if (String(relation.studentId) !== String(validatedStudentId.value)) {
+    throw createHttpError(
+      403,
+      'FORBIDDEN',
+      'You do not have permission to remove this relation.',
+      { relationId: validatedRelationId.value }
+    );
+  }
+
+  if (relation.status !== 'active') {
+    throw createHttpError(
+      409,
+      'INVALID_STATUS',
+      'Only active connections can be removed.',
+      { relationId: validatedRelationId.value, status: relation.status }
+    );
+  }
+
+  removeRelationById(validatedRelationId.value);
+  return sendSuccess(res, 200, { relationId: validatedRelationId.value });
+});
+
 module.exports = {
   listRelations,
+  listMyRelations,
   listMyStudents,
   listMyTeachers,
   listPendingRelations,
   requestRelation,
+  removeRelation,
   reviewMyTeacher,
   updateRelationStatus,
 };

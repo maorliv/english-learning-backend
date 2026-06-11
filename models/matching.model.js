@@ -1,4 +1,4 @@
-const studentPreferences = require('./data/studentPreferences.json');
+const { studentPreferences } = require('./store');
 const { getAllTeachers } = require('./teachers.model');
 
 /**

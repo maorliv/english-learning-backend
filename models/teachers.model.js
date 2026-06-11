@@ -1,4 +1,4 @@
-const teachers = require('./data/teachers.json');
+const { teachers } = require('./store');
 
 /**
  * Returns all teachers, optionally filtered by availability and/or max price.

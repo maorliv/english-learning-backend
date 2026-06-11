@@ -1,4 +1,4 @@
-const grammarRules = require('./data/grammarRules.json');
+const { grammarRules } = require('./store');
 
 /**
  * Returns all grammar rules, optionally filtered by category.

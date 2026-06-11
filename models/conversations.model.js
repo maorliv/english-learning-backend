@@ -1,4 +1,4 @@
-const conversations = require('./data/conversations.json');
+const { conversations } = require('./store');
 
 /**
  * Returns the most recent completed and scored conversations for a student.
@@ -114,6 +114,24 @@ function getConversationSummaries(filters = {}) {
       teacherScore: conversation.teacherScore,
       isReviewedByTeacher: conversation.isReviewedByTeacher,
       createdAt: conversation.createdAt,
+    }));
+}
+
+/**
+ * Returns all completed conversations for a student with the fields needed for progress stats.
+ * Unlike getScoredCompletedConversationsByStudentId, this has no limit and includes unscored
+ * completed conversations so that completedLessonsCount is always accurate.
+ */
+function getAllCompletedConversationsByStudentId(studentId) {
+  return conversations
+    .filter(
+      (c) => String(c.studentId) === String(studentId) && c.status === 'completed'
+    )
+    .map((c) => ({
+      lessonId: c.lessonId,
+      aiScore: c.aiScore,
+      teacherScore: c.teacherScore,
+      date: c.endedAt || c.createdAt,
     }));
 }
 
@@ -285,6 +303,7 @@ module.exports = {
   addTeacherComment,
   endConversation,
   getAllConversations,
+  getAllCompletedConversationsByStudentId,
   getConversationSummaries,
   getScoredCompletedConversationsByStudentId,
   getConversationById,

@@ -1,5 +1,4 @@
-// In-memory data store — loaded from JSON at startup, reset when the server restarts
-const users = require('./data/users.json');
+const { users } = require('./store');
 
 /** Returns the full list of all users. */
 function getAllUsers() {

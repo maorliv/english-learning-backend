@@ -1,4 +1,4 @@
-const vocabulary = require('./data/vocabulary.json');
+const { vocabulary } = require('./store');
 
 /**
  * Returns all vocabulary items that belong to the given lesson.

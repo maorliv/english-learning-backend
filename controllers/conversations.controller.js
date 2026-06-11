@@ -1,7 +1,7 @@
 const { getLessonById } = require('../models/lessons.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const { getActiveStudentIdsByTeacherId } = require('../models/relations.model');
-const { getTeacherByUserId } = require('../models/teachers.model');
+const { getTeacherByUserId, getTeacherById } = require('../models/teachers.model');
 const {
   addConversationReply,
   addTeacherComment,
@@ -127,6 +127,8 @@ const listConversations = withErrorHandling((req, res) => {
 
     // Restrict results to only the teacher's own students
     filters.studentIds = activeStudentIds;
+
+    return sendSuccess(res, 200, getAllConversations(filters, teacherProfile.teacherId));
   }
 
   return sendSuccess(res, 200, getAllConversations(filters));
@@ -189,18 +191,31 @@ const listStudentConversations = withErrorHandling((req, res) => {
     }
   }
 
-  // Enrich each conversation summary with the lesson title
+  // Enrich each conversation summary with the lesson title and teacher names
   const conversations = getConversationSummaries({ studentId: validatedStudentId.value }).map(
-    (conversation) => ({
-      conversationId: conversation.conversationId,
-      lessonId: conversation.lessonId,
-      lessonTitle: getLessonById(conversation.lessonId)?.title || null, // ?. handles missing lesson
-      status: conversation.status,
-      aiScore: conversation.aiScore,
-      teacherScore: conversation.teacherScore,
-      isReviewedByTeacher: conversation.isReviewedByTeacher,
-      createdAt: conversation.createdAt,
-    })
+    (conversation) => {
+      const enrichedReviews = conversation.teacherReviews.map((review) => {
+        const teacher = getTeacherById(review.teacherId);
+        return {
+          teacherId: review.teacherId,
+          userId: teacher ? teacher.userId : null,
+          teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null,
+          teacherScore: review.teacherScore,
+          reviewedAt: review.reviewedAt,
+        };
+      });
+
+      return {
+        conversationId: conversation.conversationId,
+        lessonId: conversation.lessonId,
+        lessonTitle: getLessonById(conversation.lessonId)?.title || null,
+        status: conversation.status,
+        aiScore: conversation.aiScore,
+        teacherReviews: enrichedReviews,
+        isReviewedByTeacher: conversation.isReviewedByTeacher,
+        createdAt: conversation.createdAt,
+      };
+    }
   );
 
   return sendSuccess(res, 200, conversations);
@@ -386,12 +401,23 @@ const getConversation = withErrorHandling((req, res) => {
     );
   }
 
+  const enrichedReviews = conversation.teacherReviews.map((review) => {
+    const teacher = getTeacherById(review.teacherId);
+    return {
+      teacherId: review.teacherId,
+      userId: teacher ? teacher.userId : null,
+      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null,
+      teacherScore: review.teacherScore,
+      teacherComment: review.teacherComment,
+      reviewedAt: review.reviewedAt,
+    };
+  });
+
   return sendSuccess(res, 200, {
     conversationId: conversation.conversationId,
     messages: conversation.messages,
     aiScore: conversation.aiScore,
-    teacherScore: conversation.teacherScore,
-    teacherComment: conversation.teacherComment,
+    teacherReviews: enrichedReviews,
     status: conversation.status,
     replies: conversation.commentsThread || [],
   });
@@ -440,8 +466,31 @@ const commentOnConversation = withErrorHandling((req, res) => {
     );
   }
 
+  const validatedTeacherUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+
+  if (!validatedTeacherUserId.isValid) {
+    throw createHttpError(
+      400,
+      'VALIDATION_ERROR',
+      validatedTeacherUserId.message,
+      validatedTeacherUserId.details
+    );
+  }
+
+  const reviewingTeacher = getTeacherByUserId(validatedTeacherUserId.value);
+
+  if (!reviewingTeacher) {
+    throw createHttpError(
+      404,
+      'TEACHER_NOT_FOUND',
+      'Teacher profile not found for this user.',
+      { userId: validatedTeacherUserId.value }
+    );
+  }
+
   const result = addTeacherComment(
     validatedConversationId.value,
+    reviewingTeacher.teacherId,
     req.body.teacherScore,
     req.body.teacherComment
   );

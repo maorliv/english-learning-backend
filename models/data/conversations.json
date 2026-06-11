@@ -6,8 +6,9 @@
       { "role": "assistant", "content": "Mock AI reply: I understood your message about lesson 101.", "createdAt": "2026-05-09T09:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Maintain", "Deploy"], "aiScore": 80, "aiFeedback": "Good job using lesson vocabulary in the conversation.",
-    "teacherScore": 88, "teacherComment": "Good fluency and strong use of lesson vocabulary.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 2, "teacherScore": 88, "teacherComment": "Good fluency and strong use of lesson vocabulary.", "reviewedAt": "2026-05-09T10:30:00.000Z" }
+    ],
     "commentsThread": [
       { "role": "teacher", "content": "Nice job. Try to expand your answer with one more example.", "createdAt": "2026-05-09T09:10:00.000Z" },
       { "role": "student", "content": "Sure, I also maintain deployment scripts for the team.", "createdAt": "2026-05-09T09:12:00.000Z" }
@@ -21,7 +22,7 @@
       { "role": "assistant", "content": "Mock AI reply: I understood your message about lesson 102.", "createdAt": "2026-05-09T10:30:03.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Report"], "aiScore": 70, "aiFeedback": "Good effort. Try using more lesson vocabulary next time.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-09T10:28:00.000Z", "endedAt": "2026-05-09T10:35:00.000Z"
   },
   {
@@ -31,7 +32,7 @@
       { "role": "assistant", "content": "Mock AI reply: I understood your message about lesson 103.", "createdAt": "2026-05-09T11:15:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Investigate"], "aiScore": 70, "aiFeedback": "Good job using lesson vocabulary in the conversation.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false,
+    "teacherReviews": [],
     "commentsThread": [
       { "role": "teacher", "content": "Please explain what you are doing next after the investigation.", "createdAt": "2026-05-09T11:20:00.000Z" }
     ],
@@ -44,8 +45,9 @@
       { "role": "assistant", "content": "Mock AI reply: Great use of past simple for sprint planning context.", "createdAt": "2026-05-13T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Estimate", "Prioritize"], "aiScore": 82, "aiFeedback": "Both key vocabulary items used correctly. Well done.",
-    "teacherScore": 85, "teacherComment": "Clear and accurate use of sprint planning vocabulary.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 2, "teacherScore": 85, "teacherComment": "Clear and accurate use of sprint planning vocabulary.", "reviewedAt": "2026-05-13T11:30:00.000Z" }
+    ],
     "commentsThread": [
       { "role": "teacher", "content": "Good sentence structure. Next time try to add more detail about what went wrong.", "createdAt": "2026-05-13T11:00:00.000Z" }
     ],
@@ -58,8 +60,9 @@
       { "role": "assistant", "content": "Mock AI reply: Clear step-by-step instructions, well done.", "createdAt": "2026-05-11T09:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Install", "Configure"], "aiScore": 90, "aiFeedback": "Excellent clarity and correct vocabulary usage.",
-    "teacherScore": 92, "teacherComment": "Very natural and accurate explanation. Great work.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 2, "teacherScore": 92, "teacherComment": "Very natural and accurate explanation. Great work.", "reviewedAt": "2026-05-11T10:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-11T08:55:00.000Z", "endedAt": "2026-05-11T09:08:00.000Z"
   },
@@ -70,8 +73,9 @@
       { "role": "assistant", "content": "Mock AI reply: Perfect use of present perfect for completed tasks.", "createdAt": "2026-05-16T09:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Accomplish", "Deliver"], "aiScore": 88, "aiFeedback": "Both vocabulary items used correctly. Present perfect tense accurate.",
-    "teacherScore": 90, "teacherComment": "Excellent work. The present perfect is used naturally here.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 5, "teacherScore": 90, "teacherComment": "Excellent work. The present perfect is used naturally here.", "reviewedAt": "2026-05-16T10:00:00.000Z" }
+    ],
     "commentsThread": [
       { "role": "teacher", "content": "Perfect. Could you also say what will happen next?", "createdAt": "2026-05-16T10:00:00.000Z" },
       { "role": "student", "content": "Sure, next sprint we are going to focus on performance improvements.", "createdAt": "2026-05-16T10:05:00.000Z" }
@@ -85,7 +89,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good use of present continuous for current actions.", "createdAt": "2026-05-14T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Refactor", "Optimize"], "aiScore": 85, "aiFeedback": "Present continuous used correctly. Good vocabulary usage.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-14T09:55:00.000Z", "endedAt": "2026-05-14T10:12:00.000Z"
   },
   {
@@ -95,8 +99,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent technical English for a system architecture presentation.", "createdAt": "2026-05-14T11:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Scale", "Integrate"], "aiScore": 94, "aiFeedback": "Sophisticated use of architecture vocabulary. Excellent performance.",
-    "teacherScore": 95, "teacherComment": "Very advanced and accurate. You speak like a native engineer.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 7, "teacherScore": 95, "teacherComment": "Very advanced and accurate. You speak like a native engineer.", "reviewedAt": "2026-05-15T09:00:00.000Z" }
+    ],
     "commentsThread": [
       { "role": "teacher", "content": "Outstanding. Your English is at a professional native level for technical topics.", "createdAt": "2026-05-15T09:00:00.000Z" }
     ],
@@ -109,7 +114,7 @@
       { "role": "assistant", "content": "Mock AI reply: Well done. Clear and correct past simple usage.", "createdAt": "2026-05-15T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Report"], "aiScore": 85, "aiFeedback": "Clear communication in past simple. Good job.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-15T09:55:00.000Z", "endedAt": "2026-05-15T10:08:00.000Z"
   },
   {
@@ -119,8 +124,9 @@
       { "role": "assistant", "content": "Mock AI reply: Very good use of going to for planned future actions.", "createdAt": "2026-05-17T10:30:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Allocate", "Backlog"], "aiScore": 86, "aiFeedback": "Both vocabulary items used naturally. Future going to is accurate.",
-    "teacherScore": 88, "teacherComment": "Natural and professional. Good sprint planning English.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 3, "teacherScore": 88, "teacherComment": "Natural and professional. Good sprint planning English.", "reviewedAt": "2026-05-17T12:00:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-17T10:25:00.000Z", "endedAt": "2026-05-17T10:40:00.000Z"
   },
@@ -131,8 +137,9 @@
       { "role": "assistant", "content": "Mock AI reply: Correct second conditional usage. Well done.", "createdAt": "2026-05-19T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Rollback", "Failover"], "aiScore": 91, "aiFeedback": "Perfect second conditional. Vocabulary is accurately applied.",
-    "teacherScore": 93, "teacherComment": "Excellent. Very confident use of the second conditional.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 26, "teacherScore": 93, "teacherComment": "Excellent. Very confident use of the second conditional.", "reviewedAt": "2026-05-19T11:00:00.000Z" }
+    ],
     "commentsThread": [
       { "role": "teacher", "content": "Can you also make a sentence using the failover vocabulary?", "createdAt": "2026-05-19T11:00:00.000Z" },
       { "role": "student", "content": "If the primary region went down, the failover system would activate automatically.", "createdAt": "2026-05-19T11:05:00.000Z" }
@@ -146,8 +153,9 @@
       { "role": "assistant", "content": "Mock AI reply: Accurate and professional incident communication.", "createdAt": "2026-05-17T10:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Resolve", "Monitor"], "aiScore": 93, "aiFeedback": "Excellent vocabulary use and professional communication style.",
-    "teacherScore": 95, "teacherComment": "This is exactly how a senior engineer communicates during an incident.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 20, "teacherScore": 95, "teacherComment": "This is exactly how a senior engineer communicates during an incident.", "reviewedAt": "2026-05-17T11:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-17T10:25:00.000Z", "endedAt": "2026-05-17T10:38:00.000Z"
   },
@@ -158,7 +166,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good comparatives usage for a framework comparison.", "createdAt": "2026-05-21T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Benchmark", "Scalable"], "aiScore": 82, "aiFeedback": "Comparatives used correctly. Good vocabulary integration.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-21T09:55:00.000Z", "endedAt": "2026-05-21T10:10:00.000Z"
   },
   {
@@ -168,8 +176,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent use of relative clauses in a technical context.", "createdAt": "2026-05-20T09:30:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Microservice", "Decouple"], "aiScore": 95, "aiFeedback": "Near-perfect relative clause usage with accurate technical vocabulary.",
-    "teacherScore": 97, "teacherComment": "Truly impressive. You are using defining relative clauses precisely and naturally.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 38, "teacherScore": 97, "teacherComment": "Truly impressive. You are using defining relative clauses precisely and naturally.", "reviewedAt": "2026-05-20T11:00:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-20T09:25:00.000Z", "endedAt": "2026-05-20T09:40:00.000Z"
   },
@@ -180,8 +189,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent formal inversion. Very impressive.", "createdAt": "2026-05-29T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Demonstrate", "Justify"], "aiScore": 95, "aiFeedback": "Perfect formal inversion with strong technical vocabulary.",
-    "teacherScore": 96, "teacherComment": "Outstanding board-level English. The inversion is flawless.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 44, "teacherScore": 96, "teacherComment": "Outstanding board-level English. The inversion is flawless.", "reviewedAt": "2026-05-29T12:00:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-29T09:55:00.000Z", "endedAt": "2026-05-29T10:12:00.000Z"
   },
@@ -192,7 +202,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good past simple usage in a formal email context.", "createdAt": "2026-05-14T09:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Submit", "Complete"], "aiScore": 78, "aiFeedback": "Both vocabulary items used correctly. Sentence structure is clear.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-14T08:55:00.000Z", "endedAt": "2026-05-14T09:08:00.000Z"
   },
   {
@@ -202,8 +212,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent use of used to for legacy system explanations.", "createdAt": "2026-05-28T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Migrate", "Deprecate"], "aiScore": 88, "aiFeedback": "Used to is handled very naturally. Vocabulary is accurate.",
-    "teacherScore": 90, "teacherComment": "Very professional. This is exactly how you would explain a legacy migration.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 16, "teacherScore": 90, "teacherComment": "Very professional. This is exactly how you would explain a legacy migration.", "reviewedAt": "2026-05-28T11:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-28T09:55:00.000Z", "endedAt": "2026-05-28T10:10:00.000Z"
   },
@@ -214,8 +225,9 @@
       { "role": "assistant", "content": "Mock AI reply: Good reported speech with correct backshifting.", "createdAt": "2026-06-01T10:30:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Summarise", "Relay"], "aiScore": 87, "aiFeedback": "Reported speech backshifting is accurate. Well done.",
-    "teacherScore": 89, "teacherComment": "Natural and grammatically correct. Your meeting summaries will sound very professional.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 32, "teacherScore": 89, "teacherComment": "Natural and grammatically correct. Your meeting summaries will sound very professional.", "reviewedAt": "2026-06-01T12:00:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-06-01T10:25:00.000Z", "endedAt": "2026-06-01T10:40:00.000Z"
   },
@@ -226,8 +238,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent past perfect usage in a security context.", "createdAt": "2026-06-01T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Detect", "Contain"], "aiScore": 93, "aiFeedback": "Near-perfect past perfect usage. Technical vocabulary is highly accurate.",
-    "teacherScore": 95, "teacherComment": "This reads like a real post-mortem report. Excellent work.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 38, "teacherScore": 95, "teacherComment": "This reads like a real post-mortem report. Excellent work.", "reviewedAt": "2026-06-01T11:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-06-01T09:55:00.000Z", "endedAt": "2026-06-01T10:12:00.000Z"
   },
@@ -238,7 +251,7 @@
       { "role": "assistant", "content": "Mock AI reply: Correct use of passive voice for API documentation.", "createdAt": "2026-05-21T09:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Document", "Expose"], "aiScore": 84, "aiFeedback": "Passive voice is used accurately. Vocabulary correctly applied.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-21T09:25:00.000Z", "endedAt": "2026-05-21T09:40:00.000Z"
   },
   {
@@ -248,7 +261,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good gerund usage in a technical proposal context.", "createdAt": "2026-05-29T09:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Propose", "Implement"], "aiScore": 83, "aiFeedback": "Gerund after proposing used correctly. Vocabulary accurate.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-29T08:55:00.000Z", "endedAt": "2026-05-29T09:10:00.000Z"
   },
   {
@@ -258,8 +271,9 @@
       { "role": "assistant", "content": "Mock AI reply: Very strong past perfect usage in a post-mortem context.", "createdAt": "2026-06-03T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Detect", "Contain"], "aiScore": 89, "aiFeedback": "Excellent past perfect and passive combined. Very professional.",
-    "teacherScore": 91, "teacherComment": "This is post-mortem level English. Well done.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 41, "teacherScore": 91, "teacherComment": "This is post-mortem level English. Well done.", "reviewedAt": "2026-06-03T11:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-06-03T09:55:00.000Z", "endedAt": "2026-06-03T10:15:00.000Z"
   },
@@ -270,7 +284,7 @@
       { "role": "assistant", "content": "Mock AI reply: Flawless subjunctive mood in a compliance context.", "createdAt": "2026-06-08T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Comply", "Audit"], "aiScore": 96, "aiFeedback": "Subjunctive used correctly in both cases. Highly impressive.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-08T09:55:00.000Z", "endedAt": "2026-06-08T10:12:00.000Z"
   },
   {
@@ -280,7 +294,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good use of modal verbs for recommendations.", "createdAt": "2026-06-03T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Review", "Lint"], "aiScore": 80, "aiFeedback": "Modal verbs used accurately for advice. Vocabulary correct.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-03T09:55:00.000Z", "endedAt": "2026-06-03T10:08:00.000Z"
   },
   {
@@ -290,8 +304,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent use of future perfect for roadmap planning.", "createdAt": "2026-06-05T09:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Release", "Roadmap"], "aiScore": 91, "aiFeedback": "Future perfect used correctly for milestone planning. Very professional.",
-    "teacherScore": 92, "teacherComment": "Board-ready language. This is exactly how you present a roadmap.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 35, "teacherScore": 92, "teacherComment": "Board-ready language. This is exactly how you present a roadmap.", "reviewedAt": "2026-06-05T10:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-06-05T08:55:00.000Z", "endedAt": "2026-06-05T09:12:00.000Z"
   },
@@ -302,7 +317,7 @@
       { "role": "assistant", "content": "Mock AI reply: Very accurate past continuous usage in an incident context.", "createdAt": "2026-06-08T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Alert", "Diagnose"], "aiScore": 86, "aiFeedback": "Past continuous correctly used to describe parallel past actions.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-08T09:55:00.000Z", "endedAt": "2026-06-08T10:10:00.000Z"
   },
   {
@@ -312,7 +327,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good passive voice usage for API documentation.", "createdAt": "2026-05-24T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Document", "Expose"], "aiScore": 83, "aiFeedback": "Passive voice is correctly used throughout. Vocabulary is accurate.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-24T09:55:00.000Z", "endedAt": "2026-05-24T10:10:00.000Z"
   },
   {
@@ -322,7 +337,7 @@
       { "role": "assistant", "content": "Mock AI reply: Clear past simple for sprint retrospective context.", "createdAt": "2026-05-26T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Estimate", "Prioritize"], "aiScore": 77, "aiFeedback": "Good past simple use. Try to add more detail in your answers.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-26T09:55:00.000Z", "endedAt": "2026-05-26T10:08:00.000Z"
   },
   {
@@ -332,7 +347,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good article usage in a status update context.", "createdAt": "2026-05-30T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Update", "Milestone"], "aiScore": 76, "aiFeedback": "Articles used correctly. Vocabulary is accurate.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-30T09:55:00.000Z", "endedAt": "2026-05-30T10:08:00.000Z"
   },
   {
@@ -342,7 +357,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good reported speech with correct backshifting.", "createdAt": "2026-06-07T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Summarise", "Relay"], "aiScore": 81, "aiFeedback": "Reported speech is mostly correct. Good vocabulary integration.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-07T09:55:00.000Z", "endedAt": "2026-06-07T10:10:00.000Z"
   },
   {
@@ -352,7 +367,7 @@
       { "role": "assistant", "content": "Mock AI reply: I noticed a small tense error — use 'reported' for past.", "createdAt": "2026-05-17T09:00:04.000Z" }
     ],
     "unusedVocab": ["Report"], "usedWords": [], "aiScore": 55, "aiFeedback": "Tense error detected. Remember to use past simple for completed actions.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false,
+    "teacherReviews": [],
     "commentsThread": [
       { "role": "teacher", "content": "The key word here is 'reported' not 'report'. Please revise this lesson.", "createdAt": "2026-05-17T10:00:00.000Z" }
     ],
@@ -365,7 +380,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good comparatives. Vocabulary used correctly.", "createdAt": "2026-06-01T09:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Benchmark", "Scalable"], "aiScore": 82, "aiFeedback": "Comparatives used correctly. Good vocabulary integration.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-01T09:25:00.000Z", "endedAt": "2026-06-01T09:40:00.000Z"
   },
   {
@@ -375,7 +390,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good attempt. Note: 'the alert was escalating' is more natural.", "createdAt": "2026-05-22T09:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Handover", "Escalate"], "aiScore": 68, "aiFeedback": "Vocabulary used but phrasing needs improvement. Try again for better score.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-22T08:55:00.000Z", "endedAt": "2026-05-22T09:08:00.000Z"
   },
   {
@@ -385,7 +400,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good modal verbs for code quality recommendations.", "createdAt": "2026-05-26T09:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Review", "Lint"], "aiScore": 85, "aiFeedback": "Modal verbs used correctly for recommendations.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-26T09:25:00.000Z", "endedAt": "2026-05-26T09:40:00.000Z"
   },
   {
@@ -395,7 +410,7 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent passive future for a migration plan.", "createdAt": "2026-06-09T09:30:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Transfer", "Archive"], "aiScore": 88, "aiFeedback": "Passive future used correctly. Professional migration language.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-09T09:25:00.000Z", "endedAt": "2026-06-09T09:40:00.000Z"
   },
   {
@@ -405,8 +420,9 @@
       { "role": "assistant", "content": "Mock AI reply: Perfect use of cleft sentences for root cause analysis.", "createdAt": "2026-05-22T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Analyse", "Trace"], "aiScore": 96, "aiFeedback": "Cleft sentences used perfectly. This is advanced technical English.",
-    "teacherScore": 98, "teacherComment": "One of the best responses I have seen. This is boardroom-level English.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 7, "teacherScore": 98, "teacherComment": "One of the best responses I have seen. This is boardroom-level English.", "reviewedAt": "2026-05-22T11:30:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-22T09:55:00.000Z", "endedAt": "2026-05-22T10:12:00.000Z"
   },
@@ -417,7 +433,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good present perfect for reviewing completed tasks.", "createdAt": "2026-06-05T09:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Accomplish", "Deliver"], "aiScore": 82, "aiFeedback": "Present perfect used correctly. Vocabulary integrated naturally.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-05T09:25:00.000Z", "endedAt": "2026-06-05T09:40:00.000Z"
   },
   {
@@ -427,7 +443,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good past continuous for parallel past actions.", "createdAt": "2026-06-09T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Alert", "Diagnose"], "aiScore": 84, "aiFeedback": "Past continuous handles overlapping actions well. Well done.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-09T09:55:00.000Z", "endedAt": "2026-06-09T10:10:00.000Z"
   },
   {
@@ -437,7 +453,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good past simple usage for formal email context.", "createdAt": "2026-05-25T10:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Submit", "Complete"], "aiScore": 76, "aiFeedback": "Past simple used correctly. Try longer, more detailed sentences.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-25T09:55:00.000Z", "endedAt": "2026-05-25T10:08:00.000Z"
   },
   {
@@ -447,7 +463,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good present continuous for current work descriptions.", "createdAt": "2026-06-03T09:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Refactor", "Optimize"], "aiScore": 79, "aiFeedback": "Present continuous used correctly. Grammar is accurate.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-03T08:55:00.000Z", "endedAt": "2026-06-03T09:10:00.000Z"
   },
   {
@@ -457,7 +473,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good use of used to for legacy system context.", "createdAt": "2026-05-30T09:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Migrate", "Deprecate"], "aiScore": 83, "aiFeedback": "Used to applied naturally. Migration vocabulary is correct.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-30T08:55:00.000Z", "endedAt": "2026-05-30T09:10:00.000Z"
   },
   {
@@ -467,7 +483,7 @@
       { "role": "assistant", "content": "Mock AI reply: Clear and correct present simple usage.", "createdAt": "2026-05-30T09:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Maintain", "Deploy"], "aiScore": 74, "aiFeedback": "Good attempt. Vocabulary used correctly. Expand on your answer.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-30T08:55:00.000Z", "endedAt": "2026-05-30T09:08:00.000Z"
   },
   {
@@ -477,8 +493,9 @@
       { "role": "assistant", "content": "Mock AI reply: Excellent formal inversion structures. Very advanced.", "createdAt": "2026-05-24T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Demonstrate", "Justify"], "aiScore": 95, "aiFeedback": "Multiple inversion structures used correctly. Very impressive.",
-    "teacherScore": 96, "teacherComment": "This is exactly the level of English needed for executive communications.",
-    "isReviewedByTeacher": true,
+    "teacherReviews": [
+      { "teacherId": 20, "teacherScore": 96, "teacherComment": "This is exactly the level of English needed for executive communications.", "reviewedAt": "2026-05-24T12:00:00.000Z" }
+    ],
     "commentsThread": [],
     "createdAt": "2026-05-24T09:55:00.000Z", "endedAt": "2026-05-24T10:12:00.000Z"
   },
@@ -489,7 +506,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good introduction using modal verbs for ability.", "createdAt": "2026-05-28T08:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Collaborate", "Contribute"], "aiScore": 73, "aiFeedback": "Good use of can and could. Try to also mention collaboration.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-28T07:55:00.000Z", "endedAt": "2026-05-28T08:08:00.000Z"
   },
   {
@@ -499,7 +516,7 @@
       { "role": "assistant", "content": "Mock AI reply: Tense issues detected. Use reported and finished in past simple.", "createdAt": "2026-05-29T09:00:04.000Z" }
     ],
     "unusedVocab": ["Report"], "usedWords": [], "aiScore": 52, "aiFeedback": "Multiple tense errors. Practice past simple with more examples.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false,
+    "teacherReviews": [],
     "commentsThread": [
       { "role": "teacher", "content": "Please revise past simple irregular verbs and try again.", "createdAt": "2026-05-29T10:00:00.000Z" }
     ],
@@ -512,7 +529,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good use of will and would for projections.", "createdAt": "2026-06-09T10:00:05.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Forecast", "Capacity"], "aiScore": 88, "aiFeedback": "Modal will and would correctly used for business projections.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-09T09:55:00.000Z", "endedAt": "2026-06-09T10:10:00.000Z"
   },
   {
@@ -522,7 +539,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good present simple usage. Clear and correct.", "createdAt": "2026-06-04T09:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Maintain", "Deploy"], "aiScore": 72, "aiFeedback": "Correct and clear. Try to add more detail.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-04T08:55:00.000Z", "endedAt": "2026-06-04T09:08:00.000Z"
   },
   {
@@ -532,7 +549,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good introduction with modal verbs for ability.", "createdAt": "2026-06-07T08:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Collaborate", "Contribute"], "aiScore": 70, "aiFeedback": "Can and could used correctly. Work on more detailed sentences.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-07T08:25:00.000Z", "endedAt": "2026-06-07T08:40:00.000Z"
   },
   {
@@ -542,7 +559,7 @@
       { "role": "assistant", "content": "Mock AI reply: Clear setup instructions. Vocabulary used correctly.", "createdAt": "2026-05-28T09:00:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Install", "Configure"], "aiScore": 75, "aiFeedback": "Instructions are clear and vocabulary is correct. Good work.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-05-28T08:55:00.000Z", "endedAt": "2026-05-28T09:08:00.000Z"
   },
   {
@@ -552,7 +569,7 @@
       { "role": "assistant", "content": "Mock AI reply: Good use of quantifiers in a resource discussion.", "createdAt": "2026-06-04T08:30:04.000Z" }
     ],
     "unusedVocab": [], "usedWords": ["Headcount", "Bandwidth"], "aiScore": 78, "aiFeedback": "Quantifiers used correctly. Vocabulary accurately applied.",
-    "teacherScore": null, "teacherComment": null, "isReviewedByTeacher": false, "commentsThread": [],
+    "teacherReviews": [], "commentsThread": [],
     "createdAt": "2026-06-04T08:25:00.000Z", "endedAt": "2026-06-04T08:40:00.000Z"
   }
 ]

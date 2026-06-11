@@ -28,4 +28,27 @@ function updateSettingsByUserId(userId, updates) {
   return record;
 }
 
-module.exports = { getSettingsByUserId, updateSettingsByUserId };
+/**
+ * Creates a default settings record for a newly registered user.
+ * Called automatically by the registration handler for every role.
+ *
+ * @param {number|string} userId
+ * @param {string} firstName
+ * @param {string} lastName
+ * @param {string} email
+ * @returns {object} The new settings record
+ */
+function createSettingsRecord(userId, firstName, lastName, email) {
+  const newRecord = {
+    userId: Number(userId),
+    displayName: `${firstName} ${lastName}`,
+    email,
+    theme: 'light',
+  };
+
+  settings.push(newRecord);
+
+  return newRecord;
+}
+
+module.exports = { getSettingsByUserId, updateSettingsByUserId, createSettingsRecord };

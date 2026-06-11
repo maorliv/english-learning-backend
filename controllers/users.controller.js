@@ -2,6 +2,7 @@ const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { createProgressRecord } = require('../models/progress.model');
+const { createSettingsRecord } = require('../models/settings.model');
 const { createTeacherProfile } = require('../models/teachers.model');
 const {
   createUser,
@@ -53,6 +54,9 @@ const registerUser = withErrorHandling((req, res) => {
     userRole,
     sex,
   });
+
+  // Settings record is created for every user regardless of role.
+  createSettingsRecord(newUser.userID, firstName, lastName, email);
 
   // Automatically create a blank progress record for new students.
   // Level starts as null and is set after the AI assessment is completed.

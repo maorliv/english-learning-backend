@@ -9,7 +9,7 @@ function getScoredCompletedConversationsByStudentId(studentId, limit = 5) {
   return conversations
     .filter((conversation) => String(conversation.studentId) === String(studentId))
     .filter((conversation) => conversation.status === 'completed')
-    .filter((conversation) => conversation.aiScore !== null || conversation.teacherScore !== null)
+    .filter((conversation) => conversation.aiScore !== null || conversation.teacherReviews.length > 0)
     .sort((leftConversation, rightConversation) => {
       const leftDate = new Date(leftConversation.endedAt || leftConversation.createdAt).getTime();
       const rightDate = new Date(rightConversation.endedAt || rightConversation.createdAt).getTime();
@@ -21,7 +21,7 @@ function getScoredCompletedConversationsByStudentId(studentId, limit = 5) {
       conversationId: conversation.conversationId,
       lessonId: conversation.lessonId,
       aiScore: conversation.aiScore,
-      teacherScore: conversation.teacherScore,
+      teacherReviews: conversation.teacherReviews,
       date: conversation.endedAt || conversation.createdAt,
     }));
 }
@@ -31,7 +31,7 @@ function getScoredCompletedConversationsByStudentId(studentId, limit = 5) {
  * Supports filtering by status, studentId, studentIds (array), and lessonId.
  * Used by admin/teacher list endpoints that don't need full message content.
  */
-function getAllConversations(filters = {}) {
+function getAllConversations(filters = {}, requestingTeacherId = null) {
   return conversations
     .filter((conversation) => {
       if (filters.status && conversation.status !== filters.status) {
@@ -67,7 +67,9 @@ function getAllConversations(filters = {}) {
       lessonId: conversation.lessonId,
       status: conversation.status,
       aiScore: conversation.aiScore,
-      isReviewedByTeacher: conversation.isReviewedByTeacher,
+      isReviewedByTeacher: requestingTeacherId !== null
+        ? conversation.teacherReviews.some((r) => String(r.teacherId) === String(requestingTeacherId))
+        : conversation.teacherReviews.length > 0,
     }));
 }
 
@@ -111,8 +113,8 @@ function getConversationSummaries(filters = {}) {
       lessonId: conversation.lessonId,
       status: conversation.status,
       aiScore: conversation.aiScore,
-      teacherScore: conversation.teacherScore,
-      isReviewedByTeacher: conversation.isReviewedByTeacher,
+      teacherReviews: conversation.teacherReviews,
+      isReviewedByTeacher: conversation.teacherReviews.length > 0,
       createdAt: conversation.createdAt,
     }));
 }
@@ -130,7 +132,9 @@ function getAllCompletedConversationsByStudentId(studentId) {
     .map((c) => ({
       lessonId: c.lessonId,
       aiScore: c.aiScore,
-      teacherScore: c.teacherScore,
+      teacherScore: c.teacherReviews.length > 0
+        ? c.teacherReviews[c.teacherReviews.length - 1].teacherScore
+        : null,
       date: c.endedAt || c.createdAt,
     }));
 }
@@ -163,9 +167,7 @@ function createConversation(studentId, lessonId, unusedVocab = []) {
     usedWords: [],
     aiScore: null,
     aiFeedback: null,
-    teacherScore: null,
-    teacherComment: null,
-    isReviewedByTeacher: false,
+    teacherReviews: [],
     commentsThread: [],
     createdAt: new Date().toISOString(),
     endedAt: null,
@@ -253,19 +255,33 @@ function endConversation(conversationId) {
 
 /**
  * Saves a teacher's score and written comment on a completed conversation.
- * Sets isReviewedByTeacher = true.
+ * Stores the review in teacherReviews keyed by teacherId — each teacher has one entry.
+ * If the teacher has already reviewed, their entry is updated in place.
  * Returns just the conversationId on success, or null if not found.
  */
-function addTeacherComment(conversationId, teacherScore, teacherComment) {
+function addTeacherComment(conversationId, teacherId, teacherScore, teacherComment) {
   const conversation = getConversationById(conversationId);
 
   if (!conversation) {
     return null;
   }
 
-  conversation.teacherScore = teacherScore;
-  conversation.teacherComment = teacherComment;
-  conversation.isReviewedByTeacher = true;
+  const review = {
+    teacherId: Number(teacherId),
+    teacherScore,
+    teacherComment,
+    reviewedAt: new Date().toISOString(),
+  };
+
+  const existingIndex = conversation.teacherReviews.findIndex(
+    (r) => String(r.teacherId) === String(teacherId)
+  );
+
+  if (existingIndex !== -1) {
+    conversation.teacherReviews[existingIndex] = review;
+  } else {
+    conversation.teacherReviews.push(review);
+  }
 
   return {
     conversationId: conversation.conversationId,

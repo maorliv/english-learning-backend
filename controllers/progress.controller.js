@@ -4,6 +4,7 @@ const {
   getAllCompletedConversationsByStudentId,
 } = require('../models/conversations.model');
 const { getAllLessons, getLessonById } = require('../models/lessons.model');
+const { getTeacherById } = require('../models/teachers.model');
 const { getStudentPreferencesByUserId } = require('../models/matching.model');
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
@@ -147,15 +148,26 @@ const getProgressChart = withErrorHandling((req, res) => {
     );
   }
 
-  // Fetch recent scored conversations and enrich each with the lesson title
+  // Fetch recent scored conversations and enrich each with lesson title and teacher names
   const scoredConversations = getScoredCompletedConversationsByStudentId(validatedStudentId.value).map(
-    (conversation) => ({
-      conversationId: conversation.conversationId,
-      lessonTitle: getLessonById(conversation.lessonId)?.title || null, // ?. safely handles missing lesson
-      aiScore: conversation.aiScore,
-      teacherScore: conversation.teacherScore,
-      date: conversation.date,
-    })
+    (conversation) => {
+      const enrichedReviews = conversation.teacherReviews.map((review) => {
+        const teacher = getTeacherById(review.teacherId);
+        return {
+          teacherId: review.teacherId,
+          teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null,
+          teacherScore: review.teacherScore,
+        };
+      });
+
+      return {
+        conversationId: conversation.conversationId,
+        lessonTitle: getLessonById(conversation.lessonId)?.title || null,
+        aiScore: conversation.aiScore,
+        teacherReviews: enrichedReviews,
+        date: conversation.date,
+      };
+    }
   );
 
   return sendSuccess(res, 200, scoredConversations);

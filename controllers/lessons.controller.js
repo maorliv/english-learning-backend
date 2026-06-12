@@ -2,7 +2,7 @@ const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const { getGrammarRuleById } = require('../models/grammarRules.model');
-const { getWarmUpGrammarByLessonId } = require('../models/warmUpGrammar.model');
+const { getWarmUpGrammarByGrammarRuleId } = require('../models/warmUpGrammar.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
 const { getProgressByStudentId } = require('../models/progress.model');
 const {
@@ -25,7 +25,6 @@ const createLessonHandler = withErrorHandling((req, res) => {
     'aiRole',
     'level',
     'grammarRuleId',
-    'vocabularyId',
   ]);
 
   if (!requiredFieldsValidation.isValid) {
@@ -43,7 +42,7 @@ const createLessonHandler = withErrorHandling((req, res) => {
     aiRole: req.body.aiRole,
     level: req.body.level,
     grammarRuleId: req.body.grammarRuleId,
-    vocabularyId: req.body.vocabularyId,
+    vocabularyId: req.body.vocabularyId ?? 0,
   });
 
   return sendSuccess(res, 201, lesson);
@@ -158,7 +157,7 @@ const getLessonGrammarWarmUp = withErrorHandling((req, res) => {
   }
 
   // req.query.difficulty is an optional filter from the URL (e.g. ?difficulty=easy)
-  const exercises = getWarmUpGrammarByLessonId(validatedId.value, req.query.difficulty);
+  const exercises = getWarmUpGrammarByGrammarRuleId(lesson.grammarRuleId, req.query.difficulty);
 
   if (exercises.length === 0) {
     throw createHttpError(

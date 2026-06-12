@@ -8,7 +8,6 @@ function getAllWarmUpGrammar() {
 /**
  * Returns warm-up exercises for a specific lesson, optionally filtered by difficulty.
  * Results are randomly shuffled and limited to `limit` items (default 5).
- * The correctAnswer field is intentionally excluded from the returned shape.
  *
  * @param {number|string} lessonId
  * @param {string}        [difficulty] - e.g. 'easy', 'medium', 'hard'
@@ -26,19 +25,51 @@ function getWarmUpGrammarByLessonId(lessonId, difficulty, limit = 5) {
 
       return String(exercise.difficulty).trim().toLowerCase() === normalizedDifficulty;
     })
-    // Project to exclude the correctAnswer field (should not be sent to the student)
     .map((exercise) => ({
       exerciseId: exercise.exerciseId,
       type: exercise.type,
       instruction: exercise.instruction,
       content: exercise.content,
       options: exercise.options,
+      correctAnswer: exercise.correctAnswer,
       difficulty: exercise.difficulty,
     }));
 
   // Shuffle randomly and return only the requested number of exercises
   return matchingExercises
     .sort(() => Math.random() - 0.5) // Fisher-Yates-style shuffle via random comparator
+    .slice(0, limit);
+}
+
+/**
+ * Returns warm-up exercises for a specific grammar rule, optionally filtered by difficulty.
+ * Results are randomly shuffled and limited to `limit` items (default 5).
+ *
+ * @param {string}        grammarRuleId - e.g. 'present_simple'
+ * @param {string}        [difficulty]  - e.g. 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'
+ * @param {number}        [limit=5]     - Maximum number of exercises to return
+ */
+function getWarmUpGrammarByGrammarRuleId(grammarRuleId, difficulty, limit = 5) {
+  const normalizedDifficulty = difficulty ? String(difficulty).trim().toLowerCase() : null;
+
+  const matchingExercises = warmUpGrammar
+    .filter((exercise) => exercise.grammarRuleId === grammarRuleId)
+    .filter((exercise) => {
+      if (!normalizedDifficulty) return true;
+      return String(exercise.difficulty).trim().toLowerCase() === normalizedDifficulty;
+    })
+    .map((exercise) => ({
+      exerciseId: exercise.exerciseId,
+      type: exercise.type,
+      instruction: exercise.instruction,
+      content: exercise.content,
+      options: exercise.options,
+      correctAnswer: exercise.correctAnswer,
+      difficulty: exercise.difficulty,
+    }));
+
+  return matchingExercises
+    .sort(() => Math.random() - 0.5)
     .slice(0, limit);
 }
 
@@ -115,6 +146,7 @@ function deleteWarmUpGrammarById(id) {
 module.exports = {
   getAllWarmUpGrammar,
   getWarmUpGrammarByLessonId,
+  getWarmUpGrammarByGrammarRuleId,
   getWarmUpGrammarById,
   createWarmUpGrammar,
   updateWarmUpGrammarById,

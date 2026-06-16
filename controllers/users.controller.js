@@ -114,16 +114,17 @@ const getUser = withErrorHandling((req, res) => {
 
 /**
  * PUT /api/users/:id
- * Updates a user's firstName, lastName, and userRole.
+ * Updates a user's firstName and lastName only.
+ * Role changes are not permitted — any request that includes a userRole differing from
+ * the user's current role is rejected with 400.
  * Only admin can update any user; a user can also update their own profile (allowSelf in routes).
  */
 const updateUser = withErrorHandling((req, res) => {
-  const { firstName, lastName, userRole } = req.body; // Fields allowed to be updated
+  const { firstName, lastName, userRole } = req.body;
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'firstName',
     'lastName',
-    'userRole',
   ]);
 
   if (!validatedId.isValid) {
@@ -144,17 +145,28 @@ const updateUser = withErrorHandling((req, res) => {
     );
   }
 
-  const updatedUser = updateUserById(validatedId.value, {
-    firstName,
-    lastName,
-    userRole,
-  });
+  const existingUser = getUserById(validatedId.value);
 
-  if (!updatedUser) {
+  if (!existingUser) {
     throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', {
       userID: validatedId.value,
     });
   }
+
+  // Reject any attempt to change the user's role
+  if (userRole !== undefined && userRole !== existingUser.role) {
+    throw createHttpError(
+      400,
+      'ROLE_CHANGE_NOT_ALLOWED',
+      'Changing a user\'s role is not permitted.'
+    );
+  }
+
+  const updatedUser = updateUserById(validatedId.value, {
+    firstName,
+    lastName,
+    userRole: existingUser.role, // Always preserve the existing role
+  });
 
   return sendSuccess(res, 200, {
     userId: updatedUser.userID,
@@ -164,7 +176,7 @@ const updateUser = withErrorHandling((req, res) => {
 /**
  * DELETE /api/users/:id
  * Removes a user from the in-memory store by their numeric ID.
- * Restricted to admin.
+ * Restricted to admin. Admin accounts cannot be deleted.
  */
 const deleteUser = withErrorHandling((req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
@@ -178,13 +190,23 @@ const deleteUser = withErrorHandling((req, res) => {
     );
   }
 
-  const deletedUser = deleteUserById(validatedId.value);
+  const targetUser = getUserById(validatedId.value);
 
-  if (!deletedUser) {
+  if (!targetUser) {
     throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', {
       userID: validatedId.value,
     });
   }
+
+  if (targetUser.role === 'admin') {
+    throw createHttpError(
+      403,
+      'CANNOT_DELETE_ADMIN',
+      'Admin accounts cannot be deleted.'
+    );
+  }
+
+  const deletedUser = deleteUserById(validatedId.value);
 
   return sendSuccess(res, 200, {
     userId: deletedUser.userID,

@@ -359,7 +359,7 @@ const getLessonsCatalog = withErrorHandling((req, res) => {
       vocabularyCount: getVocabularyByLessonId(lesson.lessonId).length,
       isLocked,
       lockReason: isLocked
-        ? `This lesson requires ${lesson.level} level or above.`
+        ? `This lesson requires ${lesson.level} level. Your current level is ${progress.currentLevel}.`
         : null,
       canStart: !isLocked,
       isCompleted,

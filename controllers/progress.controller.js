@@ -3,65 +3,13 @@ const {
   getScoredCompletedConversationsByStudentId,
   getAllCompletedConversationsByStudentId,
 } = require('../models/conversations.model');
-const { getAllLessons, getLessonById } = require('../models/lessons.model');
+const { getLessonById } = require('../models/lessons.model');
 const { getTeacherById } = require('../models/teachers.model');
 const { getStudentPreferencesByUserId } = require('../models/matching.model');
+const { getNextLessonRecommendation } = require('../services/progress.service');
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam } = require('../utils/validators');
-
-/**
- * Private helper — builds a recommended next lesson for the student.
- * Finds lessons matching the student's current level, then ranks them by
- * how many tokens from the student's learning goal text appear in the lesson metadata.
- *
- * @param {object} progress    - The student's progress record
- * @param {object} preferences - The student's matching preferences
- * @returns {{ lessonId, title, reason } | null}
- */
-function buildRecommendedLesson(progress, preferences) {
-  const normalizedLevel = String(progress.currentLevel || '').trim().toLowerCase();
-  const goalText = String(preferences.learning_goal || '').toLowerCase();
-  const lessons = getAllLessons();
-
-  // Only consider lessons at the student's current level; fall back to all lessons if none match
-  const levelMatchedLessons = lessons.filter((lesson) => {
-    return String(lesson.level || '').trim().toLowerCase() === normalizedLevel;
-  });
-  const candidateLessons = levelMatchedLessons.length > 0 ? levelMatchedLessons : lessons;
-
-  // Score each lesson by how many goal tokens appear in its searchable fields
-  const rankedLessons = candidateLessons
-    .map((lesson) => {
-      const searchableText = [lesson.title, lesson.scene, lesson.aiRole, lesson.grammarRuleId]
-        .join(' ')
-        .toLowerCase();
-
-      // Split the goal text into tokens and count how many are found in the lesson text
-      const matchScore = goalText.split(/[^a-z0-9]+/).filter(Boolean).reduce((score, token) => {
-        return searchableText.includes(token) ? score + 1 : score;
-      }, 0);
-
-      return {
-        lesson,
-        matchScore,
-      };
-    })
-    .sort((leftItem, rightItem) => rightItem.matchScore - leftItem.matchScore); // Highest score first
-
-  // Optional chaining (?.) safely accesses .lesson even if the array is empty
-  const recommendedLesson = rankedLessons[0]?.lesson || null;
-
-  if (!recommendedLesson) {
-    return null;
-  }
-
-  return {
-    lessonId: recommendedLesson.lessonId,
-    title: recommendedLesson.title,
-    reason: `Recommended for your ${progress.currentLevel} level and learning goal: ${preferences.learning_goal}.`,
-  };
-}
 
 // Minimum score to count a lesson as successfully completed
 const SUCCESS_THRESHOLD = 70;
@@ -216,7 +164,7 @@ const getNextLesson = withErrorHandling((req, res) => {
     );
   }
 
-  return sendSuccess(res, 200, buildRecommendedLesson(progress, preferences));
+  return sendSuccess(res, 200, await getNextLessonRecommendation(progress, preferences));
 });
 
 /**

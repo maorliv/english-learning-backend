@@ -1,13 +1,12 @@
 const { getLessonById } = require('../models/lessons.model');
+const { getGrammarRuleById } = require('../models/grammarRules.model');
 const { getVocabularyByLessonId } = require('../models/vocabulary.model');
+const { startSession, generateReply, finalizeConversation } = require('../services/conversation.service');
 const { getActiveStudentIdsByTeacherId } = require('../models/relations.model');
 const { getTeacherByUserId, getTeacherById } = require('../models/teachers.model');
 const {
   addConversationReply,
   addTeacherComment,
-  addMessageToConversation,
-  createConversation,
-  endConversation,
   getAllConversations,
   getConversationById,
   getConversationSummaries,
@@ -224,10 +223,13 @@ const listStudentConversations = withErrorHandling((req, res) => {
 /**
  * POST /api/conversations/start
  * Creates a new conversation for the logged-in student on the specified lesson.
- * Initializes the unusedVocab list from the lesson's vocabulary so progress can be tracked.
- * Returns the new conversation's ID and initial state.
+ * Stores full lesson context (scene, aiRole, grammarRuleDetails, vocabWithDefinitions)
+ * in the conversation record so future AI calls have everything they need.
+ * Attempts to generate an AI opening message; falls back to an empty messages array
+ * when AI is not configured (frontend renders its own hardcoded greeting).
+ * Returns the new conversation's ID, messages, and initial unusedVocab list.
  */
-const startConversation = withErrorHandling((req, res) => {
+const startConversation = withErrorHandling(async (req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['lessonId']);
 
@@ -268,19 +270,19 @@ const startConversation = withErrorHandling((req, res) => {
       404,
       'LESSON_NOT_FOUND',
       'Lesson not found',
-      {
-        lessonId: validatedLessonId.value,
-      }
+      { lessonId: validatedLessonId.value }
     );
   }
 
-  // Build the initial unusedVocab list from all vocabulary words in this lesson
-  const lessonVocabulary = getVocabularyByLessonId(validatedLessonId.value);
-  const unusedVocab = lessonVocabulary.map((item) => item.word); // Start with all words unused
-  const conversation = createConversation(
+  // Fetch grammar rule and vocabulary with definitions — stored in the conversation for AI context
+  const grammarRule = getGrammarRuleById(lesson.grammarRuleId) || null;
+  const vocabulary = getVocabularyByLessonId(validatedLessonId.value);
+
+  const conversation = await startSession(
     validatedStudentId.value,
-    validatedLessonId.value,
-    unusedVocab
+    lesson,
+    grammarRule,
+    vocabulary
   );
 
   return sendSuccess(res, 201, {
@@ -293,10 +295,9 @@ const startConversation = withErrorHandling((req, res) => {
 /**
  * POST /api/conversations/:id/message
  * Sends a student message to an active conversation.
- * The message content is scanned for lesson vocabulary words, which are then moved
- * from unusedVocab to usedWords. A mock AI reply is appended automatically.
+ * Tracks vocabulary usage, then generates an AI reply (real or mock fallback).
  */
-const sendConversationMessage = withErrorHandling((req, res) => {
+const sendConversationMessage = withErrorHandling(async (req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['content']);
 
@@ -325,23 +326,21 @@ const sendConversationMessage = withErrorHandling((req, res) => {
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
+      { conversationId: validatedConversationId.value }
     );
   }
 
-  const result = addMessageToConversation(validatedConversationId.value, req.body.content);
+  const result = await generateReply(validatedConversationId.value, req.body.content);
 
   return sendSuccess(res, 200, result);
 });
 
 /**
  * POST /api/conversations/:id/end
- * Marks a conversation as completed and calculates an AI score based on vocabulary usage.
+ * Marks a conversation as completed and scores it using AI (real or fallback).
  * Returns the final score and AI feedback.
  */
-const finishConversation = withErrorHandling((req, res) => {
+const finishConversation = withErrorHandling(async (req, res) => {
   const validatedConversationId = validateIdParam(req.params.id, 'id');
 
   if (!validatedConversationId.isValid) {
@@ -360,13 +359,11 @@ const finishConversation = withErrorHandling((req, res) => {
       404,
       'CONVERSATION_NOT_FOUND',
       'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
+      { conversationId: validatedConversationId.value }
     );
   }
 
-  const result = endConversation(validatedConversationId.value);
+  const result = await finalizeConversation(validatedConversationId.value);
 
   return sendSuccess(res, 200, result);
 });

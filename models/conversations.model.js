@@ -150,9 +150,16 @@ function getConversationById(conversationId) {
 
 /**
  * Creates a new conversation for a student on a given lesson.
- * The unusedVocab array is pre-populated from the lesson's vocabulary so word usage can be tracked.
+ * lessonContext and vocabWithDefinitions are stored for future AI API calls —
+ * they give Gemini the scene, role, grammar rule, and vocabulary definitions it needs.
+ *
+ * @param {number|string} studentId
+ * @param {number|string} lessonId
+ * @param {string[]}      unusedVocab          - Word strings for UI vocab tracking
+ * @param {object|null}   lessonContext         - { scene, aiRole, grammarRuleId, grammarRuleDetails, vocabWithDefinitions }
+ * @param {object[]}      vocabWithDefinitions  - [{ word, definition }] for the AI prompt
  */
-function createConversation(studentId, lessonId, unusedVocab = []) {
+function createConversation(studentId, lessonId, unusedVocab = [], lessonContext = null, vocabWithDefinitions = []) {
   const nextConversationId = conversations.reduce((maxConversationId, conversation) => {
     return Math.max(maxConversationId, Number(conversation.conversationId) || 0);
   }, 0) + 1;
@@ -165,6 +172,8 @@ function createConversation(studentId, lessonId, unusedVocab = []) {
     messages: [],
     unusedVocab,
     usedWords: [],
+    lessonContext,
+    vocabWithDefinitions,
     aiScore: null,
     aiFeedback: null,
     teacherReviews: [],
@@ -176,6 +185,74 @@ function createConversation(studentId, lessonId, unusedVocab = []) {
   conversations.push(newConversation);
 
   return newConversation;
+}
+
+/**
+ * Tracks which vocabulary words appear in the student's message (case-insensitive),
+ * moves found words from unusedVocab to usedWords, and stores the student message.
+ * Used by conversation.service as step 1 of every turn (pure JS, no AI call).
+ * Returns the updated vocab lists, or null if the conversation is not found.
+ */
+function trackVocabAndStoreMessage(conversationId, content) {
+  const conversation = getConversationById(conversationId);
+  if (!conversation) return null;
+
+  const normalizedContent = String(content).toLowerCase();
+  const foundWords = conversation.unusedVocab.filter((word) =>
+    normalizedContent.includes(String(word).toLowerCase())
+  );
+
+  conversation.unusedVocab = conversation.unusedVocab.filter((word) => !foundWords.includes(word));
+  conversation.usedWords = Array.from(new Set([...conversation.usedWords, ...foundWords]));
+
+  conversation.messages.push({
+    role: 'student',
+    content,
+    createdAt: new Date().toISOString(),
+  });
+
+  return {
+    unusedVocab: conversation.unusedVocab,
+    usedWords: conversation.usedWords,
+  };
+}
+
+/**
+ * Appends an AI message to the conversation's message history.
+ * Called by conversation.service after receiving a reply (real or mock).
+ */
+function appendAIMessage(conversationId, content) {
+  const conversation = getConversationById(conversationId);
+  if (!conversation) return null;
+
+  conversation.messages.push({
+    role: 'assistant',
+    content,
+    createdAt: new Date().toISOString(),
+  });
+
+  return conversation;
+}
+
+/**
+ * Marks the conversation as completed and stores the final AI score and feedback.
+ * Called by conversation.service after scoring (real or fallback).
+ * Returns { conversationId, aiScore, aiFeedback } or null if not found.
+ */
+function markConversationComplete(conversationId, aiScore, aiFeedback) {
+  const conversation = getConversationById(conversationId);
+  if (!conversation) return null;
+
+  conversation.status = 'completed';
+  conversation.endedAt = new Date().toISOString();
+  conversation.aiScore = aiScore;
+  conversation.aiFeedback = aiFeedback;
+
+  return {
+    conversationId: conversation.conversationId,
+    aiScore: conversation.aiScore,
+    aiFeedback: conversation.aiFeedback,
+  };
 }
 
 /**
@@ -317,6 +394,8 @@ function addConversationReply(conversationId, role, content) {
 module.exports = {
   addConversationReply,
   addTeacherComment,
+  appendAIMessage,
+  createConversation,
   endConversation,
   getAllConversations,
   getAllCompletedConversationsByStudentId,
@@ -324,5 +403,6 @@ module.exports = {
   getScoredCompletedConversationsByStudentId,
   getConversationById,
   addMessageToConversation,
-  createConversation,
+  markConversationComplete,
+  trackVocabAndStoreMessage,
 };

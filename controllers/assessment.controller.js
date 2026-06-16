@@ -4,10 +4,9 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const {
   createAssessment,
   getAssessmentById,
-  addMessageToAssessment,
-  endAssessment,
 } = require('../models/assessment.model');
 const { updateProgressLevel } = require('../models/progress.model');
+const { processMessage, finalizeAssessment } = require('../services/assessment.service');
 
 /**
  * POST /api/assessment/start
@@ -42,7 +41,7 @@ const startAssessment = withErrorHandling((req, res) => {
  * Returns 404 if the assessment does not exist.
  * Returns 400 if the assessment is already completed.
  */
-const sendAssessmentMessage = withErrorHandling((req, res) => {
+const sendAssessmentMessage = withErrorHandling(async (req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['content']);
 
@@ -78,7 +77,7 @@ const sendAssessmentMessage = withErrorHandling((req, res) => {
     });
   }
 
-  const result = addMessageToAssessment(validatedId.value, req.body.content);
+  const result = await processMessage(validatedId.value, req.body.content);
 
   return sendSuccess(res, 200, {
     reply: result.reply,
@@ -93,7 +92,7 @@ const sendAssessmentMessage = withErrorHandling((req, res) => {
  * Returns 400 if the assessment is already completed.
  * Returns 404 if the student has no progress record to update.
  */
-const endAssessmentHandler = withErrorHandling((req, res) => {
+const endAssessmentHandler = withErrorHandling(async (req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
@@ -119,7 +118,7 @@ const endAssessmentHandler = withErrorHandling((req, res) => {
     });
   }
 
-  const result = endAssessment(validatedId.value);
+  const result = await finalizeAssessment(validatedId.value);
 
   // Write the detected level back to the student's progress record
   const updatedProgress = updateProgressLevel(assessment.studentId, result.detectedLevel);

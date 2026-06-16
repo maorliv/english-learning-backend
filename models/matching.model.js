@@ -101,6 +101,24 @@ function calculateMockMatchScore(teacher, preferences) {
 }
 
 /**
+ * Applies hard filters to the teacher list based on student preferences.
+ * Used by matching.service as step 1 before passing candidates to the AI.
+ * budget_max and available are always enforced; onlineOnly is enforced when set to true.
+ */
+function getFilteredTeachers(preferences) {
+  const candidates = getAllTeachers({
+    available: true,
+    maxPrice: Number(preferences.budget_max),
+  });
+
+  if (preferences.onlineOnly === true) {
+    return candidates.filter((t) => t.onlineOnly === true);
+  }
+
+  return candidates;
+}
+
+/**
  * Returns a ranked list of available teacher recommendations for the given preferences.
  * Only teachers who are available and within budget are included.
  * Sorted by: matchScore DESC, rank DESC, pricePerWeek ASC.
@@ -110,10 +128,7 @@ function getMockTeacherRecommendationsForPreferences(preferences) {
     return null;
   }
 
-  const matchingTeachers = getAllTeachers({
-    available: true,
-    maxPrice: Number(preferences.budget_max),
-  });
+  const matchingTeachers = getFilteredTeachers(preferences);
 
   return matchingTeachers
     .map((teacher) => ({
@@ -140,5 +155,6 @@ function getMockTeacherRecommendationsForPreferences(preferences) {
 module.exports = {
   getStudentPreferencesByUserId,
   saveStudentPreferences,
+  getFilteredTeachers,
   getMockTeacherRecommendationsForPreferences,
 };

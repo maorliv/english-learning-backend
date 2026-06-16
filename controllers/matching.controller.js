@@ -1,8 +1,8 @@
 const {
   getStudentPreferencesByUserId,
-  getMockTeacherRecommendationsForPreferences,
   saveStudentPreferences,
 } = require('../models/matching.model');
+const { getRecommendations } = require('../services/matching.service');
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
@@ -55,7 +55,7 @@ const saveMatchingPreferences = withErrorHandling((req, res) => {
   });
 
   // Return recommendations immediately after saving (no need for a second request)
-  return sendSuccess(res, 201, getMockTeacherRecommendationsForPreferences(savedPreferences));
+  return sendSuccess(res, 201, await getRecommendations(savedPreferences));
 });
 
 /**
@@ -88,7 +88,7 @@ const getMatchingRecommendations = withErrorHandling((req, res) => {
     );
   }
 
-  return sendSuccess(res, 200, getMockTeacherRecommendationsForPreferences(preferences));
+  return sendSuccess(res, 200, await getRecommendations(preferences));
 });
 
 module.exports = {

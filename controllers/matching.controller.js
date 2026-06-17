@@ -14,7 +14,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
  * The student's ID is read from the x-user-id header.
  * Returns the recommendations on success (201 Created).
  */
-const saveMatchingPreferences = withErrorHandling((req, res) => {
+const saveMatchingPreferences = withErrorHandling(async (req, res) => {
   // Read the logged-in student's ID from the request header
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
@@ -63,7 +63,7 @@ const saveMatchingPreferences = withErrorHandling((req, res) => {
  * Returns teacher recommendations based on the student's previously saved preferences.
  * Returns 404 if the student has not saved preferences yet.
  */
-const getMatchingRecommendations = withErrorHandling((req, res) => {
+const getMatchingRecommendations = withErrorHandling(async (req, res) => {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedUserId.isValid) {

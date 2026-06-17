@@ -126,7 +126,7 @@ const getProgressChart = withErrorHandling((req, res) => {
  * Returns the recommended next lesson for the logged-in student based on their
  * current level and learning preferences. Returns 404 if progress or preferences are missing.
  */
-const getNextLesson = withErrorHandling((req, res) => {
+const getNextLesson = withErrorHandling(async (req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedStudentId.isValid) {

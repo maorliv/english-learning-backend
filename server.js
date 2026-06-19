@@ -2,9 +2,11 @@
 // Creates the Express app, registers middleware, mounts all route handlers, and starts the server.
 
 require('dotenv').config();
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const prisma = require('./prisma/client');
+const { initSocket } = require('./socket');
 
 // Route modules — each file handles one resource (e.g. /api/users, /api/lessons)
 const assessmentRouter = require('./routes/assessment.routes');
@@ -58,7 +60,11 @@ app.use('/api/warm-up-grammar', warmUpGrammarRouter);
 app.use(notFound);     // Returns 404 for any unmatched route
 app.use(errorHandler); // Catches errors thrown/passed from any route or middleware
 
-app.listen(PORT, () => {
+// Wrap Express in an HTTP server so Socket.IO can share the same port
+const httpServer = http.createServer(app);
+initSocket(httpServer);
+
+httpServer.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);
 });
 

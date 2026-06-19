@@ -4,6 +4,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const usersService = require('../services/users.service');
 const teachersService = require('../services/teachers.service');
 const relationsService = require('../services/relations.service');
+const { emitToUser } = require('../socket');
 
 const ALLOWED_RELATION_STATUSES = ['active', 'rejected'];
 const FILTERABLE_RELATION_STATUSES = ['pending', 'active', 'rejected'];
@@ -134,6 +135,16 @@ const updateRelationStatus = withErrorHandling(async (req, res) => {
   }
 
   const updated = await relationsService.updateRelationStatusById(validatedRelationId.value, effectiveTeacherId, normalizedStatus);
+
+  // Notify the student when their request is accepted
+  if (normalizedStatus === 'active') {
+    const teacher = await teachersService.getTeacherById(effectiveTeacherId);
+    emitToUser(relation.studentId, 'relation:accepted', {
+      relationId: updated.relationId,
+      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Your teacher',
+    });
+  }
+
   return sendSuccess(res, 200, { relationId: updated.relationId, status: updated.status });
 });
 

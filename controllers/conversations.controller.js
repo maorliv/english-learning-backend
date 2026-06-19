@@ -6,6 +6,7 @@ const lessonsService = require('../services/lessons.service');
 const vocabularyService = require('../services/vocabulary.service');
 const teachersService = require('../services/teachers.service');
 const relationsService = require('../services/relations.service');
+const { emitToUser } = require('../socket');
 
 const ALLOWED_REPLY_ROLES = ['student', 'teacher'];
 const FILTERABLE_CONVERSATION_STATUSES = ['active', 'completed'];
@@ -133,6 +134,16 @@ const finishConversation = withErrorHandling(async (req, res) => {
   if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
   const result = await conversationsService.endConversation(vId.value);
+
+  // Notify all teachers connected to this student via active relations
+  const teacherRelations = await relationsService.getRelationsByStudentId(conversation.studentId);
+  for (const rel of teacherRelations) {
+    const teacher = await teachersService.getTeacherById(rel.teacherId);
+    if (teacher?.userId) {
+      emitToUser(teacher.userId, 'conversation:completed', { conversationId: vId.value, studentId: conversation.studentId, aiScore: result.aiScore });
+    }
+  }
+
   return sendSuccess(res, 200, result);
 });
 
@@ -196,6 +207,17 @@ const replyToConversation = withErrorHandling(async (req, res) => {
   if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
   const result = await conversationsService.addConversationReply(vId.value, normalizedRole, req.body.content);
+
+  // Notify the other party about the new reply
+  if (normalizedRole === 'student') {
+    const reviews = conversation.reviews || [];
+    reviews.forEach(r => {
+      if (r.teacher?.userID) emitToUser(r.teacher.userID, 'conversation:new-reply', { conversationId: vId.value, from: 'student', message: req.body.content });
+    });
+  } else {
+    emitToUser(conversation.studentId, 'conversation:new-reply', { conversationId: vId.value, from: 'teacher', message: req.body.content });
+  }
+
   return sendSuccess(res, 200, result);
 });
 

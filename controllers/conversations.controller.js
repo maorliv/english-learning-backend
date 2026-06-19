@@ -136,11 +136,14 @@ const finishConversation = withErrorHandling(async (req, res) => {
   const result = await conversationsService.endConversation(vId.value);
 
   // Notify all teachers connected to this student via active relations
+  const usersService = require('../services/users.service');
+  const student = await usersService.getUserById(conversation.studentId);
+  const studentName = student ? `${student.firstName} ${student.lastName}` : 'A student';
   const teacherRelations = await relationsService.getRelationsByStudentId(conversation.studentId);
   for (const rel of teacherRelations) {
     const teacher = await teachersService.getTeacherById(rel.teacherId);
     if (teacher?.userId) {
-      emitToUser(teacher.userId, 'conversation:completed', { conversationId: vId.value, studentId: conversation.studentId, aiScore: result.aiScore });
+      emitToUser(teacher.userId, 'conversation:completed', { conversationId: vId.value, studentName, aiScore: result.aiScore });
     }
   }
 
@@ -208,14 +211,17 @@ const replyToConversation = withErrorHandling(async (req, res) => {
 
   const result = await conversationsService.addConversationReply(vId.value, normalizedRole, req.body.content);
 
-  // Notify the other party about the new reply
+  // Notify the other party — resolve sender's name from DB for informative notifications
+  const usersServiceForReply = require('../services/users.service');
+  const senderUser = await usersServiceForReply.getUserById(req.header('x-user-id'));
+  const senderName = senderUser ? `${senderUser.firstName} ${senderUser.lastName}` : (normalizedRole === 'teacher' ? 'Your teacher' : 'A student');
   if (normalizedRole === 'student') {
     const reviews = conversation.reviews || [];
     reviews.forEach(r => {
-      if (r.teacher?.userID) emitToUser(r.teacher.userID, 'conversation:new-reply', { conversationId: vId.value, from: 'student', message: req.body.content });
+      if (r.teacher?.userID) emitToUser(r.teacher.userID, 'conversation:new-reply', { conversationId: vId.value, from: 'student', senderName, message: req.body.content });
     });
   } else {
-    emitToUser(conversation.studentId, 'conversation:new-reply', { conversationId: vId.value, from: 'teacher', message: req.body.content });
+    emitToUser(conversation.studentId, 'conversation:new-reply', { conversationId: vId.value, from: 'teacher', senderName, message: req.body.content });
   }
 
   return sendSuccess(res, 200, result);

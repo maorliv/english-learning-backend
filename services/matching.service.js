@@ -1,5 +1,6 @@
 const prisma = require('../prisma/client');
 const teachersService = require('./teachers.service');
+const { askGemini } = require('./gemini');
 
 function tokenizeText(value) {
   return String(value || '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
@@ -38,6 +39,7 @@ async function saveStudentPreferences(userId, data) {
   });
 }
 
+// Fallback scoring — kept as backup when Gemini is unavailable
 function calculateMockMatchScore(teacher, preferences) {
   const preferenceTokens = new Set([
     ...tokenizeText(preferences.learning_goal),
@@ -74,11 +76,54 @@ async function getRecommendationsForPreferences(preferences) {
     maxPrice: Number(preferences.budget_max),
   });
 
+  // Try Gemini-based semantic matching (single prompt for all teachers)
+  let geminiScores = null;
+  try {
+    const teacherSummaries = teachers.map(t => ({
+      teacherId: t.teacherId,
+      specialties: t.specialties,
+      experience: t.experience,
+      bio: t.bio,
+      onlineOnly: t.onlineOnly,
+      teachingLevels: t.teachingLevels,
+    }));
+
+    const prompt = `You are a teacher-student matching system for an English learning platform.
+
+STUDENT PROFILE:
+- Learning goal: "${preferences.learning_goal}"
+- Self-description: "${preferences.onboarding_text}"
+- Main goal: "${preferences.mainGoal}"
+- Current level: "${preferences.currentLevel}"
+- Prefers online only: ${preferences.onlineOnly}
+
+AVAILABLE TEACHERS (JSON array):
+${JSON.stringify(teacherSummaries)}
+
+For each teacher, rate their compatibility with this student on a scale of 0-100.
+Consider: specialty match with learning goal, experience relevance, teaching level compatibility, and online preference match.
+
+Respond ONLY with a JSON array in this exact format, no other text:
+[{"teacherId": <number>, "score": <number 0-100>}, ...]`;
+
+    const rawResponse = await askGemini(prompt);
+    const cleaned = rawResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    if (Array.isArray(parsed)) {
+      geminiScores = new Map(parsed.map(item => [item.teacherId, item.score]));
+    }
+  } catch (error) {
+    console.error('Gemini matching error:', error.message);
+  }
+
   return teachers
     .map(teacher => ({
       teacherId: teacher.teacherId,
       firstName: teacher.firstName,
-      matchScore: calculateMockMatchScore(teacher, preferences),
+      matchScore: geminiScores
+        ? (geminiScores.get(teacher.teacherId) || 0)
+        : calculateMockMatchScore(teacher, preferences),
       rank: teacher.rank,
       pricePerWeek: teacher.pricePerWeek,
       specialties: teacher.specialties,

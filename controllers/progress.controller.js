@@ -6,35 +6,80 @@ const conversationsService = require('../services/conversations.service');
 const lessonsService = require('../services/lessons.service');
 const teachersService = require('../services/teachers.service');
 const matchingService = require('../services/matching.service');
+const { askGemini } = require('../services/gemini');
 
 const SUCCESS_THRESHOLD = 70;
 
 async function buildRecommendedLesson(progress, preferences) {
-  const normalizedLevel = String(progress.currentLevel || '').trim().toLowerCase();
-  const goalText = String(preferences.learning_goal || '').toLowerCase();
   const lessons = await lessonsService.getAllLessons();
 
-  const levelMatchedLessons = lessons.filter(l => String(l.level || '').trim().toLowerCase() === normalizedLevel);
-  const candidateLessons = levelMatchedLessons.length > 0 ? levelMatchedLessons : lessons;
+  try {
+    const lessonSummaries = lessons.map(l => ({
+      lessonId: l.lessonId,
+      title: l.title,
+      scene: l.scene,
+      level: l.level,
+      aiRole: l.aiRole,
+    }));
 
-  const rankedLessons = candidateLessons
-    .map(lesson => {
-      const searchableText = [lesson.title, lesson.scene, lesson.aiRole, lesson.grammarRuleId].join(' ').toLowerCase();
-      const matchScore = goalText.split(/[^a-z0-9]+/).filter(Boolean).reduce((score, token) => {
-        return searchableText.includes(token) ? score + 1 : score;
-      }, 0);
-      return { lesson, matchScore };
-    })
-    .sort((a, b) => b.matchScore - a.matchScore);
+    const prompt = `You are a lesson recommendation system for an English learning platform.
 
-  const recommended = rankedLessons[0]?.lesson || null;
-  if (!recommended) return null;
+STUDENT PROFILE:
+- Current level: "${progress.currentLevel}"
+- Learning goal: "${preferences.learning_goal}"
 
-  return {
-    lessonId: recommended.lessonId,
-    title: recommended.title,
-    reason: `Recommended for your ${progress.currentLevel} level and learning goal: ${preferences.learning_goal}.`,
-  };
+AVAILABLE LESSONS (JSON array):
+${JSON.stringify(lessonSummaries)}
+
+Select the ONE best lesson for this student. Consider:
+1. The lesson level should match the student's current level
+2. The lesson topic/scene should align with their learning goal
+3. Prefer variety
+
+Respond ONLY with a JSON object in this exact format, no other text:
+{"lessonId": <number>, "title": "<lesson title>", "reason": "<1 sentence explaining why this lesson is recommended>"}`;
+
+    const rawResponse = await askGemini(prompt);
+    const cleaned = rawResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    const validLesson = lessons.find(l => l.lessonId === parsed.lessonId);
+    if (validLesson && parsed.reason) {
+      return {
+        lessonId: validLesson.lessonId,
+        title: validLesson.title,
+        reason: parsed.reason,
+      };
+    }
+    throw new Error('Gemini recommended invalid lesson ID');
+  } catch (error) {
+    console.error('Gemini lesson recommendation error:', error.message);
+    // Fallback: original keyword matching
+    const normalizedLevel = String(progress.currentLevel || '').trim().toLowerCase();
+    const goalText = String(preferences.learning_goal || '').toLowerCase();
+
+    const levelMatchedLessons = lessons.filter(l => String(l.level || '').trim().toLowerCase() === normalizedLevel);
+    const candidateLessons = levelMatchedLessons.length > 0 ? levelMatchedLessons : lessons;
+
+    const rankedLessons = candidateLessons
+      .map(lesson => {
+        const searchableText = [lesson.title, lesson.scene, lesson.aiRole, lesson.grammarRuleId].join(' ').toLowerCase();
+        const matchScore = goalText.split(/[^a-z0-9]+/).filter(Boolean).reduce((score, token) => {
+          return searchableText.includes(token) ? score + 1 : score;
+        }, 0);
+        return { lesson, matchScore };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore);
+
+    const recommended = rankedLessons[0]?.lesson || null;
+    if (!recommended) return null;
+
+    return {
+      lessonId: recommended.lessonId,
+      title: recommended.title,
+      reason: `Recommended for your ${progress.currentLevel} level and learning goal: ${preferences.learning_goal}.`,
+    };
+  }
 }
 
 const getProgressStats = withErrorHandling(async (req, res) => {

@@ -1,4 +1,5 @@
 const prisma = require('../prisma/client');
+const { askGemini } = require('./gemini');
 
 async function getConversationById(conversationId) {
   return prisma.conversation.findUnique({
@@ -101,11 +102,14 @@ async function createConversation(studentId, lessonId, unusedVocab = []) {
 }
 
 async function addMessageToConversation(conversationId, content) {
+  // Fetch conversation WITH message history (needed for prompt context)
   const conversation = await prisma.conversation.findUnique({
     where: { conversationId: Number(conversationId) },
+    include: { messages: { orderBy: { createdAt: 'asc' } } },
   });
   if (!conversation) return null;
 
+  // --- Vocabulary tracking (unchanged) ---
   const normalizedContent = String(content).toLowerCase();
   const unusedVocab = Array.isArray(conversation.unusedVocab) ? conversation.unusedVocab : [];
   const usedWords = Array.isArray(conversation.usedWords) ? conversation.usedWords : [];
@@ -114,8 +118,50 @@ async function addMessageToConversation(conversationId, content) {
   const newUnused = unusedVocab.filter(word => !foundWords.includes(word));
   const newUsed = Array.from(new Set([...usedWords, ...foundWords]));
 
-  const aiReply = `Mock AI reply: I understood your message about lesson ${conversation.lessonId}.`;
+  // --- Build prompt and call Gemini ---
+  let aiReply;
+  try {
+    const lesson = await prisma.lesson.findUnique({
+      where: { lessonId: conversation.lessonId },
+    });
 
+    const conversationHistory = conversation.messages
+      .map(m => `${m.role === 'student' ? 'Student' : 'Tutor'}: ${m.content}`)
+      .join('\n');
+
+    const prompt = `You are an English language tutor in a roleplay conversation.
+
+LESSON CONTEXT:
+- Lesson title: "${lesson.title}"
+- Scene: "${lesson.scene}"
+- Your role: "${lesson.aiRole}"
+
+VOCABULARY TO PRACTICE:
+- Words the student still needs to use: ${newUnused.join(', ') || 'none'}
+- Words the student already used: ${newUsed.join(', ') || 'none'}
+
+CONVERSATION HISTORY:
+${conversationHistory || '(This is the first message)'}
+
+INSTRUCTIONS:
+- Stay in character as "${lesson.aiRole}"
+- Keep responses to 2-3 sentences
+- Try to naturally guide the student to use the unused vocabulary words
+- If the student makes grammar mistakes, gently model the correct form in your reply
+- Match the student's level
+- Do NOT list vocabulary words or break character
+
+STUDENT'S LATEST MESSAGE: "${content}"
+
+Respond in character:`;
+
+    aiReply = await askGemini(prompt);
+  } catch (error) {
+    console.error('Gemini API error in addMessageToConversation:', error.message);
+    aiReply = `That's interesting, could you tell me more about that? I'd also like you to try using some of the vocabulary words we're practicing in this lesson.`;
+  }
+
+  // --- Save messages to database ---
   await prisma.$transaction([
     prisma.conversationMessage.create({
       data: { conversationId: Number(conversationId), role: 'student', content },
@@ -135,14 +181,66 @@ async function addMessageToConversation(conversationId, content) {
 async function endConversation(conversationId) {
   const conversation = await prisma.conversation.findUnique({
     where: { conversationId: Number(conversationId) },
+    include: { messages: { orderBy: { createdAt: 'asc' } } },
   });
   if (!conversation) return null;
 
-  const usedWordsCount = Array.isArray(conversation.usedWords) ? conversation.usedWords.length : 0;
-  const aiScore = Math.min(100, 60 + usedWordsCount * 10);
-  const aiFeedback = usedWordsCount > 0
-    ? 'Good job using lesson vocabulary in the conversation.'
-    : 'Good effort. Try using more lesson vocabulary next time.';
+  let aiScore, aiFeedback;
+  try {
+    const lesson = await prisma.lesson.findUnique({
+      where: { lessonId: conversation.lessonId },
+    });
+
+    const usedWords = Array.isArray(conversation.usedWords) ? conversation.usedWords : [];
+    const unusedVocab = Array.isArray(conversation.unusedVocab) ? conversation.unusedVocab : [];
+    const allVocab = [...usedWords, ...unusedVocab];
+
+    const allMessages = conversation.messages
+      .map(m => `${m.role === 'student' ? 'Student' : 'Tutor'}: ${m.content}`)
+      .join('\n');
+
+    const prompt = `You are an English language assessment system. Evaluate the following conversation between a student and an AI tutor.
+
+LESSON CONTEXT:
+- Lesson title: "${lesson.title}"
+- Target vocabulary: ${allVocab.join(', ')}
+
+VOCABULARY USAGE:
+- Words successfully used by student: ${usedWords.join(', ') || 'none'}
+- Words NOT used by student: ${unusedVocab.join(', ') || 'none'}
+
+FULL CONVERSATION:
+${allMessages}
+
+SCORING CRITERIA:
+- Vocabulary usage (did they use the target words?): 0-30 points
+- Grammar accuracy (are sentences well-formed?): 0-25 points
+- Communication effectiveness (did they convey meaning?): 0-25 points
+- Engagement and effort (length, variety, initiative): 0-20 points
+
+Respond ONLY with a JSON object in this exact format, no other text:
+{"aiScore": <number 0-100>, "aiFeedback": "<2-3 sentences of specific, encouraging feedback>"}`;
+
+    const rawResponse = await askGemini(prompt);
+
+    // Gemini sometimes wraps JSON in markdown code fences — strip them
+    const cleaned = rawResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    aiScore = typeof parsed.aiScore === 'number'
+      ? Math.min(100, Math.max(0, Math.round(parsed.aiScore)))
+      : null;
+    aiFeedback = typeof parsed.aiFeedback === 'string' ? parsed.aiFeedback : null;
+
+    if (aiScore === null || aiFeedback === null) throw new Error('Invalid Gemini response format');
+  } catch (error) {
+    console.error('Gemini scoring error:', error.message);
+    const usedWordsCount = Array.isArray(conversation.usedWords) ? conversation.usedWords.length : 0;
+    aiScore = Math.min(100, 60 + usedWordsCount * 10);
+    aiFeedback = usedWordsCount > 0
+      ? 'Good job using lesson vocabulary in the conversation.'
+      : 'Good effort. Try using more lesson vocabulary next time.';
+  }
 
   await prisma.conversation.update({
     where: { conversationId: Number(conversationId) },

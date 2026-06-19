@@ -1,8 +1,10 @@
 // Entry point for the English Learning Platform backend.
 // Creates the Express app, registers middleware, mounts all route handlers, and starts the server.
 
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const prisma = require('./prisma/client');
 
 // Route modules — each file handles one resource (e.g. /api/users, /api/lessons)
 const assessmentRouter = require('./routes/assessment.routes');
@@ -58,4 +60,9 @@ app.use(errorHandler); // Catches errors thrown/passed from any route or middlew
 
 app.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);
+});
+
+process.on('SIGINT', async () => {
+	await prisma.$disconnect();
+	process.exit(0);
 });

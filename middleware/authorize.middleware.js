@@ -17,48 +17,45 @@ const { createHttpError } = require('../utils/httpError');
  *   x-user-id   — the numeric ID of the logged-in user
  */
 function authorize(allowedRoles, options = {}) {
-  // Returns the actual middleware function that Express will call for each request
-  return function authorizeRequest(req, res, next) {
-    // Read identity from custom request headers (simulated auth — no real JWT in this project)
-    const userRole = req.header('x-user-role');
-    const userId = req.header('x-user-id');
+  return async function authorizeRequest(req, res, next) {
+    try {
+      const userRole = req.header('x-user-role');
+      const userId = req.header('x-user-id');
 
-    // Determine which route param contains the resource ID
-    const routeId = req.params[options.idParam || 'id'];
+      const routeId = req.params[options.idParam || 'id'];
 
-    // Use getOwnerId if provided; otherwise fall back to the route param
-    const ownerId = options.getOwnerId ? options.getOwnerId(req) : routeId;
+      // getOwnerId may be async (returns a Promise) since services use Prisma
+      const ownerId = options.getOwnerId ? await options.getOwnerId(req) : routeId;
 
-    // Check 1: does the user's role appear in the allowed list?
-    const isAllowedRole = userRole && allowedRoles.includes(userRole);
+      const isAllowedRole = userRole && allowedRoles.includes(userRole);
 
-    // Check 2: is self-access enabled AND is the logged-in user the resource owner?
-    const isSelfAllowed =
-      options.allowSelf === true &&
-      userId &&
-      ownerId &&
-      String(userId) === String(ownerId);
+      const isSelfAllowed =
+        options.allowSelf === true &&
+        userId &&
+        ownerId &&
+        String(userId) === String(ownerId);
 
-    if (!isAllowedRole && !isSelfAllowed) {
-      // 403 Forbidden — the user is authenticated but not authorized for this action
-      return next(
-        createHttpError(
-          403,
-          'FORBIDDEN',
-          'You do not have permission to perform this action.',
-          {
-            allowedRoles,
-            receivedRole: userRole || null,
-            receivedUserId: userId || null,
-            routeId: routeId || null,
-            ownerId: ownerId || null,
-          }
-        )
-      );
+      if (!isAllowedRole && !isSelfAllowed) {
+        return next(
+          createHttpError(
+            403,
+            'FORBIDDEN',
+            'You do not have permission to perform this action.',
+            {
+              allowedRoles,
+              receivedRole: userRole || null,
+              receivedUserId: userId || null,
+              routeId: routeId || null,
+              ownerId: ownerId || null,
+            }
+          )
+        );
+      }
+
+      return next();
+    } catch (error) {
+      return next(error);
     }
-
-    // Authorization passed — hand control to the next middleware or route handler
-    return next();
   };
 }
 

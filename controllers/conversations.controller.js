@@ -1,287 +1,109 @@
-const { getLessonById } = require('../models/lessons.model');
-const { getVocabularyByLessonId } = require('../models/vocabulary.model');
-const { getActiveStudentIdsByTeacherId } = require('../models/relations.model');
-const { getTeacherByUserId, getTeacherById } = require('../models/teachers.model');
-const {
-  addConversationReply,
-  addTeacherComment,
-  addMessageToConversation,
-  createConversation,
-  endConversation,
-  getAllConversations,
-  getConversationById,
-  getConversationSummaries,
-} = require('../models/conversations.model');
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
+const conversationsService = require('../services/conversations.service');
+const lessonsService = require('../services/lessons.service');
+const vocabularyService = require('../services/vocabulary.service');
+const teachersService = require('../services/teachers.service');
+const relationsService = require('../services/relations.service');
 
-// Valid roles that can post a reply in a conversation comment thread
 const ALLOWED_REPLY_ROLES = ['student', 'teacher'];
-// Valid values for the ?status= filter when listing conversations
 const FILTERABLE_CONVERSATION_STATUSES = ['active', 'completed'];
 
-/**
- * GET /api/conversations
- * Returns a list of conversations. Supports optional filters: ?status=, ?studentId=, ?lessonId=
- *
- * Role-based behavior:
- *   - admin: can see all conversations (filtered by query params only)
- *   - teacher: can only see conversations for their own active students;
- *              if a specific studentId filter is given, it is validated against the teacher's students
- */
-const listConversations = withErrorHandling((req, res) => {
+const listConversations = withErrorHandling(async (req, res) => {
   const filters = {};
-  const userRole = req.header('x-user-role'); // Used to apply teacher-specific filtering
+  const userRole = req.header('x-user-role');
 
   if (req.query.status !== undefined) {
     const normalizedStatus = String(req.query.status).trim().toLowerCase();
-
     if (!FILTERABLE_CONVERSATION_STATUSES.includes(normalizedStatus)) {
-      throw createHttpError(
-        400,
-        'VALIDATION_ERROR',
-        'Invalid status filter',
-        {
-          status: req.query.status,
-          allowedValues: FILTERABLE_CONVERSATION_STATUSES,
-        }
-      );
+      throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid status filter', { status: req.query.status, allowedValues: FILTERABLE_CONVERSATION_STATUSES });
     }
-
     filters.status = normalizedStatus;
   }
-
   if (req.query.studentId !== undefined) {
-    const validatedStudentId = validateIdParam(req.query.studentId, 'studentId');
-
-    if (!validatedStudentId.isValid) {
-      throw createHttpError(
-        400,
-        'VALIDATION_ERROR',
-        validatedStudentId.message,
-        validatedStudentId.details
-      );
-    }
-
-    filters.studentId = validatedStudentId.value;
+    const v = validateIdParam(req.query.studentId, 'studentId');
+    if (!v.isValid) throw createHttpError(400, 'VALIDATION_ERROR', v.message, v.details);
+    filters.studentId = v.value;
   }
-
   if (req.query.lessonId !== undefined) {
-    const validatedLessonId = validateIdParam(req.query.lessonId, 'lessonId');
-
-    if (!validatedLessonId.isValid) {
-      throw createHttpError(
-        400,
-        'VALIDATION_ERROR',
-        validatedLessonId.message,
-        validatedLessonId.details
-      );
-    }
-
-    filters.lessonId = validatedLessonId.value;
+    const v = validateIdParam(req.query.lessonId, 'lessonId');
+    if (!v.isValid) throw createHttpError(400, 'VALIDATION_ERROR', v.message, v.details);
+    filters.lessonId = v.value;
   }
 
   if (userRole === 'teacher') {
-    const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+    const vUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+    if (!vUserId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vUserId.message, vUserId.details);
+    const teacherProfile = await teachersService.getTeacherByUserId(vUserId.value);
+    if (!teacherProfile) throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: vUserId.value });
 
-    if (!validatedUserId.isValid) {
-      throw createHttpError(
-        400,
-        'VALIDATION_ERROR',
-        validatedUserId.message,
-        validatedUserId.details
-      );
+    const activeStudentIds = await relationsService.getActiveStudentIdsByTeacherId(teacherProfile.teacherId);
+    if (typeof filters.studentId === 'number' && !activeStudentIds.map(String).includes(String(filters.studentId))) {
+      throw createHttpError(403, 'FORBIDDEN', 'You do not have permission to view conversations for this student.', { teacherId: teacherProfile.teacherId, studentId: filters.studentId });
     }
-
-    // Resolve the teacher's teacherId from their userID — these are separate fields
-    const teacherProfile = getTeacherByUserId(validatedUserId.value);
-
-    if (!teacherProfile) {
-      throw createHttpError(
-        404,
-        'TEACHER_NOT_FOUND',
-        'Teacher profile not found for this user.',
-        { userId: validatedUserId.value }
-      );
-    }
-
-    // Get the list of student IDs this teacher is actively connected to
-    const activeStudentIds = getActiveStudentIdsByTeacherId(teacherProfile.teacherId);
-
-    // If the teacher is filtering by a specific student, verify that student is theirs
-    if (
-      typeof filters.studentId === 'number' &&
-      !activeStudentIds.map(String).includes(String(filters.studentId))
-    ) {
-      throw createHttpError(
-        403,
-        'FORBIDDEN',
-        'You do not have permission to view conversations for this student.',
-        {
-          teacherId: teacherProfile.teacherId,
-          studentId: filters.studentId,
-        }
-      );
-    }
-
-    // Restrict results to only the teacher's own students
     filters.studentIds = activeStudentIds;
-
-    return sendSuccess(res, 200, getAllConversations(filters, teacherProfile.teacherId));
+    return sendSuccess(res, 200, await conversationsService.getAllConversations(filters, teacherProfile.teacherId));
   }
 
-  return sendSuccess(res, 200, getAllConversations(filters));
+  return sendSuccess(res, 200, await conversationsService.getAllConversations(filters));
 });
 
-/**
- * GET /api/students/:studentId/conversations
- * Returns conversation summaries for a specific student.
- * Teachers can only view their own students; the check is enforced here as well.
- */
-const listStudentConversations = withErrorHandling((req, res) => {
-  const validatedStudentId = validateIdParam(req.params.studentId, 'studentId'); // :studentId from URL
+const listStudentConversations = withErrorHandling(async (req, res) => {
+  const vStudentId = validateIdParam(req.params.studentId, 'studentId');
   const userRole = req.header('x-user-role');
-
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
-  }
+  if (!vStudentId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vStudentId.message, vStudentId.details);
 
   if (userRole === 'teacher') {
-    const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
-
-    if (!validatedUserId.isValid) {
-      throw createHttpError(
-        400,
-        'VALIDATION_ERROR',
-        validatedUserId.message,
-        validatedUserId.details
-      );
-    }
-
-    const teacherProfile = getTeacherByUserId(validatedUserId.value);
-
-    if (!teacherProfile) {
-      throw createHttpError(
-        404,
-        'TEACHER_NOT_FOUND',
-        'Teacher profile not found for this user.',
-        { userId: validatedUserId.value }
-      );
-    }
-
-    const activeStudentIds = getActiveStudentIdsByTeacherId(teacherProfile.teacherId);
-
-    // Teacher may only view conversations for their own students
-    if (!activeStudentIds.map(String).includes(String(validatedStudentId.value))) {
-      throw createHttpError(
-        403,
-        'FORBIDDEN',
-        'You do not have permission to view conversations for this student.',
-        {
-          teacherId: teacherProfile.teacherId,
-          studentId: validatedStudentId.value,
-        }
-      );
+    const vUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+    if (!vUserId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vUserId.message, vUserId.details);
+    const teacherProfile = await teachersService.getTeacherByUserId(vUserId.value);
+    if (!teacherProfile) throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: vUserId.value });
+    const activeStudentIds = await relationsService.getActiveStudentIdsByTeacherId(teacherProfile.teacherId);
+    if (!activeStudentIds.map(String).includes(String(vStudentId.value))) {
+      throw createHttpError(403, 'FORBIDDEN', 'You do not have permission to view conversations for this student.', { teacherId: teacherProfile.teacherId, studentId: vStudentId.value });
     }
   }
 
-  // Enrich each conversation summary with the lesson title and teacher names
-  const conversations = getConversationSummaries({ studentId: validatedStudentId.value }).map(
-    (conversation) => {
-      const enrichedReviews = conversation.teacherReviews.map((review) => {
-        const teacher = getTeacherById(review.teacherId);
-        return {
-          teacherId: review.teacherId,
-          userId: teacher ? teacher.userId : null,
-          teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null,
-          teacherScore: review.teacherScore,
-          reviewedAt: review.reviewedAt,
-        };
-      });
+  const conversations = await conversationsService.getConversationSummaries({ studentId: vStudentId.value });
+  const result = conversations.map(c => {
+    const enrichedReviews = (c.reviews || []).map(r => ({
+      teacherId: r.teacherId,
+      userId: r.teacher?.userID || null,
+      teacherName: r.teacher?.user ? `${r.teacher.user.firstName} ${r.teacher.user.lastName}` : null,
+      teacherScore: r.teacherScore,
+      reviewedAt: r.reviewedAt,
+    }));
+    return {
+      conversationId: c.conversationId,
+      lessonId: c.lessonId,
+      lessonTitle: c.lesson?.title || null,
+      status: c.status,
+      aiScore: c.aiScore,
+      teacherReviews: enrichedReviews,
+      isReviewedByTeacher: enrichedReviews.length > 0,
+      createdAt: c.createdAt,
+    };
+  });
 
-      return {
-        conversationId: conversation.conversationId,
-        lessonId: conversation.lessonId,
-        lessonTitle: getLessonById(conversation.lessonId)?.title || null,
-        status: conversation.status,
-        aiScore: conversation.aiScore,
-        teacherReviews: enrichedReviews,
-        isReviewedByTeacher: conversation.isReviewedByTeacher,
-        createdAt: conversation.createdAt,
-      };
-    }
-  );
-
-  return sendSuccess(res, 200, conversations);
+  return sendSuccess(res, 200, result);
 });
 
-/**
- * POST /api/conversations/start
- * Creates a new conversation for the logged-in student on the specified lesson.
- * Initializes the unusedVocab list from the lesson's vocabulary so progress can be tracked.
- * Returns the new conversation's ID and initial state.
- */
-const startConversation = withErrorHandling((req, res) => {
-  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
-  const requiredFieldsValidation = validateRequiredFields(req.body, ['lessonId']);
+const startConversation = withErrorHandling(async (req, res) => {
+  const vStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const reqValidation = validateRequiredFields(req.body, ['lessonId']);
+  if (!vStudentId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vStudentId.message, vStudentId.details);
+  if (!reqValidation.isValid) throw createHttpError(400, 'VALIDATION_ERROR', reqValidation.message, reqValidation.details);
 
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
-  }
+  const vLessonId = validateIdParam(req.body.lessonId, 'lessonId');
+  if (!vLessonId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vLessonId.message, vLessonId.details);
 
-  if (!requiredFieldsValidation.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      requiredFieldsValidation.message,
-      requiredFieldsValidation.details
-    );
-  }
+  const lesson = await lessonsService.getLessonById(vLessonId.value);
+  if (!lesson) throw createHttpError(404, 'LESSON_NOT_FOUND', 'Lesson not found', { lessonId: vLessonId.value });
 
-  // lessonId comes from the request body, not the URL
-  const validatedLessonId = validateIdParam(req.body.lessonId, 'lessonId');
-
-  if (!validatedLessonId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedLessonId.message,
-      validatedLessonId.details
-    );
-  }
-
-  const lesson = getLessonById(validatedLessonId.value);
-
-  if (!lesson) {
-    throw createHttpError(
-      404,
-      'LESSON_NOT_FOUND',
-      'Lesson not found',
-      {
-        lessonId: validatedLessonId.value,
-      }
-    );
-  }
-
-  // Build the initial unusedVocab list from all vocabulary words in this lesson
-  const lessonVocabulary = getVocabularyByLessonId(validatedLessonId.value);
-  const unusedVocab = lessonVocabulary.map((item) => item.word); // Start with all words unused
-  const conversation = createConversation(
-    validatedStudentId.value,
-    validatedLessonId.value,
-    unusedVocab
-  );
+  const lessonVocabulary = await vocabularyService.getVocabularyByLessonId(vLessonId.value);
+  const unusedVocab = lessonVocabulary.map(item => item.word);
+  const conversation = await conversationsService.createConversation(vStudentId.value, vLessonId.value, unusedVocab);
 
   return sendSuccess(res, 201, {
     conversationId: conversation.conversationId,
@@ -290,128 +112,45 @@ const startConversation = withErrorHandling((req, res) => {
   });
 });
 
-/**
- * POST /api/conversations/:id/message
- * Sends a student message to an active conversation.
- * The message content is scanned for lesson vocabulary words, which are then moved
- * from unusedVocab to usedWords. A mock AI reply is appended automatically.
- */
-const sendConversationMessage = withErrorHandling((req, res) => {
-  const validatedConversationId = validateIdParam(req.params.id, 'id');
-  const requiredFieldsValidation = validateRequiredFields(req.body, ['content']);
+const sendConversationMessage = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.params.id, 'id');
+  const reqValidation = validateRequiredFields(req.body, ['content']);
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
+  if (!reqValidation.isValid) throw createHttpError(400, 'VALIDATION_ERROR', reqValidation.message, reqValidation.details);
 
-  if (!validatedConversationId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedConversationId.message,
-      validatedConversationId.details
-    );
-  }
+  const conversation = await conversationsService.getConversationById(vId.value);
+  if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
-  if (!requiredFieldsValidation.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      requiredFieldsValidation.message,
-      requiredFieldsValidation.details
-    );
-  }
-
-  const conversation = getConversationById(validatedConversationId.value);
-
-  if (!conversation) {
-    throw createHttpError(
-      404,
-      'CONVERSATION_NOT_FOUND',
-      'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
-    );
-  }
-
-  const result = addMessageToConversation(validatedConversationId.value, req.body.content);
-
+  const result = await conversationsService.addMessageToConversation(vId.value, req.body.content);
   return sendSuccess(res, 200, result);
 });
 
-/**
- * POST /api/conversations/:id/end
- * Marks a conversation as completed and calculates an AI score based on vocabulary usage.
- * Returns the final score and AI feedback.
- */
-const finishConversation = withErrorHandling((req, res) => {
-  const validatedConversationId = validateIdParam(req.params.id, 'id');
+const finishConversation = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.params.id, 'id');
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
 
-  if (!validatedConversationId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedConversationId.message,
-      validatedConversationId.details
-    );
-  }
+  const conversation = await conversationsService.getConversationById(vId.value);
+  if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
-  const conversation = getConversationById(validatedConversationId.value);
-
-  if (!conversation) {
-    throw createHttpError(
-      404,
-      'CONVERSATION_NOT_FOUND',
-      'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
-    );
-  }
-
-  const result = endConversation(validatedConversationId.value);
-
+  const result = await conversationsService.endConversation(vId.value);
   return sendSuccess(res, 200, result);
 });
 
-/**
- * GET /api/conversations/:id
- * Returns the full details of a single conversation, including all messages,
- * scores, and teacher feedback.
- */
-const getConversation = withErrorHandling((req, res) => {
-  const validatedConversationId = validateIdParam(req.params.id, 'id');
+const getConversation = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.params.id, 'id');
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
 
-  if (!validatedConversationId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedConversationId.message,
-      validatedConversationId.details
-    );
-  }
+  const conversation = await conversationsService.getConversationById(vId.value);
+  if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
-  const conversation = getConversationById(validatedConversationId.value);
-
-  if (!conversation) {
-    throw createHttpError(
-      404,
-      'CONVERSATION_NOT_FOUND',
-      'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
-    );
-  }
-
-  const enrichedReviews = conversation.teacherReviews.map((review) => {
-    const teacher = getTeacherById(review.teacherId);
-    return {
-      teacherId: review.teacherId,
-      userId: teacher ? teacher.userId : null,
-      teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null,
-      teacherScore: review.teacherScore,
-      teacherComment: review.teacherComment,
-      reviewedAt: review.reviewedAt,
-    };
-  });
+  const enrichedReviews = (conversation.reviews || []).map(r => ({
+    teacherId: r.teacherId,
+    userId: r.teacher?.userID || null,
+    teacherName: r.teacher?.user ? `${r.teacher.user.firstName} ${r.teacher.user.lastName}` : null,
+    teacherScore: r.teacherScore,
+    teacherComment: r.teacherComment,
+    reviewedAt: r.reviewedAt,
+  }));
 
   return sendSuccess(res, 200, {
     conversationId: conversation.conversationId,
@@ -419,157 +158,45 @@ const getConversation = withErrorHandling((req, res) => {
     aiScore: conversation.aiScore,
     teacherReviews: enrichedReviews,
     status: conversation.status,
-    replies: conversation.commentsThread || [],
+    replies: conversation.replies || [],
   });
 });
 
-/**
- * POST /api/conversations/:id/teacher-comment
- * Lets a teacher add a score and written feedback to a completed conversation.
- * Marks the conversation as reviewed by teacher.
- */
-const commentOnConversation = withErrorHandling((req, res) => {
-  const validatedConversationId = validateIdParam(req.params.id, 'id');
-  const requiredFieldsValidation = validateRequiredFields(req.body, [
-    'teacherScore',
-    'teacherComment',
-  ]);
+const commentOnConversation = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.params.id, 'id');
+  const reqValidation = validateRequiredFields(req.body, ['teacherScore', 'teacherComment']);
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
+  if (!reqValidation.isValid) throw createHttpError(400, 'VALIDATION_ERROR', reqValidation.message, reqValidation.details);
 
-  if (!validatedConversationId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedConversationId.message,
-      validatedConversationId.details
-    );
-  }
+  const conversation = await conversationsService.getConversationById(vId.value);
+  if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
-  if (!requiredFieldsValidation.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      requiredFieldsValidation.message,
-      requiredFieldsValidation.details
-    );
-  }
+  const vTeacherUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  if (!vTeacherUserId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vTeacherUserId.message, vTeacherUserId.details);
 
-  const conversation = getConversationById(validatedConversationId.value);
+  const teacher = await teachersService.getTeacherByUserId(vTeacherUserId.value);
+  if (!teacher) throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: vTeacherUserId.value });
 
-  if (!conversation) {
-    throw createHttpError(
-      404,
-      'CONVERSATION_NOT_FOUND',
-      'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
-    );
-  }
-
-  const validatedTeacherUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
-
-  if (!validatedTeacherUserId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedTeacherUserId.message,
-      validatedTeacherUserId.details
-    );
-  }
-
-  const reviewingTeacher = getTeacherByUserId(validatedTeacherUserId.value);
-
-  if (!reviewingTeacher) {
-    throw createHttpError(
-      404,
-      'TEACHER_NOT_FOUND',
-      'Teacher profile not found for this user.',
-      { userId: validatedTeacherUserId.value }
-    );
-  }
-
-  const result = addTeacherComment(
-    validatedConversationId.value,
-    reviewingTeacher.teacherId,
-    req.body.teacherScore,
-    req.body.teacherComment
-  );
-
+  const result = await conversationsService.addTeacherComment(vId.value, teacher.teacherId, req.body.teacherScore, req.body.teacherComment);
   return sendSuccess(res, 200, result);
 });
 
-/**
- * POST /api/conversations/:id/reply
- * Adds a reply to the conversation's comment thread (not the main message list).
- * Used for back-and-forth discussion between student and teacher after the conversation ends.
- * The 'role' field in the body must be 'student' or 'teacher'.
- */
-const replyToConversation = withErrorHandling((req, res) => {
-  const validatedConversationId = validateIdParam(req.params.id, 'id');
-  const requiredFieldsValidation = validateRequiredFields(req.body, ['role', 'content']);
+const replyToConversation = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.params.id, 'id');
+  const reqValidation = validateRequiredFields(req.body, ['role', 'content']);
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
+  if (!reqValidation.isValid) throw createHttpError(400, 'VALIDATION_ERROR', reqValidation.message, reqValidation.details);
 
-  if (!validatedConversationId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedConversationId.message,
-      validatedConversationId.details
-    );
-  }
-
-  if (!requiredFieldsValidation.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      requiredFieldsValidation.message,
-      requiredFieldsValidation.details
-    );
-  }
-
-  const normalizedRole = String(req.body.role).trim().toLowerCase(); // Normalize before validation
-
+  const normalizedRole = String(req.body.role).trim().toLowerCase();
   if (!ALLOWED_REPLY_ROLES.includes(normalizedRole)) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      'Invalid role value',
-      {
-        field: 'role',
-        allowedValues: ALLOWED_REPLY_ROLES,
-        receivedValue: req.body.role,
-      }
-    );
+    throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid role value', { field: 'role', allowedValues: ALLOWED_REPLY_ROLES, receivedValue: req.body.role });
   }
 
-  const conversation = getConversationById(validatedConversationId.value);
+  const conversation = await conversationsService.getConversationById(vId.value);
+  if (!conversation) throw createHttpError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found', { conversationId: vId.value });
 
-  if (!conversation) {
-    throw createHttpError(
-      404,
-      'CONVERSATION_NOT_FOUND',
-      'Conversation not found',
-      {
-        conversationId: validatedConversationId.value,
-      }
-    );
-  }
-
-  const result = addConversationReply(
-    validatedConversationId.value,
-    normalizedRole,
-    req.body.content
-  );
-
+  const result = await conversationsService.addConversationReply(vId.value, normalizedRole, req.body.content);
   return sendSuccess(res, 200, result);
 });
 
-module.exports = {
-  commentOnConversation,
-  finishConversation,
-  getConversation,
-  listStudentConversations,
-  listConversations,
-  replyToConversation,
-  sendConversationMessage,
-  startConversation,
-};
+module.exports = { commentOnConversation, finishConversation, getConversation, listStudentConversations, listConversations, replyToConversation, sendConversationMessage, startConversation };

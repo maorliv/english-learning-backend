@@ -1,10 +1,7 @@
-// Teacher profile routes
-// getOwnerId is used to map :id (teacherId) to a userId so allowSelf works correctly,
-// since the x-user-id header carries a userId, not a teacherId.
 const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');
-const { getTeacherById } = require('../models/teachers.model');
+const teachersService = require('../services/teachers.service');
 const {
 	getMyProfile,
 	getMyReviews,
@@ -22,8 +19,10 @@ router.put(
 	'/:id',
 	authorize(['admin','teacher'], {
 		allowSelf: true,
-		// Resolve teacherId → userId so allowSelf can compare against x-user-id header
-		getOwnerId: (req) => getTeacherById(req.params.id)?.userId,
+		getOwnerId: async (req) => {
+			const teacher = await teachersService.getTeacherById(req.params.id);
+			return teacher?.userId;
+		},
 	}),
 	updateTeacher
 );
@@ -31,7 +30,10 @@ router.get(
 	'/:id',
 	authorize(['student', 'admin'], {
 		allowSelf: true,
-		getOwnerId: (req) => getTeacherById(req.params.id)?.userId,
+		getOwnerId: async (req) => {
+			const teacher = await teachersService.getTeacherById(req.params.id);
+			return teacher?.userId;
+		},
 	}),
 	getTeacher
 );

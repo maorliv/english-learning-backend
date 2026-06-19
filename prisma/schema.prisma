@@ -1,0 +1,348 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Enums — fixed sets of allowed values.
+// In MySQL these become ENUM columns that reject invalid values.
+// ============================================================
+
+enum UserRole {
+  student
+  teacher
+  admin
+}
+
+enum Level {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum ConversationStatus {
+  active
+  completed
+}
+
+enum RelationStatus {
+  pending
+  active
+  rejected
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum MessageRole {
+  student
+  assistant
+}
+
+enum ReplyRole {
+  student
+  teacher
+}
+
+// ============================================================
+// Core Entities
+// ============================================================
+
+model User {
+  userID     Int      @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  email      String   @unique
+  password   String
+  role       UserRole
+  sex        String   @default("")
+  createDate DateTime @default(now())
+
+  // One-to-one: each user can optionally have one of these
+  teacher            Teacher?
+  settings           Settings?
+  studentPreferences StudentPreferences?
+  progress           Progress?
+
+  // One-to-many: a user (student) can have many conversations / assessments
+  conversations Conversation[]
+  assessments   Assessment[]
+
+  // Many-to-many via junction tables
+  studentRelations StudentTeacherRelation[] @relation("StudentRelations")
+  completedLessons StudentCompletedLesson[]
+
+  @@map("users")
+}
+
+model Teacher {
+  teacherId         Int      @id @default(autoincrement())
+  userID            Int      @unique
+  rank              Int      @default(0)
+  pricePerWeek      Int?
+  specialties       Json     @default("[]")
+  feedbackFrequency String?
+  available         Boolean  @default(false)
+  experience        String?
+  onlineOnly        Boolean?
+  bio               String?  @db.Text
+  teachingLevels    Json     @default("[]")
+  availability      String?
+  createdAt         DateTime @default(now())
+  updateDate        DateTime @updatedAt
+
+  // One-to-one with User — the foreign key is userID
+  user User @relation(fields: [userID], references: [userID])
+
+  // A teacher can have many student relations and reviews
+  teacherRelations StudentTeacherRelation[]
+  teacherReviews   TeacherReview[]
+
+  @@map("teachers")
+}
+
+model Lesson {
+  lessonId      Int    @id @default(autoincrement())
+  title         String
+  scene         String @db.Text
+  aiRole        String
+  level         Level
+  grammarRuleId String
+
+  // Many lessons can share one grammar rule (many-to-one)
+  grammarRule GrammarRule @relation(fields: [grammarRuleId], references: [id])
+
+  // One lesson has many vocabulary words, exercises, conversations
+  vocabulary        Vocabulary[]
+  warmUpExercises   WarmUpExercise[]
+  conversations     Conversation[]
+  completedByStudents StudentCompletedLesson[]
+
+  @@map("lessons")
+}
+
+model Vocabulary {
+  vocabularyId     Int    @id @default(autoincrement())
+  lessonId         Int
+  word             String
+  translation      String
+  example          String @db.Text
+  definition       String @db.Text
+  completeSentence String @db.Text
+
+  // Each vocabulary word belongs to one lesson
+  lesson Lesson @relation(fields: [lessonId], references: [lessonId])
+
+  @@map("vocabulary")
+}
+
+model GrammarRule {
+  id            String  @id
+  category      String
+  usage         String  @db.Text
+  forms         Json
+  keywords      Json    @default("[]")
+  spellingRules String? @db.Text
+  examples      Json    @default("[]")
+
+  // One grammar rule can be used by many lessons and exercises
+  lessons         Lesson[]
+  warmUpExercises WarmUpExercise[]
+
+  @@map("grammar_rules")
+}
+
+model WarmUpExercise {
+  exerciseId    Int        @id @default(autoincrement())
+  lessonId      Int
+  grammarRuleId String
+  type          String
+  instruction   String
+  content       String     @db.Text
+  options       Json
+  correctAnswer String
+  difficulty    Difficulty
+
+  lesson      Lesson     @relation(fields: [lessonId], references: [lessonId])
+  grammarRule GrammarRule @relation(fields: [grammarRuleId], references: [id])
+
+  @@map("warm_up_exercises")
+}
+
+// ============================================================
+// Conversation System
+// ============================================================
+
+model Conversation {
+  conversationId Int                @id @default(autoincrement())
+  studentId      Int
+  lessonId       Int
+  status         ConversationStatus @default(active)
+  unusedVocab    Json               @default("[]")
+  usedWords      Json               @default("[]")
+  aiScore        Int?
+  aiFeedback     String?            @db.Text
+  createdAt      DateTime           @default(now())
+  endedAt        DateTime?
+
+  student  User                  @relation(fields: [studentId], references: [userID])
+  lesson   Lesson                @relation(fields: [lessonId], references: [lessonId])
+  messages ConversationMessage[]
+  reviews  TeacherReview[]
+  replies  ConversationReply[]
+
+  @@map("conversations")
+}
+
+model ConversationMessage {
+  messageId      Int         @id @default(autoincrement())
+  conversationId Int
+  role           MessageRole
+  content        String      @db.Text
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId])
+
+  @@map("conversation_messages")
+}
+
+model TeacherReview {
+  reviewId       Int      @id @default(autoincrement())
+  conversationId Int
+  teacherId      Int
+  teacherScore   Int
+  teacherComment String   @db.Text
+  reviewedAt     DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId])
+  teacher      Teacher      @relation(fields: [teacherId], references: [teacherId])
+
+  @@unique([conversationId, teacherId], name: "conversationId_teacherId")
+  @@map("teacher_reviews")
+}
+
+model ConversationReply {
+  replyId        Int       @id @default(autoincrement())
+  conversationId Int
+  role           ReplyRole
+  content        String    @db.Text
+  createdAt      DateTime  @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId])
+
+  @@map("conversation_replies")
+}
+
+// ============================================================
+// Student Tracking
+// ============================================================
+
+model Progress {
+  progressId            Int      @id @default(autoincrement())
+  studentId             Int      @unique
+  currentLevel          Level?
+  completedLessonsCount Int      @default(0)
+  successedLessonsCount Int      @default(0)
+  overallAverage        Float    @default(0)
+  lastActivityDate      DateTime @default(now())
+
+  student User @relation(fields: [studentId], references: [userID])
+
+  @@map("progress")
+}
+
+model Assessment {
+  assessmentId  Int                @id @default(autoincrement())
+  studentId     Int
+  status        ConversationStatus @default(active)
+  detectedLevel Level?
+  createdAt     DateTime           @default(now())
+  endedAt       DateTime?
+
+  student  User                @relation(fields: [studentId], references: [userID])
+  messages AssessmentMessage[]
+
+  @@map("assessments")
+}
+
+model AssessmentMessage {
+  messageId    Int         @id @default(autoincrement())
+  assessmentId Int
+  role         MessageRole
+  content      String      @db.Text
+  createdAt    DateTime    @default(now())
+
+  assessment Assessment @relation(fields: [assessmentId], references: [assessmentId])
+
+  @@map("assessment_messages")
+}
+
+// ============================================================
+// User Configuration
+// ============================================================
+
+model Settings {
+  userId      Int    @id
+  displayName String
+  email       String
+  theme       String @default("light")
+
+  user User @relation(fields: [userId], references: [userID])
+
+  @@map("settings")
+}
+
+model StudentPreferences {
+  userId          Int      @id
+  budget_max      Int      @default(0)
+  learning_goal   String   @db.Text
+  onboarding_text String   @db.Text
+  currentLevel    Level?
+  availability    String?
+  teacherGender   String?
+  mainGoal        String?
+  onlineOnly      Boolean?
+
+  user User @relation(fields: [userId], references: [userID])
+
+  @@map("student_preferences")
+}
+
+// ============================================================
+// Junction Tables (Many-to-Many)
+// ============================================================
+
+model StudentTeacherRelation {
+  relationId       Int            @id @default(autoincrement())
+  studentId        Int
+  teacherId        Int
+  status           RelationStatus @default(pending)
+  createdAt        DateTime       @default(now())
+  rating           Int?
+  student_feedback String?        @db.Text
+
+  student User    @relation("StudentRelations", fields: [studentId], references: [userID])
+  teacher Teacher @relation(fields: [teacherId], references: [teacherId])
+
+  @@map("student_teacher_relations")
+}
+
+model StudentCompletedLesson {
+  studentId   Int
+  lessonId    Int
+  completedAt DateTime @default(now())
+
+  student User   @relation(fields: [studentId], references: [userID])
+  lesson  Lesson @relation(fields: [lessonId], references: [lessonId])
+
+  // Composite primary key — the combination of studentId + lessonId is unique
+  @@id([studentId, lessonId])
+  @@map("student_completed_lessons")
+}

@@ -1,35 +1,30 @@
-// Lesson routes including nested vocabulary sub-routes under /:id/vocab
-// Vocabulary routes use :vocabId as the second dynamic segment
 const express = require('express');
 
 const authorize = require('../middleware/authorize.middleware');
 const {
-	createLessonVocabularyItem,
-	deleteLessonVocabularyItem,
-  getLessonVocabularyItem,
-  listLessonVocabulary,
-	updateLessonVocabularyItem,
-} = require('../controllers/vocabulary.controller');
-const {
 	createLessonHandler,
+	createLessonVocabularyItem,
 	deleteLesson,
+	deleteLessonVocabularyItem,
 	getLesson,
 	getLessonGrammar,
 	getLessonGrammarWarmUp,
+	getLessonVocabularyItem,
 	getLessonVocabularyWarmUp,
 	getLessonsCatalog,
+	listLessonVocabulary,
 	listLessons,
 	updateLesson,
+	updateLessonVocabularyItem,
 } = require('../controllers/lessons.controller');
 
 const router = express.Router();
 
 router.get('/', authorize(['student', 'admin', 'teacher']), listLessons);
 router.post('/', authorize(['admin']), createLessonHandler);
-// /catalog must be registered before /:id to prevent Express matching "catalog" as a lesson ID
 router.get('/catalog', authorize(['student']), getLessonsCatalog);
 router.get('/:id/grammar', authorize(['student', 'admin']), getLessonGrammar);
-router.get('/:id/grammar-warmup', authorize(['student']), getLessonGrammarWarmUp);       // Student warm-up only
+router.get('/:id/grammar-warmup', authorize(['student']), getLessonGrammarWarmUp);
 router.get('/:id/vocab-warmup', authorize(['student', 'admin']), getLessonVocabularyWarmUp);
 router.post('/:id/vocab', authorize(['admin']), createLessonVocabularyItem);
 router.get('/:id/vocab/:vocabId', authorize(['student', 'admin']), getLessonVocabularyItem);

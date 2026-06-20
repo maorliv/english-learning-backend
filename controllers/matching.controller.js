@@ -34,4 +34,14 @@ const getMatchingRecommendations = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, await matchingService.getRecommendationsForPreferences(preferences));
 });
 
-module.exports = { saveMatchingPreferences, getMatchingRecommendations };
+const getMatchingPreferences = withErrorHandling(async (req, res) => {
+  const vUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  if (!vUserId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vUserId.message, vUserId.details);
+
+  const preferences = await matchingService.getStudentPreferencesByUserId(vUserId.value);
+  if (!preferences) throw createHttpError(404, 'PREFERENCES_NOT_FOUND', 'Student preferences not found', { userId: vUserId.value });
+
+  return sendSuccess(res, 200, preferences);
+});
+
+module.exports = { saveMatchingPreferences, getMatchingRecommendations, getMatchingPreferences };

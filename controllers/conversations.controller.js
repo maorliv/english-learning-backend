@@ -192,6 +192,16 @@ const commentOnConversation = withErrorHandling(async (req, res) => {
   if (!teacher) throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: vTeacherUserId.value });
 
   const result = await conversationsService.addTeacherComment(vId.value, teacher.teacherId, req.body.teacherScore, req.body.teacherComment);
+
+  // Notify the student that a teacher reviewed their conversation
+  const lesson = await lessonsService.getLessonById(conversation.lessonId);
+  emitToUser(conversation.studentId, 'conversation:reviewed', {
+    conversationId: Number(vId.value),
+    teacherName: `${teacher.firstName} ${teacher.lastName}`,
+    lessonTitle: lesson?.title || 'a lesson',
+    teacherScore: req.body.teacherScore,
+  });
+
   return sendSuccess(res, 200, result);
 });
 

@@ -252,6 +252,7 @@ model Progress {
   successedLessonsCount Int      @default(0)
   overallAverage        Float    @default(0)
   lastActivityDate      DateTime @default(now())
+  cachedRecommendation  Json?
 
   student User @relation(fields: [studentId], references: [userID])
 

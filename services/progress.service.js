@@ -18,7 +18,15 @@ async function updateProgressLevel(studentId, level) {
   }
 }
 
+async function updateCachedRecommendation(studentId, recommendation) {
+  return prisma.progress.update({
+    where: { studentId: Number(studentId) },
+    data: { cachedRecommendation: recommendation },
+  });
+}
+
 module.exports = {
   getProgressByStudentId,
   updateProgressLevel,
+  updateCachedRecommendation,
 };

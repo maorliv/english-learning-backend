@@ -36,7 +36,7 @@ async function getUserByEmail(email) {
 // If ANY operation fails, ALL of them are rolled back — nothing is half-created.
 // This replaces: createUser() + createSettingsRecord() + createProgressRecord() + createTeacherProfile()
 // which were 4 separate calls that could partially fail.
-async function registerUser({ firstName, lastName, email, password, userRole, sex }) {
+async function registerUser({ firstName, lastName, email, password, userRole, sex, learning_goal, mainGoal, onlineOnly }) {
   return prisma.$transaction(async (tx) => {
     // tx is a "transaction client" — use it instead of prisma for all operations
     // inside this block to ensure they all run in the same transaction.
@@ -60,10 +60,20 @@ async function registerUser({ firstName, lastName, email, password, userRole, se
       },
     });
 
-    // Students get a progress record
+    // Students get a progress record + preferences record
     if (userRole === 'student') {
       await tx.progress.create({
         data: { studentId: newUser.userID },
+      });
+      await tx.studentPreferences.create({
+        data: {
+          userId: newUser.userID,
+          learning_goal: learning_goal || '',
+          onboarding_text: '',
+          budget_max: 100,
+          mainGoal: mainGoal || null,
+          onlineOnly: onlineOnly || false,
+        },
       });
     }
 

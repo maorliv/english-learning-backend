@@ -139,7 +139,36 @@ const getNextLesson = withErrorHandling(async (req, res) => {
   const preferences = await matchingService.getStudentPreferencesByUserId(vId.value);
   if (!preferences) throw createHttpError(404, 'PREFERENCES_NOT_FOUND', 'Student preferences not found', { studentId: vId.value });
 
-  return sendSuccess(res, 200, await buildRecommendedLesson(progress, preferences));
+  // Cache key: if level or learning_goal changed → invalidate
+  const cacheKey = `${progress.currentLevel || ''}|${preferences.learning_goal || ''}`;
+  const cached = progress.cachedRecommendation;
+
+  if (cached && cached.cacheKey === cacheKey) {
+    // Check if the student already completed the cached lesson
+    const prisma = require('../prisma/client');
+    const completed = await prisma.studentCompletedLesson.findUnique({
+      where: { studentId_lessonId: { studentId: Number(vId.value), lessonId: cached.lessonId } },
+    });
+
+    if (!completed) {
+      return sendSuccess(res, 200, { lessonId: cached.lessonId, title: cached.title, reason: cached.reason });
+    }
+  }
+
+  // Cache miss or invalidated — get a fresh recommendation
+  const recommendation = await buildRecommendedLesson(progress, preferences);
+
+  // Save to cache
+  if (recommendation) {
+    await progressService.updateCachedRecommendation(vId.value, {
+      lessonId: recommendation.lessonId,
+      title: recommendation.title,
+      reason: recommendation.reason,
+      cacheKey,
+    });
+  }
+
+  return sendSuccess(res, 200, recommendation);
 });
 
 const getStudentProgress = withErrorHandling(async (req, res) => {

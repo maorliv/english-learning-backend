@@ -4,7 +4,7 @@ const { validateIdParam, validateRequiredFields } = require('../utils/validators
 const usersService = require('../services/users.service');
 
 const registerUser = withErrorHandling(async (req, res) => {
-  const { firstName, lastName, email, password, userRole, sex } = req.body;
+  const { firstName, lastName, email, password, userRole, sex, learning_goal, mainGoal, onlineOnly } = req.body;
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'firstName',
     'lastName',
@@ -36,6 +36,9 @@ const registerUser = withErrorHandling(async (req, res) => {
     password,
     userRole,
     sex,
+    learning_goal,
+    mainGoal,
+    onlineOnly,
   });
 
   return sendSuccess(res, 201, {

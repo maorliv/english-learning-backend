@@ -123,8 +123,10 @@ async function addMessageToConversation(conversationId, content) {
   try {
     const lesson = await prisma.lesson.findUnique({
       where: { lessonId: conversation.lessonId },
+      include: { grammarRule: true },
     });
 
+    const grammar = lesson.grammarRule;
     const conversationHistory = conversation.messages
       .map(m => `${m.role === 'student' ? 'Student' : 'Tutor'}: ${m.content}`)
       .join('\n');
@@ -135,6 +137,12 @@ LESSON CONTEXT:
 - Lesson title: "${lesson.title}"
 - Scene: "${lesson.scene}"
 - Your role: "${lesson.aiRole}"
+
+GRAMMAR RULE TO PRACTICE:
+- Rule: "${grammar?.id || ''}" (${grammar?.category || ''})
+- Usage: ${grammar?.usage || ''}
+- Forms: ${grammar?.forms ? JSON.stringify(grammar.forms) : 'N/A'}
+- Keywords: ${Array.isArray(grammar?.keywords) ? grammar.keywords.join(', ') : 'N/A'}
 
 VOCABULARY TO PRACTICE:
 - Words the student still needs to use: ${newUnused.join(', ') || 'none'}
@@ -147,9 +155,10 @@ INSTRUCTIONS:
 - Stay in character as "${lesson.aiRole}"
 - Keep responses to 2-3 sentences
 - Try to naturally guide the student to use the unused vocabulary words
-- If the student makes grammar mistakes, gently model the correct form in your reply
+- Guide the student to use the grammar rule "${grammar?.id || ''}" correctly (e.g. use ${Array.isArray(grammar?.keywords) ? grammar.keywords.slice(0, 3).join(', ') : 'appropriate tense'} naturally)
+- If the student makes grammar mistakes related to this rule, gently model the correct form in your reply
 - Match the student's level
-- Do NOT list vocabulary words or break character
+- Do NOT list vocabulary words or grammar rules explicitly — keep it natural and in character
 
 STUDENT'S LATEST MESSAGE: "${content}"
 
@@ -189,8 +198,10 @@ async function endConversation(conversationId) {
   try {
     const lesson = await prisma.lesson.findUnique({
       where: { lessonId: conversation.lessonId },
+      include: { grammarRule: true },
     });
 
+    const grammar = lesson.grammarRule;
     const usedWords = Array.isArray(conversation.usedWords) ? conversation.usedWords : [];
     const unusedVocab = Array.isArray(conversation.unusedVocab) ? conversation.unusedVocab : [];
     const allVocab = [...usedWords, ...unusedVocab];
@@ -204,6 +215,9 @@ async function endConversation(conversationId) {
 LESSON CONTEXT:
 - Lesson title: "${lesson.title}"
 - Target vocabulary: ${allVocab.join(', ')}
+- Target grammar rule: "${grammar?.id || ''}" (${grammar?.category || ''})
+- Grammar usage: ${grammar?.usage || ''}
+- Expected forms: ${grammar?.forms ? JSON.stringify(grammar.forms) : 'N/A'}
 
 VOCABULARY USAGE:
 - Words successfully used by student: ${usedWords.join(', ') || 'none'}
@@ -213,13 +227,13 @@ FULL CONVERSATION:
 ${allMessages}
 
 SCORING CRITERIA:
-- Vocabulary usage (did they use the target words?): 0-30 points
-- Grammar accuracy (are sentences well-formed?): 0-25 points
-- Communication effectiveness (did they convey meaning?): 0-25 points
-- Engagement and effort (length, variety, initiative): 0-20 points
+- Vocabulary usage (did they use the target words?): 0-25 points
+- Grammar rule usage (did they correctly use "${grammar?.id || 'the target grammar'}"?): 0-25 points
+- Communication effectiveness (did they convey meaning clearly?): 0-25 points
+- Engagement and effort (length, variety, initiative): 0-25 points
 
 Respond ONLY with a JSON object in this exact format, no other text:
-{"aiScore": <number 0-100>, "aiFeedback": "<2-3 sentences of specific, encouraging feedback>"}`;
+{"aiScore": <number 0-100>, "aiFeedback": "<2-3 sentences of specific feedback mentioning both vocabulary and grammar rule usage>"}`;
 
     const rawResponse = await askGemini(prompt);
 

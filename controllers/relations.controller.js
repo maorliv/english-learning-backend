@@ -32,6 +32,18 @@ const requestRelation = withErrorHandling(async (req, res) => {
   }
 
   const relation = await relationsService.createRelationRequest(validatedTeacherId.value, validatedStudentId.value);
+
+  // Notify the teacher about the new student request
+  const student = await usersService.getUserById(validatedStudentId.value);
+  const teacher = await teachersService.getTeacherById(validatedTeacherId.value);
+  if (teacher?.userId) {
+    emitToUser(teacher.userId, 'relation:requested', {
+      relationId: relation.relationId,
+      studentId: validatedStudentId.value,
+      studentName: student ? `${student.firstName} ${student.lastName}` : 'A student',
+    });
+  }
+
   return sendSuccess(res, 201, { relationId: relation.relationId, status: relation.status });
 });
 

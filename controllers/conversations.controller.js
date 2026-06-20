@@ -168,6 +168,8 @@ const getConversation = withErrorHandling(async (req, res) => {
 
   return sendSuccess(res, 200, {
     conversationId: conversation.conversationId,
+    studentId: conversation.studentId,
+    lessonId: conversation.lessonId,
     messages: conversation.messages,
     aiScore: conversation.aiScore,
     teacherReviews: enrichedReviews,

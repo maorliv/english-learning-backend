@@ -32,10 +32,7 @@ async function getUserByEmail(email) {
 // CREATE — register a new user + related records atomically
 // ─────────────────────────────────────────────────────────
 
-// $transaction() wraps multiple DB operations in one atomic unit.
-// If ANY operation fails, ALL of them are rolled back — nothing is half-created.
-// This replaces: createUser() + createSettingsRecord() + createProgressRecord() + createTeacherProfile()
-// which were 4 separate calls that could partially fail.
+/** Atomically creates a user + settings + role-specific records (progress/preferences for students, profile for teachers). */
 async function registerUser({ firstName, lastName, email, password, userRole, sex, learning_goal, mainGoal, onlineOnly }) {
   return prisma.$transaction(async (tx) => {
     // tx is a "transaction client" — use it instead of prisma for all operations
@@ -115,9 +112,7 @@ async function updateUserById(id, { firstName, lastName, userRole }) {
 // DELETE
 // ─────────────────────────────────────────────────────────
 
-// Deleting a user requires removing related records first (settings, progress, etc.)
-// because MySQL enforces foreign key constraints.
-// We use a transaction so everything is deleted atomically.
+/** Cascades deletion of all related records (settings, progress, conversations, assessments, etc.) in a transaction. */
 async function deleteUserById(id) {
   const numericId = Number(id);
   const user = await prisma.user.findUnique({ where: { userID: numericId } });

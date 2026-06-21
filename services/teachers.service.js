@@ -1,8 +1,6 @@
 const prisma = require('../prisma/client');
 
-// Helper: flatten a teacher + user join into the shape the frontend expects.
-// Prisma returns { teacherId, userID, ..., user: { firstName, lastName, ... } }
-// The frontend expects { teacherId, firstName, lastName, ... } (flat)
+/** Flattens the Prisma teacher+user join into the flat shape the frontend expects. */
 function flattenTeacher(teacher) {
   if (!teacher) return null;
   const { user, ...rest } = teacher;

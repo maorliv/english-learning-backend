@@ -11,6 +11,7 @@ const { emitToUser } = require('../socket');
 const ALLOWED_REPLY_ROLES = ['student', 'teacher'];
 const FILTERABLE_CONVERSATION_STATUSES = ['active', 'completed'];
 
+/** Lists conversations; teachers only see conversations for their active students (scoped via relations). */
 const listConversations = withErrorHandling(async (req, res) => {
   const filters = {};
   const userRole = req.header('x-user-role');
@@ -50,6 +51,7 @@ const listConversations = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, await conversationsService.getAllConversations(filters));
 });
 
+/** Returns enriched conversation summaries for a student; teachers must have an active relation to view. */
 const listStudentConversations = withErrorHandling(async (req, res) => {
   const vStudentId = validateIdParam(req.params.studentId, 'studentId');
   const userRole = req.header('x-user-role');
@@ -90,6 +92,7 @@ const listStudentConversations = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, result);
 });
 
+/** Creates a conversation pre-loaded with the lesson's vocabulary words as the unused-vocab list. */
 const startConversation = withErrorHandling(async (req, res) => {
   const vStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const reqValidation = validateRequiredFields(req.body, ['lessonId']);
@@ -126,6 +129,7 @@ const sendConversationMessage = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, result);
 });
 
+/** Ends the conversation, triggers AI scoring, and emits a WebSocket notification to the student's connected teachers. */
 const finishConversation = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.params.id, 'id');
   if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
@@ -178,6 +182,7 @@ const getConversation = withErrorHandling(async (req, res) => {
   });
 });
 
+/** Saves a teacher's review and emits a WebSocket 'conversation:reviewed' event to the student. */
 const commentOnConversation = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.params.id, 'id');
   const reqValidation = validateRequiredFields(req.body, ['teacherScore', 'teacherComment']);
@@ -207,6 +212,7 @@ const commentOnConversation = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, result);
 });
 
+/** Adds a reply to a completed conversation and emits a WebSocket notification to the other party (student or teacher). */
 const replyToConversation = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.params.id, 'id');
   const reqValidation = validateRequiredFields(req.body, ['role', 'content']);

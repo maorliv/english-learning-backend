@@ -5,6 +5,7 @@ let io;
 // Maps userId → socketId so we can send events to specific users
 const onlineUsers = new Map();
 
+/** Attaches a Socket.IO server to the HTTP server and registers connection/disconnect handlers. */
 function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {

@@ -93,6 +93,7 @@ async function removeRelationById(relationId) {
   }
 }
 
+/** Updates relation status only if the requesting teacherId owns the relation; returns false on ownership mismatch. */
 async function updateRelationStatusById(relationId, teacherId, status) {
   const relation = await getRelationById(relationId);
   if (!relation) return null;
@@ -104,6 +105,7 @@ async function updateRelationStatusById(relationId, teacherId, status) {
   });
 }
 
+/** Saves a student's rating/feedback for their teacher; only allowed on active relations owned by the student. */
 async function updateRelationReviewById(relationId, studentId, rating, studentFeedback) {
   const relation = await getRelationById(relationId);
   if (!relation) return null;

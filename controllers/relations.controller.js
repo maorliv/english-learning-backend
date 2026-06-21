@@ -17,6 +17,7 @@ const listRelations = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, await relationsService.getAllRelations(status));
 });
 
+/** Creates a new student-teacher request (or re-opens a rejected one) and emits a WebSocket event to the teacher. */
 const requestRelation = withErrorHandling(async (req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const requiredFieldsValidation = validateRequiredFields(req.body, ['teacherId']);
@@ -52,6 +53,7 @@ const requestRelation = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 201, { relationId: relation.relationId, status: relation.status });
 });
 
+/** Returns pending requests for the logged-in teacher, enriched with student names. */
 const listPendingRelations = withErrorHandling(async (req, res) => {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   if (!validatedUserId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', validatedUserId.message, validatedUserId.details);
@@ -124,6 +126,7 @@ const reviewMyTeacher = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, { relationId: updated.relationId });
 });
 
+/** Accepts or rejects a relation; emits a WebSocket 'relation:accepted' to the student when approved. */
 const updateRelationStatus = withErrorHandling(async (req, res) => {
   const userRole = req.header('x-user-role');
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
@@ -165,6 +168,7 @@ const updateRelationStatus = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, { relationId: updated.relationId, status: updated.status });
 });
 
+/** Deletes an active relation (student-initiated) and emits a WebSocket 'relation:removed' to the teacher. */
 const removeRelation = withErrorHandling(async (req, res) => {
   const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const validatedRelationId = validateIdParam(req.params.id, 'id');

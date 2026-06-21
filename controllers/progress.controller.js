@@ -10,6 +10,7 @@ const { askGemini } = require('../services/gemini');
 
 const SUCCESS_THRESHOLD = 70;
 
+/** Asks Gemini to pick the best next lesson for a student; falls back to keyword matching on failure. */
 async function buildRecommendedLesson(progress, preferences) {
   const lessons = await lessonsService.getAllLessons();
 
@@ -82,6 +83,7 @@ Respond ONLY with a JSON object in this exact format, no other text:
   }
 }
 
+/** Computes aggregate stats (best score per lesson, success count, overall average) from all completed conversations. */
 const getProgressStats = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
@@ -111,6 +113,7 @@ const getProgressStats = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, { currentLevel: progress.currentLevel, completedLessonsCount, successedLessonsCount, overallAverage, lastActivityDate });
 });
 
+/** Returns recent scored conversations enriched with lesson titles and teacher names for the progress chart. */
 const getProgressChart = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
@@ -129,6 +132,7 @@ const getProgressChart = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, result);
 });
 
+/** Returns a cached lesson recommendation, invalidating the cache when level or learning goal changes. */
 const getNextLesson = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);

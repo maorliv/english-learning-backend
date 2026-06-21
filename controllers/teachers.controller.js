@@ -3,6 +3,7 @@ const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const teachersService = require('../services/teachers.service');
 
+/** Returns all student reviews for the logged-in teacher along with their computed average rating. */
 const getMyReviews = withErrorHandling(async (req, res) => {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 

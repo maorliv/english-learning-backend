@@ -1,3 +1,4 @@
+/** Creates an Error object enriched with statusCode, code, and details for the error-handler middleware. */
 function createHttpError(statusCode, code, message, details = {}) {
   const error = new Error(message);
 
@@ -8,6 +9,7 @@ function createHttpError(statusCode, code, message, details = {}) {
   return error;
 }
 
+/** Wraps an async route handler so rejected promises are forwarded to Express's next(err). */
 function withErrorHandling(handler) {
   return async function wrappedHandler(req, res, next) {
     try {

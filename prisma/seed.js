@@ -1,3 +1,7 @@
+/**
+ * Seeds the database from JSON fixtures in models/data/.
+ * Insert order respects FK constraints: users -> teachers -> grammar rules -> lessons -> vocabulary -> etc.
+ */
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');

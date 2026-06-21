@@ -1,6 +1,7 @@
 const prisma = require('../prisma/client');
 const { askGemini } = require('./gemini');
 
+/** Creates a new assessment session and seeds it with the opening interviewer prompt. */
 async function createAssessment(studentId) {
   const firstPrompt =
     'Hello! To help us understand your current English level, please tell me a little about yourself. ' +
@@ -34,6 +35,7 @@ async function getAssessmentById(assessmentId) {
   });
 }
 
+/** Sends conversation history to Gemini to generate a progressively harder follow-up question for level assessment. */
 async function addMessageToAssessment(assessmentId, content) {
   const assessment = await prisma.assessment.findUnique({
     where: { assessmentId: Number(assessmentId) },
@@ -82,6 +84,7 @@ Your follow-up question:`;
   return { reply };
 }
 
+/** Asks Gemini to classify the student as Beginner/Intermediate/Advanced based on the full assessment conversation. */
 async function endAssessment(assessmentId) {
   const assessment = await prisma.assessment.findUnique({
     where: { assessmentId: Number(assessmentId) },

@@ -3,6 +3,7 @@ const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
 const matchingService = require('../services/matching.service');
 
+/** Saves student preferences and immediately returns AI-ranked teacher recommendations. */
 const saveMatchingPreferences = withErrorHandling(async (req, res) => {
   const vUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
   const reqValidation = validateRequiredFields(req.body, ['budget_max', 'learning_goal', 'onboarding_text', 'currentLevel']);

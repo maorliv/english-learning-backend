@@ -2,6 +2,7 @@ const prisma = require('../prisma/client');
 const teachersService = require('./teachers.service');
 const { askGemini } = require('./gemini');
 
+/** Splits text into lowercase alphanumeric tokens for keyword-overlap scoring. */
 function tokenizeText(value) {
   return String(value || '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
 }
@@ -39,7 +40,7 @@ async function saveStudentPreferences(userId, data) {
   });
 }
 
-// Fallback scoring — kept as backup when Gemini is unavailable
+/** Fallback token-overlap scorer used when Gemini is unavailable; combines goal/specialty overlap, online pref, and rank. */
 function calculateMockMatchScore(teacher, preferences) {
   const preferenceTokens = new Set([
     ...tokenizeText(preferences.learning_goal),
@@ -68,6 +69,7 @@ function calculateMockMatchScore(teacher, preferences) {
   return overlapScore + mainGoalBonus + onlineBonus + Number(teacher.rank || 0);
 }
 
+/** Scores all budget-eligible teachers via Gemini semantic matching, falling back to token-overlap on error. */
 async function getRecommendationsForPreferences(preferences) {
   if (!preferences) return null;
 

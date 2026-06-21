@@ -12,6 +12,7 @@ async function getConversationById(conversationId) {
   });
 }
 
+/** Returns conversations with a per-teacher `isReviewedByTeacher` flag when requestingTeacherId is provided. */
 async function getAllConversations(filters = {}, requestingTeacherId = null) {
   const where = {};
   if (filters.status) where.status = filters.status;
@@ -101,6 +102,7 @@ async function createConversation(studentId, lessonId, unusedVocab = []) {
   });
 }
 
+/** Tracks vocabulary usage, builds a Gemini prompt with lesson context + history, and returns the AI tutor reply. */
 async function addMessageToConversation(conversationId, content) {
   // Fetch conversation WITH message history (needed for prompt context)
   const conversation = await prisma.conversation.findUnique({
@@ -187,6 +189,7 @@ Respond in character:`;
   return { reply: aiReply, unusedVocab: newUnused, usedWords: newUsed };
 }
 
+/** Sends the full conversation to Gemini for scoring (0-100) and feedback; falls back to word-count heuristic on error. */
 async function endConversation(conversationId) {
   const conversation = await prisma.conversation.findUnique({
     where: { conversationId: Number(conversationId) },
@@ -264,6 +267,7 @@ Respond ONLY with a JSON object in this exact format, no other text:
   return { conversationId: Number(conversationId), aiScore, aiFeedback };
 }
 
+/** Upserts a teacher review so the same teacher can update their score/comment on a conversation. */
 async function addTeacherComment(conversationId, teacherId, teacherScore, teacherComment) {
   await prisma.teacherReview.upsert({
     where: {

@@ -2,6 +2,7 @@ const prisma = require('../prisma/client');
 
 const LEVEL_ORDER = { Beginner: 1, Intermediate: 2, Advanced: 3 };
 
+/** Returns all lessons, marking each as locked/unlocked based on the student's current level rank. */
 async function getAllLessons(level) {
   const studentRank = level ? (LEVEL_ORDER[level] ?? 0) : null;
   const lessons = await prisma.lesson.findMany();
@@ -56,10 +57,7 @@ async function deleteLessonById(id) {
   }
 }
 
-// The most complex query — assembles the lesson catalog for a student.
-// In the old code, the controller called 4 different model functions.
-// With Prisma, we use `include` to fetch related data in fewer queries,
-// and `Promise.all` to run independent queries in parallel.
+/** Builds the full lesson catalog for a student: lock state, completion status, grammar/vocab metadata, sorted by completion. */
 async function getLessonsCatalog(studentId) {
   // Promise.all runs both queries at the same time (parallel), not one after another.
   // This is faster than: const progress = await ...; const lessons = await ...;
@@ -149,7 +147,7 @@ async function getLessonGrammarWarmUp(lessonId, difficulty) {
   return { lesson, exercises };
 }
 
-// Lesson vocabulary warmup — returns the two exercise formats
+/** Returns lesson vocabulary split into two warm-up formats: fill-in-the-blank and word-definition matching. */
 async function getLessonVocabWarmUp(lessonId) {
   const lesson = await prisma.lesson.findUnique({ where: { lessonId: Number(lessonId) } });
   if (!lesson) return null;

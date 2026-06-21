@@ -26,6 +26,7 @@ const sendAssessmentMessage = withErrorHandling(async (req, res) => {
   return sendSuccess(res, 200, { reply: result.reply });
 });
 
+/** Ends the assessment, gets the AI-detected level, and updates the student's progress record accordingly. */
 const endAssessmentHandler = withErrorHandling(async (req, res) => {
   const vId = validateIdParam(req.params.id, 'id');
   if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);

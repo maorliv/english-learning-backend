@@ -8,6 +8,7 @@ async function getWarmUpGrammarById(id) {
   return prisma.warmUpExercise.findUnique({ where: { exerciseId: Number(id) } });
 }
 
+/** Returns a random subset of warm-up exercises for a lesson, optionally filtered by difficulty. */
 async function getWarmUpGrammarByLessonId(lessonId, difficulty, limit = 5) {
   const where = { lessonId: Number(lessonId) };
   if (difficulty) where.difficulty = difficulty.toUpperCase();
@@ -19,6 +20,7 @@ async function getWarmUpGrammarByLessonId(lessonId, difficulty, limit = 5) {
     .slice(0, limit);
 }
 
+/** Returns a random subset of warm-up exercises for a grammar rule, optionally filtered by difficulty. */
 async function getWarmUpGrammarByGrammarRuleId(grammarRuleId, difficulty, limit = 5) {
   const where = { grammarRuleId };
   if (difficulty) where.difficulty = difficulty.toUpperCase();

@@ -18,6 +18,7 @@ async function updateProgressLevel(studentId, level) {
   }
 }
 
+/** Stores a Gemini-generated lesson recommendation in the progress record to avoid repeated AI calls. */
 async function updateCachedRecommendation(studentId, recommendation) {
   return prisma.progress.update({
     where: { studentId: Number(studentId) },

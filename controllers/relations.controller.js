@@ -176,7 +176,18 @@ const removeRelation = withErrorHandling(async (req, res) => {
   if (String(relation.studentId) !== String(validatedStudentId.value)) throw createHttpError(403, 'FORBIDDEN', 'You do not have permission to remove this relation.', { relationId: validatedRelationId.value });
   if (relation.status !== 'active') throw createHttpError(409, 'INVALID_STATUS', 'Only active connections can be removed.', { relationId: validatedRelationId.value, status: relation.status });
 
+  const student = await usersService.getUserById(validatedStudentId.value);
+  const teacher = await teachersService.getTeacherById(relation.teacherId);
+
   await relationsService.removeRelationById(validatedRelationId.value);
+
+  if (teacher?.userId) {
+    emitToUser(teacher.userId, 'relation:removed', {
+      relationId: validatedRelationId.value,
+      studentName: student ? `${student.firstName} ${student.lastName}` : 'A student',
+    });
+  }
+
   return sendSuccess(res, 200, { relationId: validatedRelationId.value });
 });
 

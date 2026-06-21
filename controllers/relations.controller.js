@@ -27,11 +27,16 @@ const requestRelation = withErrorHandling(async (req, res) => {
   if (!validatedTeacherId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', validatedTeacherId.message, validatedTeacherId.details);
 
   const existing = await relationsService.getRelationByTeacherAndStudent(validatedTeacherId.value, validatedStudentId.value);
-  if (existing) {
+  if (existing && existing.status !== 'rejected') {
     throw createHttpError(409, 'RELATION_ALREADY_EXISTS', 'Relation already exists between this student and teacher', { relationId: existing.relationId, teacherId: validatedTeacherId.value, studentId: validatedStudentId.value });
   }
 
-  const relation = await relationsService.createRelationRequest(validatedTeacherId.value, validatedStudentId.value);
+  let relation;
+  if (existing && existing.status === 'rejected') {
+    relation = await relationsService.resetRelationToPending(existing.relationId);
+  } else {
+    relation = await relationsService.createRelationRequest(validatedTeacherId.value, validatedStudentId.value);
+  }
 
   // Notify the teacher about the new student request
   const student = await usersService.getUserById(validatedStudentId.value);

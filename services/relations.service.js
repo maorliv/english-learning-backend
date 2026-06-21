@@ -75,6 +75,13 @@ async function createRelationRequest(teacherId, studentId) {
   });
 }
 
+async function resetRelationToPending(relationId) {
+  return prisma.studentTeacherRelation.update({
+    where: { relationId: Number(relationId) },
+    data: { status: 'pending' },
+  });
+}
+
 async function removeRelationById(relationId) {
   try {
     return await prisma.studentTeacherRelation.delete({
@@ -120,6 +127,7 @@ module.exports = {
   getRelationsByStudentId,
   getAllRelationsByStudentId,
   createRelationRequest,
+  resetRelationToPending,
   removeRelationById,
   updateRelationStatusById,
   updateRelationReviewById,

@@ -1,105 +1,74 @@
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam, validateRequiredFields } = require('../utils/validators');
-const { getAllTeachers, getTeacherById, getTeacherByUserId, updateTeacherById } = require('../models/teachers.model');
-const { getReviewedRelationsByTeacherId } = require('../models/relations.model');
+const teachersService = require('../services/teachers.service');
 
-/**
- * GET /api/teachers/my-reviews
- * Returns all student reviews received by the currently logged-in teacher.
- * The teacher's ID is read from the x-user-id request header.
- * Also computes the average rating across all reviews.
- */
-const getMyReviews = withErrorHandling((req, res) => {
+/** Returns all student reviews for the logged-in teacher along with their computed average rating. */
+const getMyReviews = withErrorHandling(async (req, res) => {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedUserId.isValid) {
     throw createHttpError(400, 'VALIDATION_ERROR', validatedUserId.message, validatedUserId.details);
   }
 
-  const teacherProfile = getTeacherByUserId(validatedUserId.value);
+  const teacherProfile = await teachersService.getTeacherByUserId(validatedUserId.value);
 
   if (!teacherProfile) {
     throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: validatedUserId.value });
   }
 
-  const reviewedRelations = getReviewedRelationsByTeacherId(teacherProfile.teacherId);
+  const reviewedRelations = await teachersService.getReviewedRelationsByTeacherId(teacherProfile.teacherId);
 
-  // Extract only the review-relevant fields from each relation record
   const reviews = reviewedRelations.map((relation) => ({
     studentId: relation.studentId,
     rating: relation.rating,
     feedback: relation.student_feedback,
   }));
 
-  // Calculate average rating; return 0 if there are no reviews yet
   const avgRating =
     reviews.length === 0
       ? 0
       : reviews.reduce((total, review) => total + Number(review.rating || 0), 0) / reviews.length;
 
-  return sendSuccess(res, 200, {
-    avgRating,
-    reviews,
-  });
+  return sendSuccess(res, 200, { avgRating, reviews });
 });
 
-/**
- * GET /api/teachers
- * Returns the list of all teachers, with optional query-string filters:
- *   ?available=true|false  \u2014 filter by availability
- *   ?maxPrice=<number>     \u2014 filter by maximum price per week
- */
-const listTeachers = withErrorHandling((req, res) => {
-  // req.query contains values from the URL query string (e.g. ?available=true&maxPrice=100)
+const listTeachers = withErrorHandling(async (req, res) => {
   const { available, maxPrice } = req.query;
   const filters = {};
 
   if (available !== undefined) {
-    // Query strings are always strings; validate before converting to boolean
     if (available !== 'true' && available !== 'false') {
       throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid available filter', {
         available,
         expected: ['true', 'false'],
-      }); 
+      });
     }
-
-    filters.available = available === 'true'; // Convert string 'true'/'false' to boolean
+    filters.available = available === 'true';
   }
 
   if (maxPrice !== undefined) {
-    const parsedMaxPrice = Number(maxPrice); // Convert string to number
-
+    const parsedMaxPrice = Number(maxPrice);
     if (Number.isNaN(parsedMaxPrice)) {
       throw createHttpError(400, 'VALIDATION_ERROR', 'Invalid maxPrice filter', {
         maxPrice,
         expected: 'number',
       });
     }
-
     filters.maxPrice = parsedMaxPrice;
   }
 
-  return sendSuccess(res, 200, getAllTeachers(filters));
+  return sendSuccess(res, 200, await teachersService.getAllTeachers(filters));
 });
 
-/**
- * GET /api/teachers/:id
- * Returns a single teacher by their numeric teacherId.
- */
-const getTeacher = withErrorHandling((req, res) => {
+const getTeacher = withErrorHandling(async (req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
 
   if (!validatedId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedId.message,
-      validatedId.details
-    );
+    throw createHttpError(400, 'VALIDATION_ERROR', validatedId.message, validatedId.details);
   }
 
-  const teacher = getTeacherById(validatedId.value);
+  const teacher = await teachersService.getTeacherById(validatedId.value);
 
   if (!teacher) {
     throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher not found', {
@@ -110,14 +79,7 @@ const getTeacher = withErrorHandling((req, res) => {
   return sendSuccess(res, 200, teacher);
 });
 
-/**
- * PUT /api/teachers/:id
- * Updates a teacher's profile fields.
- * Required: experience, pricePerWeek, specialties, available, feedbackFrequency.
- * Optional: bio, teachingLevels, availability, onlineOnly.
- * Can be called by admin or by the teacher themselves (allowSelf is set in the route).
- */
-const updateTeacher = withErrorHandling((req, res) => {
+const updateTeacher = withErrorHandling(async (req, res) => {
   const validatedId = validateIdParam(req.params.id, 'id');
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'experience',
@@ -128,30 +90,19 @@ const updateTeacher = withErrorHandling((req, res) => {
   ]);
 
   if (!validatedId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedId.message,
-      validatedId.details
-    );
+    throw createHttpError(400, 'VALIDATION_ERROR', validatedId.message, validatedId.details);
   }
 
   if (!requiredFieldsValidation.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      requiredFieldsValidation.message,
-      requiredFieldsValidation.details
-    );
+    throw createHttpError(400, 'VALIDATION_ERROR', requiredFieldsValidation.message, requiredFieldsValidation.details);
   }
 
-  const updatedTeacher = updateTeacherById(validatedId.value, {
+  const updatedTeacher = await teachersService.updateTeacherById(validatedId.value, {
     experience: req.body.experience,
     pricePerWeek: req.body.pricePerWeek,
     specialties: req.body.specialties,
     available: req.body.available,
     feedbackFrequency: req.body.feedbackFrequency,
-    // Optional profile setup fields
     bio: req.body.bio ?? null,
     teachingLevels: req.body.teachingLevels ?? [],
     availability: req.body.availability ?? null,
@@ -164,30 +115,23 @@ const updateTeacher = withErrorHandling((req, res) => {
     });
   }
 
-  return sendSuccess(res, 200, {
-    teacherId: updatedTeacher.teacherId,
-  });
+  return sendSuccess(res, 200, { teacherId: updatedTeacher.teacherId });
 });
 
-/**
- * GET /api/teachers/me
- * Returns the currently logged-in teacher's own profile.
- * Resolves teacherId from the x-user-id header via getTeacherByUserId.
- */
-const getMyProfile = withErrorHandling((req, res) => {
+const getMyProfile = withErrorHandling(async (req, res) => {
   const validatedUserId = validateIdParam(req.header('x-user-id'), 'x-user-id');
 
   if (!validatedUserId.isValid) {
     throw createHttpError(400, 'VALIDATION_ERROR', validatedUserId.message, validatedUserId.details);
   }
 
-  const teacherRaw = getTeacherByUserId(validatedUserId.value);
+  const teacher = await teachersService.getTeacherByUserId(validatedUserId.value);
 
-  if (!teacherRaw) {
+  if (!teacher) {
     throw createHttpError(404, 'TEACHER_NOT_FOUND', 'Teacher profile not found for this user.', { userId: validatedUserId.value });
   }
 
-  return sendSuccess(res, 200, getTeacherById(teacherRaw.teacherId));
+  return sendSuccess(res, 200, teacher);
 });
 
 module.exports = {

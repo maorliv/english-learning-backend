@@ -1,15 +1,9 @@
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateRequiredFields } = require('../utils/validators');
-const { getUserByEmail } = require('../models/users.model');
+const usersService = require('../services/users.service');
 
-/**
- * POST /api/auth/login
- * Simulated login — checks email and password against in-memory data.
- * Returns a mock token and the user's role on success.
- * Returns 401 if credentials don't match.
- */
-const loginUser = withErrorHandling((req, res) => {
+const loginUser = withErrorHandling(async (req, res) => {
   const { email, password } = req.body;
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'email',
@@ -25,7 +19,7 @@ const loginUser = withErrorHandling((req, res) => {
     );
   }
 
-  const user = getUserByEmail(email);
+  const user = await usersService.getUserByEmail(email);
 
   // 401 Unauthorized — wrong email or wrong password (same message to avoid info leakage)
   if (!user || user.password !== password) {

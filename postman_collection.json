@@ -1,0 +1,1642 @@
+{
+  "info": {
+    "name": "Lingua - English Learning Platform",
+    "description": "API collection for the Lingua English learning platform backend.\n\nAuth: Most endpoints require x-user-id and x-user-role headers.\n\nExample users:\n- Admin: x-user-id: 1, x-user-role: admin\n- Student: x-user-id: 2, x-user-role: student\n- Teacher: x-user-id: 5, x-user-role: teacher",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dana@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"1234\",\n  \"userRole\": \"student\",\n  \"sex\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "2"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "2"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teachers",
+      "item": [
+        {
+          "name": "Get All Teachers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/teachers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "teachers"]
+            }
+          }
+        },
+        {
+          "name": "Get My Teacher Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/teachers/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "teachers", "me"]
+            }
+          }
+        },
+        {
+          "name": "Get My Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/teachers/my-reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "teachers", "my-reviews"]
+            }
+          }
+        },
+        {
+          "name": "Get Teacher By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/teachers/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "teachers", "5"]
+            }
+          }
+        },
+        {
+          "name": "Update Teacher Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"Updated bio\",\n  \"pricePerWeek\": 50\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/teachers/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "teachers", "5"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lessons",
+      "item": [
+        {
+          "name": "Get All Lessons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons"]
+            }
+          }
+        },
+        {
+          "name": "Create Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Lesson\",\n  \"scene\": \"A coffee shop\",\n  \"aiRole\": \"barista\",\n  \"level\": \"Beginner\",\n  \"grammarRuleId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons"]
+            }
+          }
+        },
+        {
+          "name": "Get Lesson Catalog",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/catalog",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "catalog"]
+            }
+          }
+        },
+        {
+          "name": "Get Lesson By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Lesson",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Lesson",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Lesson Grammar",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/grammar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "grammar"]
+            }
+          }
+        },
+        {
+          "name": "Get Grammar Warm-Up",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/grammar-warmup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "grammar-warmup"]
+            }
+          }
+        },
+        {
+          "name": "Get Lesson Vocabulary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/vocab",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "vocab"]
+            }
+          }
+        },
+        {
+          "name": "Add Vocabulary to Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"hello\",\n  \"translation\": \"שלום\",\n  \"example\": \"Hello there!\",\n  \"definition\": \"A greeting\",\n  \"completeSentence\": \"Say ___ when you meet someone.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/vocab",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "vocab"]
+            }
+          }
+        },
+        {
+          "name": "Get Vocabulary Item",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/vocab/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "vocab", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Vocabulary Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/vocab/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "vocab", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Vocabulary Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/vocab/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "vocab", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Vocabulary Warm-Up",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lessons/1/vocab-warmup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lessons", "1", "vocab-warmup"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Conversations",
+      "item": [
+        {
+          "name": "Get All Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations"]
+            }
+          }
+        },
+        {
+          "name": "Start Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations", "start"]
+            }
+          }
+        },
+        {
+          "name": "Get Conversation By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hello, I would like to order a coffee.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/1/message",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations", "1", "message"]
+            }
+          }
+        },
+        {
+          "name": "Reply to Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"student\",\n  \"content\": \"Thank you for the feedback!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/1/reply",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations", "1", "reply"]
+            }
+          }
+        },
+        {
+          "name": "Add Teacher Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacherScore\": 85,\n  \"teacherComment\": \"Great job with vocabulary!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/1/teacher-comment",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations", "1", "teacher-comment"]
+            }
+          }
+        },
+        {
+          "name": "End Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/1/end",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "conversations", "1", "end"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Relations",
+      "item": [
+        {
+          "name": "Get All Relations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/relations?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, active, or rejected"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Request Relation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacherId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "request"]
+            }
+          }
+        },
+        {
+          "name": "Get My Relations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/my-relations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "my-relations"]
+            }
+          }
+        },
+        {
+          "name": "Get My Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/my-students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "my-students"]
+            }
+          }
+        },
+        {
+          "name": "Get My Teachers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/my-teachers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "my-teachers"]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Relations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Review My Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"relationId\": 1,\n  \"rating\": 5,\n  \"student_feedback\": \"Excellent teacher!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/my-teacher/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "my-teacher", "review"]
+            }
+          }
+        },
+        {
+          "name": "Update Relation Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Delete Relation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/relations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relations", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "item": [
+        {
+          "name": "Get Progress Chart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/progress/chart",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "progress", "chart"]
+            }
+          }
+        },
+        {
+          "name": "Get Next Lesson",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/progress/next-lesson",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "progress", "next-lesson"]
+            }
+          }
+        },
+        {
+          "name": "Get Progress Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/progress/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "progress", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/progress/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "progress", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Matching",
+      "item": [
+        {
+          "name": "Get Matching Preferences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matching/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matching", "preferences"]
+            }
+          }
+        },
+        {
+          "name": "Set Matching Preferences",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"learning_goal\": \"Improve speaking\",\n  \"budget_max\": 80,\n  \"mainGoal\": \"speaking\",\n  \"onlineOnly\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/matching/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matching", "preferences"]
+            }
+          }
+        },
+        {
+          "name": "Get Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matching/recommendations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "matching", "recommendations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assessment",
+      "item": [
+        {
+          "name": "Start Assessment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/assessment/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assessment", "start"]
+            }
+          }
+        },
+        {
+          "name": "Send Assessment Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"I think the answer is present tense.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assessment/1/message",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assessment", "1", "message"]
+            }
+          }
+        },
+        {
+          "name": "End Assessment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/assessment/1/end",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assessment", "1", "end"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Dana L.\",\n  \"theme\": \"dark\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Grammar Rules",
+      "item": [
+        {
+          "name": "Get All Grammar Rules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/grammar-rules",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "grammar-rules"]
+            }
+          }
+        },
+        {
+          "name": "Create Grammar Rule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Tenses\",\n  \"usage\": \"Present simple for habits\",\n  \"forms\": {\"positive\": \"I work\"},\n  \"keywords\": [\"always\", \"usually\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/grammar-rules",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "grammar-rules"]
+            }
+          }
+        },
+        {
+          "name": "Get Grammar Rule By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "2"
+              },
+              {
+                "key": "x-user-role",
+                "value": "student"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/grammar-rules/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "grammar-rules", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Grammar Rule",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Updated Category\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/grammar-rules/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "grammar-rules", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Grammar Rule",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/grammar-rules/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "grammar-rules", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get Student Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "5"
+              },
+              {
+                "key": "x-user-role",
+                "value": "teacher"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/students/2/conversations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "2", "conversations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Warm-Up Grammar",
+      "item": [
+        {
+          "name": "Get All Warm-Up Grammar",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/warm-up-grammar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "warm-up-grammar"]
+            }
+          }
+        },
+        {
+          "name": "Create Warm-Up Grammar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lessonId\": 1,\n  \"grammarRuleId\": 1,\n  \"type\": \"multiple_choice\",\n  \"instruction\": \"Choose the correct answer\",\n  \"content\": \"She ___ to school every day.\",\n  \"options\": [\"go\", \"goes\", \"going\", \"gone\"],\n  \"correctAnswer\": \"goes\",\n  \"difficulty\": \"BEGINNER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/warm-up-grammar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "warm-up-grammar"]
+            }
+          }
+        },
+        {
+          "name": "Get Warm-Up Grammar By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/warm-up-grammar/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "warm-up-grammar", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Warm-Up Grammar",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"instruction\": \"Updated instruction\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/warm-up-grammar/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "warm-up-grammar", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Warm-Up Grammar",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-id",
+                "value": "1"
+              },
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/warm-up-grammar/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "warm-up-grammar", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,51 +1,98 @@
-const { getProgressByStudentId } = require('../models/progress.model');
-const {
-  getScoredCompletedConversationsByStudentId,
-  getAllCompletedConversationsByStudentId,
-} = require('../models/conversations.model');
-const { getLessonById } = require('../models/lessons.model');
-const { getTeacherById } = require('../models/teachers.model');
-const { getStudentPreferencesByUserId } = require('../models/matching.model');
-const { getNextLessonRecommendation } = require('../services/progress.service');
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const { validateIdParam } = require('../utils/validators');
+const progressService = require('../services/progress.service');
+const conversationsService = require('../services/conversations.service');
+const lessonsService = require('../services/lessons.service');
+const teachersService = require('../services/teachers.service');
+const matchingService = require('../services/matching.service');
+const { askGemini } = require('../services/gemini');
 
-// Minimum score to count a lesson as successfully completed
 const SUCCESS_THRESHOLD = 70;
 
-/**
- * GET /api/progress/stats
- * Returns summary statistics for the logged-in student's learning progress.
- * All numeric stats are computed live from conversations so they stay in sync
- * as new lessons are completed — the stored progress fields are never stale.
- */
-const getProgressStats = withErrorHandling((req, res) => {
-  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+/** Asks Gemini to pick the best next lesson for a student; falls back to keyword matching on failure. */
+async function buildRecommendedLesson(progress, preferences) {
+  const lessons = await lessonsService.getAllLessons();
 
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
+  try {
+    const lessonSummaries = lessons.map(l => ({
+      lessonId: l.lessonId,
+      title: l.title,
+      scene: l.scene,
+      level: l.level,
+      aiRole: l.aiRole,
+    }));
+
+    const prompt = `You are a lesson recommendation system for an English learning platform.
+
+STUDENT PROFILE:
+- Current level: "${progress.currentLevel}"
+- Learning goal: "${preferences.learning_goal}"
+
+AVAILABLE LESSONS (JSON array):
+${JSON.stringify(lessonSummaries)}
+
+Select the ONE best lesson for this student. Consider:
+1. The lesson level should match the student's current level
+2. The lesson topic/scene should align with their learning goal
+3. Prefer variety
+
+Respond ONLY with a JSON object in this exact format, no other text:
+{"lessonId": <number>, "title": "<lesson title>", "reason": "<1 sentence explaining why this lesson is recommended>"}`;
+
+    const rawResponse = await askGemini(prompt);
+    const cleaned = rawResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    const validLesson = lessons.find(l => l.lessonId === parsed.lessonId);
+    if (validLesson && parsed.reason) {
+      return {
+        lessonId: validLesson.lessonId,
+        title: validLesson.title,
+        reason: parsed.reason,
+      };
+    }
+    throw new Error('Gemini recommended invalid lesson ID');
+  } catch (error) {
+    console.error('Gemini lesson recommendation error:', error.message);
+    // Fallback: original keyword matching
+    const normalizedLevel = String(progress.currentLevel || '').trim().toLowerCase();
+    const goalText = String(preferences.learning_goal || '').toLowerCase();
+
+    const levelMatchedLessons = lessons.filter(l => String(l.level || '').trim().toLowerCase() === normalizedLevel);
+    const candidateLessons = levelMatchedLessons.length > 0 ? levelMatchedLessons : lessons;
+
+    const rankedLessons = candidateLessons
+      .map(lesson => {
+        const searchableText = [lesson.title, lesson.scene, lesson.aiRole, lesson.grammarRuleId].join(' ').toLowerCase();
+        const matchScore = goalText.split(/[^a-z0-9]+/).filter(Boolean).reduce((score, token) => {
+          return searchableText.includes(token) ? score + 1 : score;
+        }, 0);
+        return { lesson, matchScore };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore);
+
+    const recommended = rankedLessons[0]?.lesson || null;
+    if (!recommended) return null;
+
+    return {
+      lessonId: recommended.lessonId,
+      title: recommended.title,
+      reason: `Recommended for your ${progress.currentLevel} level and learning goal: ${preferences.learning_goal}.`,
+    };
   }
+}
 
-  const progress = getProgressByStudentId(validatedStudentId.value);
+/** Computes aggregate stats (best score per lesson, success count, overall average) from all completed conversations. */
+const getProgressStats = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
 
-  if (!progress) {
-    throw createHttpError(
-      404,
-      'PROGRESS_NOT_FOUND',
-      'Progress not found for this student',
-      { studentId: validatedStudentId.value }
-    );
-  }
+  const progress = await progressService.getProgressByStudentId(vId.value);
+  if (!progress) throw createHttpError(404, 'PROGRESS_NOT_FOUND', 'Progress not found for this student', { studentId: vId.value });
 
-  const completed = getAllCompletedConversationsByStudentId(validatedStudentId.value);
+  const completed = await conversationsService.getAllCompletedConversationsByStudentId(vId.value);
 
-  // Best score per lesson (teacherScore takes priority over aiScore)
   const bestScoreByLesson = {};
   for (const c of completed) {
     const score = c.teacherScore ?? c.aiScore;
@@ -55,147 +102,85 @@ const getProgressStats = withErrorHandling((req, res) => {
     }
   }
 
-  const completedLessonsCount = new Set(completed.map((c) => c.lessonId)).size;
+  const completedLessonsCount = new Set(completed.map(c => c.lessonId)).size;
   const lessonScores = Object.values(bestScoreByLesson);
-  const successedLessonsCount = lessonScores.filter((s) => s >= SUCCESS_THRESHOLD).length;
-  const overallAverage =
-    lessonScores.length > 0
-      ? Math.round(lessonScores.reduce((sum, s) => sum + s, 0) / lessonScores.length)
-      : 0;
+  const successedLessonsCount = lessonScores.filter(s => s >= SUCCESS_THRESHOLD).length;
+  const overallAverage = lessonScores.length > 0 ? Math.round(lessonScores.reduce((sum, s) => sum + s, 0) / lessonScores.length) : 0;
 
-  // Most recent completed-conversation date; fall back to the stored value when there are none
-  const dates = completed.map((c) => c.date).filter(Boolean);
-  const lastActivityDate =
-    dates.length > 0
-      ? dates.reduce((latest, d) => (d > latest ? d : latest))
-      : progress.lastActivityDate;
+  const dates = completed.map(c => c.date).filter(Boolean);
+  const lastActivityDate = dates.length > 0 ? dates.reduce((latest, d) => (d > latest ? d : latest)) : progress.lastActivityDate;
 
-  return sendSuccess(res, 200, {
-    currentLevel: progress.currentLevel,
-    completedLessonsCount,
-    successedLessonsCount,
-    overallAverage,
-    lastActivityDate,
-  });
+  return sendSuccess(res, 200, { currentLevel: progress.currentLevel, completedLessonsCount, successedLessonsCount, overallAverage, lastActivityDate });
 });
 
-/**
- * GET /api/progress/chart
- * Returns a list of the student's recent scored conversations for display in a progress chart.
- * Each item includes the lesson title (looked up by lessonId), AI score, teacher score, and date.
- */
-const getProgressChart = withErrorHandling((req, res) => {
-  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+/** Returns recent scored conversations enriched with lesson titles and teacher names for the progress chart. */
+const getProgressChart = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
 
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
-  }
+  const scoredConversations = await conversationsService.getScoredCompletedConversationsByStudentId(vId.value);
+  const result = await Promise.all(scoredConversations.map(async (c) => {
+    const enrichedReviews = await Promise.all((c.teacherReviews || []).map(async (r) => {
+      const teacher = await teachersService.getTeacherById(r.teacherId);
+      return { teacherId: r.teacherId, teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null, teacherScore: r.teacherScore };
+    }));
 
-  // Fetch recent scored conversations and enrich each with lesson title and teacher names
-  const scoredConversations = getScoredCompletedConversationsByStudentId(validatedStudentId.value).map(
-    (conversation) => {
-      const enrichedReviews = conversation.teacherReviews.map((review) => {
-        const teacher = getTeacherById(review.teacherId);
-        return {
-          teacherId: review.teacherId,
-          teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : null,
-          teacherScore: review.teacherScore,
-        };
-      });
+    const lesson = await lessonsService.getLessonById(c.lessonId);
+    return { conversationId: c.conversationId, lessonTitle: lesson?.title || null, aiScore: c.aiScore, teacherReviews: enrichedReviews, date: c.date };
+  }));
 
-      return {
-        conversationId: conversation.conversationId,
-        lessonTitle: getLessonById(conversation.lessonId)?.title || null,
-        aiScore: conversation.aiScore,
-        teacherReviews: enrichedReviews,
-        date: conversation.date,
-      };
-    }
-  );
-
-  return sendSuccess(res, 200, scoredConversations);
+  return sendSuccess(res, 200, result);
 });
 
-/**
- * GET /api/progress/next-lesson
- * Returns the recommended next lesson for the logged-in student based on their
- * current level and learning preferences. Returns 404 if progress or preferences are missing.
- */
+/** Returns a cached lesson recommendation, invalidating the cache when level or learning goal changes. */
 const getNextLesson = withErrorHandling(async (req, res) => {
-  const validatedStudentId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  const vId = validateIdParam(req.header('x-user-id'), 'x-user-id');
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
 
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
+  const progress = await progressService.getProgressByStudentId(vId.value);
+  if (!progress) throw createHttpError(404, 'PROGRESS_NOT_FOUND', 'Progress not found for this student', { studentId: vId.value });
+
+  const preferences = await matchingService.getStudentPreferencesByUserId(vId.value);
+  if (!preferences) throw createHttpError(404, 'PREFERENCES_NOT_FOUND', 'Student preferences not found', { studentId: vId.value });
+
+  // Cache key: if level or learning_goal changed → invalidate
+  const cacheKey = `${progress.currentLevel || ''}|${preferences.learning_goal || ''}`;
+  const cached = progress.cachedRecommendation;
+
+  if (cached && cached.cacheKey === cacheKey) {
+    // Check if the student already completed the cached lesson
+    const prisma = require('../prisma/client');
+    const completed = await prisma.studentCompletedLesson.findUnique({
+      where: { studentId_lessonId: { studentId: Number(vId.value), lessonId: cached.lessonId } },
+    });
+
+    if (!completed) {
+      return sendSuccess(res, 200, { lessonId: cached.lessonId, title: cached.title, reason: cached.reason });
+    }
   }
 
-  const progress = getProgressByStudentId(validatedStudentId.value);
+  // Cache miss or invalidated — get a fresh recommendation
+  const recommendation = await buildRecommendedLesson(progress, preferences);
 
-  if (!progress) {
-    throw createHttpError(
-      404,
-      'PROGRESS_NOT_FOUND',
-      'Progress not found for this student',
-      {
-        studentId: validatedStudentId.value,
-      }
-    );
+  // Save to cache
+  if (recommendation) {
+    await progressService.updateCachedRecommendation(vId.value, {
+      lessonId: recommendation.lessonId,
+      title: recommendation.title,
+      reason: recommendation.reason,
+      cacheKey,
+    });
   }
 
-  const preferences = getStudentPreferencesByUserId(validatedStudentId.value);
-
-  if (!preferences) {
-    throw createHttpError(
-      404,
-      'PREFERENCES_NOT_FOUND',
-      'Student preferences not found',
-      {
-        studentId: validatedStudentId.value,
-      }
-    );
-  }
-
-  return sendSuccess(res, 200, await getNextLessonRecommendation(progress, preferences));
+  return sendSuccess(res, 200, recommendation);
 });
 
-/**
- * GET /api/progress/:studentId
- * Returns full progress data for a specific student by their studentId URL param.
- * Restricted to teacher and admin roles (set in the route file).
- */
-const getStudentProgress = withErrorHandling((req, res) => {
-  const validatedStudentId = validateIdParam(req.params.studentId, 'studentId'); // comes from :studentId in the URL
+const getStudentProgress = withErrorHandling(async (req, res) => {
+  const vId = validateIdParam(req.params.studentId, 'studentId');
+  if (!vId.isValid) throw createHttpError(400, 'VALIDATION_ERROR', vId.message, vId.details);
 
-  if (!validatedStudentId.isValid) {
-    throw createHttpError(
-      400,
-      'VALIDATION_ERROR',
-      validatedStudentId.message,
-      validatedStudentId.details
-    );
-  }
-
-  const progress = getProgressByStudentId(validatedStudentId.value);
-
-  if (!progress) {
-    throw createHttpError(
-      404,
-      'PROGRESS_NOT_FOUND',
-      'Progress not found for this student',
-      {
-        studentId: validatedStudentId.value,
-      }
-    );
-  }
+  const progress = await progressService.getProgressByStudentId(vId.value);
+  if (!progress) throw createHttpError(404, 'PROGRESS_NOT_FOUND', 'Progress not found for this student', { studentId: vId.value });
 
   return sendSuccess(res, 200, {
     currentLevel: progress.currentLevel,
@@ -205,9 +190,4 @@ const getStudentProgress = withErrorHandling((req, res) => {
   });
 });
 
-module.exports = {
-  getProgressChart,
-  getNextLesson,
-  getProgressStats,
-  getStudentProgress,
-};
+module.exports = { getProgressChart, getNextLesson, getProgressStats, getStudentProgress };

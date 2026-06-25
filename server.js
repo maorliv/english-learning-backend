@@ -3,6 +3,7 @@
 
 require('dotenv').config();
 const http = require('http');
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const prisma = require('./prisma/client');
@@ -28,17 +29,17 @@ const usersRouter = require('./routes/users.routes');
 const warmUpGrammarRouter = require('./routes/warmUpGrammar.routes');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Global middleware — runs for every request, in order
-app.use(logger);              // Log each request with method, URL, status, and response time
+app.use(logger);
 app.use(
 	cors({
-		origin: 'http://localhost:5173',
+		origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
 		credentials: true,
 	})
 );
-app.use(express.json());      // Parse JSON request bodies (populates req.body)
+app.use(express.json());
 
 // Route mounting — each router handles all routes under the given path prefix
 app.use('/', healthRouter);
@@ -56,9 +57,16 @@ app.use('/api/teachers', teachersRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/warm-up-grammar', warmUpGrammarRouter);
 
+// Serve React frontend in production
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res, next) => {
+	if (req.path.startsWith('/api/')) return next();
+	res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Fallback middleware — must be registered after all routes
-app.use(notFound);     // Returns 404 for any unmatched route
-app.use(errorHandler); // Catches errors thrown/passed from any route or middleware
+app.use(notFound);
+app.use(errorHandler);
 
 // Wrap Express in an HTTP server so Socket.IO can share the same port
 const httpServer = http.createServer(app);

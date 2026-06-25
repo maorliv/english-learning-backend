@@ -42,7 +42,7 @@ app.use(
 app.use(express.json());
 
 // Route mounting — each router handles all routes under the given path prefix
-app.use('/', healthRouter);
+app.use('/api/health', healthRouter);
 app.use('/api/assessment', assessmentRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/conversations', conversationsRouter);

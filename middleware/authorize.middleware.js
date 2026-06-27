@@ -1,4 +1,5 @@
 const { createHttpError } = require('../utils/httpError');
+const prisma = require('../prisma/client');
 
 /**
  * Factory function that creates an Express authorization middleware.
@@ -21,6 +22,19 @@ function authorize(allowedRoles, options = {}) {
     try {
       const userRole = req.header('x-user-role');
       const userId = req.header('x-user-id');
+
+      if (!userId) {
+        return next(createHttpError(401, 'UNAUTHORIZED', 'Authentication required.'));
+      }
+
+      const userExists = await prisma.user.findUnique({
+        where: { userID: Number(userId) },
+        select: { userID: true },
+      });
+
+      if (!userExists) {
+        return next(createHttpError(401, 'UNAUTHORIZED', 'User account no longer exists.'));
+      }
 
       const routeId = req.params[options.idParam || 'id'];
 

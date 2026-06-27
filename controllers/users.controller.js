@@ -82,7 +82,6 @@ const updateUser = withErrorHandling(async (req, res) => {
   const requiredFieldsValidation = validateRequiredFields(req.body, [
     'firstName',
     'lastName',
-    'userRole',
   ]);
 
   if (!validatedId.isValid) {
@@ -103,11 +102,10 @@ const updateUser = withErrorHandling(async (req, res) => {
     );
   }
 
-  const updatedUser = await usersService.updateUserById(validatedId.value, {
-    firstName,
-    lastName,
-    userRole,
-  });
+  const data = { firstName, lastName };
+  if (userRole) data.userRole = userRole;
+
+  const updatedUser = await usersService.updateUserById(validatedId.value, data);
 
   if (!updatedUser) {
     throw createHttpError(404, 'USER_NOT_FOUND', 'User not found', {

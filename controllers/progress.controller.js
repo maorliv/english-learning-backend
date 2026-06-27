@@ -140,6 +140,10 @@ const getNextLesson = withErrorHandling(async (req, res) => {
   const progress = await progressService.getProgressByStudentId(vId.value);
   if (!progress) throw createHttpError(404, 'PROGRESS_NOT_FOUND', 'Progress not found for this student', { studentId: vId.value });
 
+  if (!progress.currentLevel) {
+    return sendSuccess(res, 200, null);
+  }
+
   const preferences = await matchingService.getStudentPreferencesByUserId(vId.value);
   if (!preferences) throw createHttpError(404, 'PREFERENCES_NOT_FOUND', 'Student preferences not found', { studentId: vId.value });
 

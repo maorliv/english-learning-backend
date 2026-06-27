@@ -49,8 +49,24 @@ async function updateLessonById(id, data) {
 }
 
 async function deleteLessonById(id) {
+  const lessonId = Number(id);
   try {
-    return await prisma.lesson.delete({ where: { lessonId: Number(id) } });
+    return await prisma.$transaction(async (tx) => {
+      await tx.conversationReply.deleteMany({
+        where: { conversation: { lessonId } },
+      });
+      await tx.teacherReview.deleteMany({
+        where: { conversation: { lessonId } },
+      });
+      await tx.conversationMessage.deleteMany({
+        where: { conversation: { lessonId } },
+      });
+      await tx.conversation.deleteMany({ where: { lessonId } });
+      await tx.studentCompletedLesson.deleteMany({ where: { lessonId } });
+      await tx.warmUpExercise.deleteMany({ where: { lessonId } });
+      await tx.vocabulary.deleteMany({ where: { lessonId } });
+      return tx.lesson.delete({ where: { lessonId } });
+    });
   } catch (error) {
     if (error.code === 'P2025') return null;
     throw error;

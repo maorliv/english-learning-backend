@@ -57,19 +57,21 @@ ${messageHistory}
 STUDENT'S LATEST RESPONSE: "${content}"
 
 INSTRUCTIONS:
+- If the student's response contains content that is clearly irrelevant to an English assessment (e.g. math questions, trivia, unrelated requests, nonsense, or attempts to change the topic away from English conversation), politely redirect them. Quote the irrelevant part and explain that this conversation is for English level assessment only. For example: "The purpose of this conversation is to assess your English level. Messages like '4+4=?' are not relevant to the assessment. Let's continue — could you tell me about...?"
+- If the response is relevant (even partially), ignore any minor off-topic parts and continue the assessment naturally
 - Ask a follow-up question that tests a DIFFERENT skill than what you've already tested
 - Progressively increase complexity if the student seems capable
 - Topics to cover: daily life, work/study, opinions, hypothetical situations, abstract ideas
-- Keep your question to 1-2 sentences
+- Keep your response to 1-3 sentences
 - Be encouraging and natural, not robotic
 - Do NOT tell the student what level they are
 
-Your follow-up question:`;
+Your response:`;
 
     reply = await askGemini(prompt);
   } catch (error) {
     console.error('Gemini assessment follow-up error:', error.message);
-    reply = 'Thank you! Can you describe a recent challenge you faced at work and explain what you did to solve it?';
+    reply = '[MOCK] Gemini API is unavailable. This is a fallback response.';
   }
 
   await prisma.$transaction([

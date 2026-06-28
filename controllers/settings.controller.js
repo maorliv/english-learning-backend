@@ -1,6 +1,7 @@
 const { sendSuccess } = require('../utils/response');
 const { createHttpError, withErrorHandling } = require('../utils/httpError');
 const settingsService = require('../services/settings.service');
+const prisma = require('../prisma/client');
 
 const getSettings = withErrorHandling(async (req, res) => {
   const userId = req.header('x-user-id');
@@ -22,6 +23,13 @@ const updateSettings = withErrorHandling(async (req, res) => {
 
   const updated = await settingsService.updateSettingsByUserId(userId, { displayName, email, theme });
   if (!updated) throw createHttpError(404, 'SETTINGS_NOT_FOUND', 'Settings not found for this user', { userId });
+
+  if (email) {
+    await prisma.user.update({
+      where: { userID: Number(userId) },
+      data: { email: email.toLowerCase() },
+    });
+  }
 
   return sendSuccess(res, 200, updated);
 });

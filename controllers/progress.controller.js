@@ -27,6 +27,7 @@ async function buildRecommendedLesson(progress, preferences) {
 
 STUDENT PROFILE:
 - Current level: "${progress.currentLevel}"
+- Main goal: "${preferences.mainGoal || 'general_english'}"
 - Learning goal: "${preferences.learning_goal}"
 
 AVAILABLE LESSONS (JSON array):
@@ -78,7 +79,7 @@ Respond ONLY with a JSON object in this exact format, no other text:
     return {
       lessonId: recommended.lessonId,
       title: recommended.title,
-      reason: `Recommended for your ${progress.currentLevel} level and learning goal: ${preferences.learning_goal}.`,
+      reason: `Recommended for your ${progress.currentLevel} level and goal: ${preferences.mainGoal || preferences.learning_goal}.`,
     };
   }
 }
@@ -147,8 +148,8 @@ const getNextLesson = withErrorHandling(async (req, res) => {
   const preferences = await matchingService.getStudentPreferencesByUserId(vId.value);
   if (!preferences) throw createHttpError(404, 'PREFERENCES_NOT_FOUND', 'Student preferences not found', { studentId: vId.value });
 
-  // Cache key: if level or learning_goal changed → invalidate
-  const cacheKey = `${progress.currentLevel || ''}|${preferences.learning_goal || ''}`;
+  // Cache key: if level, learning_goal, or mainGoal changed → invalidate
+  const cacheKey = `${progress.currentLevel || ''}|${preferences.learning_goal || ''}|${preferences.mainGoal || ''}`;
   const cached = progress.cachedRecommendation;
 
   if (cached && cached.cacheKey === cacheKey) {

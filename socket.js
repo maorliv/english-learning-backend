@@ -29,7 +29,7 @@ function initSocket(httpServer) {
     }
 
     socket.on('disconnect', () => {
-      if (userId) {
+      if (userId && onlineUsers.get(String(userId)) === socket.id) {
         onlineUsers.delete(String(userId));
         io.emit('user:offline', { userId: String(userId) });
       }

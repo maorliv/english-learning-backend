@@ -264,6 +264,20 @@ Respond ONLY with a JSON object in this exact format, no other text:
     data: { status: 'completed', endedAt: new Date(), aiScore, aiFeedback },
   });
 
+  await prisma.studentCompletedLesson.upsert({
+    where: {
+      studentId_lessonId: {
+        studentId: conversation.studentId,
+        lessonId: conversation.lessonId,
+      },
+    },
+    update: { completedAt: new Date() },
+    create: {
+      studentId: conversation.studentId,
+      lessonId: conversation.lessonId,
+    },
+  });
+
   return { conversationId: Number(conversationId), aiScore, aiFeedback };
 }
 
